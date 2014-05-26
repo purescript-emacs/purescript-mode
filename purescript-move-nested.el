@@ -1,4 +1,4 @@
-;;; haskell-move-nested.el --- Change the column of text nested below a line
+;;; purescript-move-nested.el --- Change the column of text nested below a line
 
 ;; Copyright (C) 2010  Chris Done
 
@@ -22,18 +22,18 @@
 
 ;;; Commentary:
 
-;; This module is intended for Haskell mode users, but is
-;; independent of Haskell mode.
+;; This module is intended for PureScript mode users, but is
+;; independent of PureScript mode.
 
 ;; Example usage:
 
-;; (define-key haskell-mode-map (kbd "C-,") 'haskell-move-nested-left)
-;; (define-key haskell-mode-map (kbd "C-.") 'haskell-move-nested-right)
+;; (define-key purescript-mode-map (kbd "C-,") 'purescript-move-nested-left)
+;; (define-key purescript-mode-map (kbd "C-.") 'purescript-move-nested-right)
 
 ;;; Code:
 
 ;;;###autoload
-(defun haskell-move-nested (cols)
+(defun purescript-move-nested (cols)
   "Shift the nested off-side-rule block adjacent to point by COLS columns to the right.
 
 In Transient Mark mode, if the mark is active, operate on the contents
@@ -44,12 +44,12 @@ of the region instead.
         (progn
           (indent-rigidly (region-beginning) (region-end) cols)
           (setq deactivate-mark nil))
-      (let ((region (haskell-move-nested-region)))
+      (let ((region (purescript-move-nested-region)))
         (when region
           (indent-rigidly (car region) (cdr region) cols))))))
 
 ;;;###autoload
-(defun haskell-move-nested-right (cols)
+(defun purescript-move-nested-right (cols)
   "Increase indentation of the following off-side-rule block adjacent to point.
 
 Use a numeric prefix argument to indicate amount of indentation to apply.
@@ -57,11 +57,11 @@ Use a numeric prefix argument to indicate amount of indentation to apply.
 In Transient Mark mode, if the mark is active, operate on the contents
 of the region instead."
   (interactive "p")
-  (haskell-move-nested cols)
+  (purescript-move-nested cols)
   )
 
 ;;;###autoload
-(defun haskell-move-nested-left (cols)
+(defun purescript-move-nested-left (cols)
   "Decrease indentation of the following off-side-rule block adjacent to point.
 
 Use a numeric prefix argument to indicate amount of indentation to apply.
@@ -69,33 +69,33 @@ Use a numeric prefix argument to indicate amount of indentation to apply.
 In Transient Mark mode, if the mark is active, operate on the contents
 of the region instead."
   (interactive "p")
-  (haskell-move-nested (- cols))
+  (purescript-move-nested (- cols))
   )
 
-(defun haskell-move-nested-region ()
+(defun purescript-move-nested-region ()
   "Infer region off-side-rule block adjacent to point.
-Used by `haskell-move-nested'.
+Used by `purescript-move-nested'.
 "
   (save-excursion
     (let ((starting-level (current-column)))
       (forward-line)
-      (let ((current-level (haskell-move-nested-indent-level)))
+      (let ((current-level (purescript-move-nested-indent-level)))
         (let ((start-point (line-beginning-position))
               (start-end-point (line-end-position))
               (end-point nil)
               (last-line 0))
           (forward-line)
           (while (and (not (= (line-beginning-position) last-line))
-                      (or (> (haskell-move-nested-indent-level) starting-level)
+                      (or (> (purescript-move-nested-indent-level) starting-level)
                           (and (> current-level starting-level)
-                               (>= (haskell-move-nested-indent-level) current-level))))
+                               (>= (purescript-move-nested-indent-level) current-level))))
             (setq last-line (line-beginning-position))
             (setq end-point (line-end-position))
             (forward-line))
           (cons start-point (or end-point
                                 start-end-point)))))))
 
-(defun haskell-move-nested-indent-level ()
+(defun purescript-move-nested-indent-level ()
   (max
    0
    (1- (length
@@ -105,26 +105,26 @@ Used by `haskell-move-nested'.
                              (search-forward-regexp "[^ ]" (line-end-position) t 1))
              (line-beginning-position)))))))
 
-(defun haskell-kill-nested ()
+(defun purescript-kill-nested ()
   "Kill the nested region after point."
   (interactive)
   (let ((start (point))
         (reg (save-excursion
                (search-backward-regexp "^[ ]+" (line-beginning-position) t 1)
                (search-forward-regexp "[^ ]" (line-end-position) t 1)
-               (haskell-move-nested-region))))
+               (purescript-move-nested-region))))
     (kill-region start (cdr reg))))
 
-(defun haskell-delete-nested ()
+(defun purescript-delete-nested ()
   "Kill the nested region after point."
   (interactive)
   (let ((start (point))
         (reg (save-excursion
                (search-backward-regexp "^[ ]+" (line-beginning-position) t 1)
                (search-forward-regexp "[^ ]" (line-end-position) t 1)
-               (haskell-move-nested-region))))
+               (purescript-move-nested-region))))
     (delete-region start (cdr reg))))
 
-(provide 'haskell-move-nested)
+(provide 'purescript-move-nested)
 
-;;; haskell-move-nested.el ends here
+;;; purescript-move-nested.el ends here

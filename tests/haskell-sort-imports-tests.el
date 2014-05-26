@@ -1,4 +1,4 @@
-;;; haskell-sort-imports-tests.el --- Unit tests for haskell-sort-imports
+;;; purescript-sort-imports-tests.el --- Unit tests for purescript-sort-imports
 
 ;; Copyright (c) 2014 Chris Done. All rights reserved.
 
@@ -18,18 +18,18 @@
 ;;; Code:
 
 (require 'ert)
-(require 'haskell-sort-imports)
+(require 'purescript-sort-imports)
 
 (ert-deftest empty-buffer ()
   (should (with-temp-buffer
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             t)))
 
 (ert-deftest single-line ()
   (should (with-temp-buffer
             (insert "import A\n")
             (goto-line 1)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "import A\n"))))
 
@@ -39,7 +39,7 @@
 import B
 ")
             (goto-line 1)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "import A
 import B
@@ -49,7 +49,7 @@ import B
 import B
 ")
             (goto-line 1)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "import qualified A
 import B
@@ -59,7 +59,7 @@ import B
 import B
 ")
             (goto-line 1)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "import qualified \"mtl\" A
 import B
@@ -71,7 +71,7 @@ import B
 import A
 ")
             (goto-line 1)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "import A
 import B
@@ -84,7 +84,7 @@ import B
 import A
 ")
             (goto-line 2)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "module A where
 import A
@@ -97,7 +97,7 @@ import B
 import A
 ")
             (goto-line 3)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "module C where
 
@@ -116,7 +116,7 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
 ")
             (goto-line 1)
-            (haskell-sort-imports)
+            (purescript-sort-imports)
             (string= (buffer-string)
                      "import Data.Aeson.Encode (encode)
 import Data.Aeson.Parser.Internal (decodeWith, decodeStrictWith,
@@ -127,4 +127,4 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
 "))))
 
-(provide 'haskell-sort-imports-tests)
+(provide 'purescript-sort-imports-tests)

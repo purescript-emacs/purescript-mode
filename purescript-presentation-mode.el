@@ -1,4 +1,4 @@
-;;; haskell-presentation-mode.el --- Presenting Haskell things
+;;; purescript-presentation-mode.el --- Presenting PureScript things
 
 ;; Copyright (C) 2013  Chris Done
 
@@ -25,23 +25,23 @@
 
 ;;; Code:
 
-(require 'haskell-mode)
+(require 'purescript-mode)
 
-(define-derived-mode haskell-presentation-mode
-  haskell-mode "Presentation"
-  "Major mode for viewing Haskell snippets.
+(define-derived-mode purescript-presentation-mode
+  purescript-mode "Presentation"
+  "Major mode for viewing PureScript snippets.
           \\{hypertext-mode-map}"
   (setq case-fold-search nil))
 
-(define-key haskell-presentation-mode-map (kbd "q") 'quit-window)
+(define-key purescript-presentation-mode-map (kbd "q") 'quit-window)
 
-(defun haskell-present (name session code)
+(defun purescript-present (name session code)
   "Present CODE in a popup buffer suffixed with NAME and set
-SESSION as the current haskell-session."
-  (let* ((name (format "*Haskell Presentation%s*" name))
+SESSION as the current purescript-session."
+  (let* ((name (format "*PureScript Presentation%s*" name))
          (buffer (get-buffer-create name)))
     (with-current-buffer buffer
-      (haskell-presentation-mode)
+      (purescript-presentation-mode)
       (if (boundp 'shm-display-quarantine)
           (set (make-local-variable 'shm-display-quarantine) nil))
       (let ((buffer-read-only nil))
@@ -53,11 +53,11 @@ SESSION as the current haskell-session."
           (insert code "\n\n")
           (font-lock-fontify-region point (point))
           (goto-char point))))
-    (if (and (boundp 'haskell-presentation-mode)
-             haskell-presentation-mode)
+    (if (and (boundp 'purescript-presentation-mode)
+             purescript-presentation-mode)
         (switch-to-buffer buffer)
       (pop-to-buffer buffer))))
 
-(provide 'haskell-presentation-mode)
+(provide 'purescript-presentation-mode)
 
-;;; haskell-presentation-mode.el ends here
+;;; purescript-presentation-mode.el ends here

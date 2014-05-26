@@ -1,4 +1,4 @@
-;;; haskell-font-lock.el --- Font locking module for Haskell Mode
+;;; purescript-font-lock.el --- Font locking module for PureScript Mode
 
 ;; Copyright 2003, 2004, 2005, 2006, 2007, 2008  Free Software Foundation, Inc.
 ;; Copyright 1997-1998  Graeme E Moss, and Tommy Thorn
@@ -6,7 +6,7 @@
 ;; Author: 1997-1998 Graeme E Moss <gem@cs.york.ac.uk>
 ;;         1997-1998 Tommy Thorn <thorn@irisa.fr>
 ;;         2003      Dave Love <fx@gnu.org>
-;; Keywords: faces files Haskell
+;; Keywords: faces files PureScript
 
 ;; This file is not part of GNU Emacs.
 
@@ -27,24 +27,24 @@
 
 ;; Purpose:
 ;;
-;; To support fontification of standard Haskell keywords, symbols,
-;; functions, etc.  Supports full Haskell 1.4 as well as LaTeX- and
+;; To support fontification of standard PureScript keywords, symbols,
+;; functions, etc.  Supports full PureScript 1.4 as well as LaTeX- and
 ;; Bird-style literate scripts.
 ;;
 ;; Installation:
 ;;
-;; To turn font locking on for all Haskell buffers under the Haskell
+;; To turn font locking on for all PureScript buffers under the PureScript
 ;; mode of Moss&Thorn, add this to .emacs:
 ;;
-;;    (add-hook 'haskell-mode-hook 'turn-on-haskell-font-lock)
+;;    (add-hook 'purescript-mode-hook 'turn-on-purescript-font-lock)
 ;;
-;; Otherwise, call `turn-on-haskell-font-lock'.
+;; Otherwise, call `turn-on-purescript-font-lock'.
 ;;
 ;;
 ;; Customisation:
 ;;
 ;; The colours and level of font locking may be customised.  See the
-;; documentation on `turn-on-haskell-font-lock' for more details.
+;; documentation on `turn-on-purescript-font-lock' for more details.
 ;;
 ;; Present Limitations/Future Work (contributions are most welcome!):
 ;;
@@ -60,7 +60,7 @@
 ;;
 ;;
 ;; All functions/variables start with
-;; `(turn-(on/off)-)haskell-font-lock' or `haskell-fl-'.
+;; `(turn-(on/off)-)purescript-font-lock' or `purescript-fl-'.
 
 ;;; Change Log:
 
@@ -83,36 +83,36 @@
 ;;   in comments.
 ;;
 ;; Version 1.0:
-;;   Brought over from Haskell mode v1.1.
+;;   Brought over from PureScript mode v1.1.
 
 ;;; Code:
 
-(require 'haskell-mode)
+(require 'purescript-mode)
 (require 'font-lock)
 (with-no-warnings (require 'cl))
 
-(defcustom haskell-font-lock-symbols nil
+(defcustom purescript-font-lock-symbols nil
   "Display \\ and -> and such using symbols in fonts.
 This may sound like a neat trick, but be extra careful: it changes the
 alignment and can thus lead to nasty surprises w.r.t layout.
 If t, try to use whichever font is available.  Otherwise you can
 set it to a particular font of your preference among `japanese-jisx0208'
 and `unicode'."
-  :group 'haskell
+  :group 'purescript
   :type '(choice (const nil)
                  (const t)
                  (const unicode)
                  (const japanese-jisx0208)))
 
-(defconst haskell-font-lock-symbols-alist
+(defconst purescript-font-lock-symbols-alist
   (append
    ;; Prefer single-width Unicode font for lambda.
    (and (fboundp 'decode-char)
-        (memq haskell-font-lock-symbols '(t unicode))
+        (memq purescript-font-lock-symbols '(t unicode))
         (list (cons "\\" (decode-char 'ucs 955))))
    ;; The symbols can come from a JIS0208 font.
    (and (fboundp 'make-char) (fboundp 'charsetp) (charsetp 'japanese-jisx0208)
-        (memq haskell-font-lock-symbols '(t japanese-jisx0208))
+        (memq purescript-font-lock-symbols '(t japanese-jisx0208))
         (list (cons "not" (make-char 'japanese-jisx0208 34 76))
               (cons "\\" (make-char 'japanese-jisx0208 38 75))
               (cons "->" (make-char 'japanese-jisx0208 34 42))
@@ -124,7 +124,7 @@ and `unicode'."
               (cons "forall" (make-char 'japanese-jisx0208 34 79))))
    ;; Or a unicode font.
    (and (fboundp 'decode-char)
-        (memq haskell-font-lock-symbols '(t unicode))
+        (memq purescript-font-lock-symbols '(t unicode))
         (list (cons "not" (decode-char 'ucs 172))
               (cons "->" (decode-char 'ucs 8594))
               (cons "<-" (decode-char 'ucs 8592))
@@ -148,17 +148,17 @@ and `unicode'."
               (list "." (decode-char 'ucs 8728) ; (decode-char 'ucs 9675)
                     ;; Need a predicate here to distinguish the . used by
                     ;; forall <foo> . <bar>.
-                    'haskell-font-lock-dot-is-not-composition)
+                    'purescript-font-lock-dot-is-not-composition)
               (cons "forall" (decode-char 'ucs 8704)))))
-  "Alist mapping Haskell symbols to chars.
+  "Alist mapping PureScript symbols to chars.
 Each element has the form (STRING . CHAR) or (STRING CHAR PREDICATE).
-STRING is the Haskell symbol.
+STRING is the PureScript symbol.
 CHAR is the character with which to represent this symbol.
 PREDICATE if present is a function of one argument (the start position
 of the symbol) which should return non-nil if this mapping should be disabled
 at that position.")
 
-(defun haskell-font-lock-dot-is-not-composition (start)
+(defun purescript-font-lock-dot-is-not-composition (start)
   "Return non-nil if the \".\" at START is not a composition operator.
 This is the case if the \".\" is part of a \"forall <tvar> . <type>\"."
   (save-excursion
@@ -168,26 +168,26 @@ This is the case if the \".\" is part of a \"forall <tvar> . <type>\"."
 
 ;; Use new vars for the font-lock faces.  The indirection allows people to
 ;; use different faces than in other modes, as before.
-(defvar haskell-keyword-face 'font-lock-keyword-face)
-(defvar haskell-constructor-face 'font-lock-type-face)
+(defvar purescript-keyword-face 'font-lock-keyword-face)
+(defvar purescript-constructor-face 'font-lock-type-face)
 ;; This used to be `font-lock-variable-name-face' but it doesn't result in
 ;; a highlighting that's consistent with other modes (it's mostly used
 ;; for function defintions).
-(defvar haskell-definition-face 'font-lock-function-name-face)
+(defvar purescript-definition-face 'font-lock-function-name-face)
 ;; This is probably just wrong, but it used to use
 ;; `font-lock-function-name-face' with a result that was not consistent with
-;; other major modes, so I just exchanged with `haskell-definition-face'.
-(defvar haskell-operator-face 'font-lock-variable-name-face)
-(defvar haskell-default-face nil)
-(defvar haskell-literate-comment-face 'font-lock-doc-face
+;; other major modes, so I just exchanged with `purescript-definition-face'.
+(defvar purescript-operator-face 'font-lock-variable-name-face)
+(defvar purescript-default-face nil)
+(defvar purescript-literate-comment-face 'font-lock-doc-face
   "Face with which to fontify literate comments.
 Set to `default' to avoid fontification of them.")
 
-(defconst haskell-emacs21-features (string-match "[[:alpha:]]" "x")
+(defconst purescript-emacs21-features (string-match "[[:alpha:]]" "x")
   "Non-nil if we have regexp char classes.
 Assume this means we have other useful features from Emacs 21.")
 
-(defun haskell-font-lock-compose-symbol (alist)
+(defun purescript-font-lock-compose-symbol (alist)
   "Compose a sequence of ascii chars into a symbol.
 Regexp match data 0 points to the chars."
   ;; Check that the chars should really be composed into a symbol.
@@ -217,10 +217,10 @@ Regexp match data 0 points to the chars."
   ;; Return nil because we're not adding any face property.
   nil)
 
-(defun haskell-font-lock-symbols-keywords ()
+(defun purescript-font-lock-symbols-keywords ()
   (when (fboundp 'compose-region)
     (let ((alist nil))
-      (dolist (x haskell-font-lock-symbols-alist)
+      (dolist (x purescript-font-lock-symbols-alist)
         (when (and (if (fboundp 'char-displayable-p)
                        (char-displayable-p (if (consp (cdr x)) (cadr x) (cdr x)))
                      (if (fboundp 'latin1-char-displayable-p)
@@ -232,21 +232,21 @@ Regexp match data 0 points to the chars."
           (push x alist)))
       (when alist
         `((,(regexp-opt (mapcar 'car alist) t)
-           (0 (haskell-font-lock-compose-symbol ',alist)
+           (0 (purescript-font-lock-compose-symbol ',alist)
               ;; In Emacs-21, if the `override' field is nil, the face
               ;; expressions is only evaluated if the text has currently
               ;; no face.  So force evaluation by using `keep'.
               keep)))))))
 
 ;; The font lock regular expressions.
-(defun haskell-font-lock-keywords-create (literate)
-  "Create fontification definitions for Haskell scripts.
+(defun purescript-font-lock-keywords-create (literate)
+  "Create fontification definitions for PureScript scripts.
 Returns keywords suitable for `font-lock-keywords'."
   (let* (;; Bird-style literate scripts start a line of code with
          ;; "^>", otherwise a line of code starts with "^".
          (line-prefix (if (eq literate 'bird) "^> ?" "^"))
 
-         ;; Most names are borrowed from the lexical syntax of the Haskell
+         ;; Most names are borrowed from the lexical syntax of the PureScript
          ;; report.
          ;; Some of these definitions have been superseded by using the
          ;; syntax table instead.
@@ -303,7 +303,7 @@ Returns keywords suitable for `font-lock-keywords'."
          (topdecl-var
           (concat line-prefix "\\(" varid "\\)\\s-*"
                   ;; optionally allow for a single newline after identifier
-                  ;; NOTE: not supported for bird-style .lhs files
+                  ;; NOTE: not supported for bird-style .lpurs files
                   (if (eq literate 'bird) nil "\\([\n]\\s-+\\)?")
                   ;; A toplevel declaration can be followed by a definition
                   ;; (=), a type (::) or (∷), a guard, or a pattern which can
@@ -325,7 +325,7 @@ Returns keywords suitable for `font-lock-keywords'."
             ("^=======" 0 'font-lock-warning-face t)
             ("^>>>>>>> .*$" 0 'font-lock-warning-face t)
             ("^#.*$" 0 'font-lock-preprocessor-face t)
-            ,@(unless haskell-emacs21-features ;Supports nested comments?
+            ,@(unless purescript-emacs21-features ;Supports nested comments?
                 ;; Expensive.
                 `((,string-and-char 1 font-lock-string-face)))
 
@@ -334,96 +334,96 @@ Returns keywords suitable for `font-lock-keywords'."
             ;; trigger a bug in Emacs-21.3 which caused the compositions to
             ;; be "randomly" dropped.  Moving it earlier seemed to reduce
             ;; the occurrence of the bug.
-            ,@(haskell-font-lock-symbols-keywords)
+            ,@(purescript-font-lock-symbols-keywords)
 
-            (,reservedid 1 (symbol-value 'haskell-keyword-face))
-            (,reservedsym 1 (symbol-value 'haskell-operator-face))
+            (,reservedid 1 (symbol-value 'purescript-keyword-face))
+            (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Special case for `as', `hiding', `safe' and `qualified', which are
             ;; keywords in import statements but are not otherwise reserved.
             ("\\<import[ \t]+\\(?:\\(safe\\>\\)[ \t]*\\)?\\(?:\\(qualified\\>\\)[ \t]*\\)?[^ \t\n()]+[ \t]*\\(?:\\(\\<as\\>\\)[ \t]*[^ \t\n()]+[ \t]*\\)?\\(\\<hiding\\>\\)?"
-             (1 (symbol-value 'haskell-keyword-face) nil lax)
-             (2 (symbol-value 'haskell-keyword-face) nil lax)
-             (3 (symbol-value 'haskell-keyword-face) nil lax)
-             (4 (symbol-value 'haskell-keyword-face) nil lax))
+             (1 (symbol-value 'purescript-keyword-face) nil lax)
+             (2 (symbol-value 'purescript-keyword-face) nil lax)
+             (3 (symbol-value 'purescript-keyword-face) nil lax)
+             (4 (symbol-value 'purescript-keyword-face) nil lax))
 
-            (,reservedsym 1 (symbol-value 'haskell-operator-face))
+            (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Special case for `foreign import'
             ;; keywords in foreign import statements but are not otherwise reserved.
             ("\\<\\(foreign\\)[ \t]+\\(import\\)[ \t]+\\(?:\\(ccall\\|stdcall\\|cplusplus\\|jvm\\|dotnet\\)[ \t]+\\)?\\(?:\\(safe\\|unsafe\\|interruptible\\)[ \t]+\\)?"
-             (1 (symbol-value 'haskell-keyword-face) nil lax)
-             (2 (symbol-value 'haskell-keyword-face) nil lax)
-             (3 (symbol-value 'haskell-keyword-face) nil lax)
-             (4 (symbol-value 'haskell-keyword-face) nil lax))
+             (1 (symbol-value 'purescript-keyword-face) nil lax)
+             (2 (symbol-value 'purescript-keyword-face) nil lax)
+             (3 (symbol-value 'purescript-keyword-face) nil lax)
+             (4 (symbol-value 'purescript-keyword-face) nil lax))
 
-            (,reservedsym 1 (symbol-value 'haskell-operator-face))
+            (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Special case for `foreign export'
             ;; keywords in foreign export statements but are not otherwise reserved.
             ("\\<\\(foreign\\)[ \t]+\\(export\\)[ \t]+\\(?:\\(ccall\\|stdcall\\|cplusplus\\|jvm\\|dotnet\\)[ \t]+\\)?"
-             (1 (symbol-value 'haskell-keyword-face) nil lax)
-             (2 (symbol-value 'haskell-keyword-face) nil lax)
-             (3 (symbol-value 'haskell-keyword-face) nil lax))
+             (1 (symbol-value 'purescript-keyword-face) nil lax)
+             (2 (symbol-value 'purescript-keyword-face) nil lax)
+             (3 (symbol-value 'purescript-keyword-face) nil lax))
 
             ;; Toplevel Declarations.
             ;; Place them *before* generic id-and-op highlighting.
-            (,topdecl-var  (1 (symbol-value 'haskell-definition-face)))
-            (,topdecl-var2 (2 (symbol-value 'haskell-definition-face)))
-            (,topdecl-sym  (2 (symbol-value 'haskell-definition-face)))
-            (,topdecl-sym2 (1 (symbol-value 'haskell-definition-face)))
+            (,topdecl-var  (1 (symbol-value 'purescript-definition-face)))
+            (,topdecl-var2 (2 (symbol-value 'purescript-definition-face)))
+            (,topdecl-sym  (2 (symbol-value 'purescript-definition-face)))
+            (,topdecl-sym2 (1 (symbol-value 'purescript-definition-face)))
 
             ;; These four are debatable...
-            ("(\\(,*\\|->\\))" 0 (symbol-value 'haskell-constructor-face))
-            ("\\[\\]" 0 (symbol-value 'haskell-constructor-face))
+            ("(\\(,*\\|->\\))" 0 (symbol-value 'purescript-constructor-face))
+            ("\\[\\]" 0 (symbol-value 'purescript-constructor-face))
             ;; Expensive.
-            (,qvarid 0 (symbol-value 'haskell-default-face))
-            (,qconid 0 (symbol-value 'haskell-constructor-face))
-            (,(concat "\`" varid "\`") 0 (symbol-value 'haskell-operator-face))
+            (,qvarid 0 (symbol-value 'purescript-default-face))
+            (,qconid 0 (symbol-value 'purescript-constructor-face))
+            (,(concat "\`" varid "\`") 0 (symbol-value 'purescript-operator-face))
             ;; Expensive.
-            (,conid 0 (symbol-value 'haskell-constructor-face))
+            (,conid 0 (symbol-value 'purescript-constructor-face))
 
             ;; Very expensive.
             (,sym 0 (if (eq (char-after (match-beginning 0)) ?:)
-                        haskell-constructor-face
-                      haskell-operator-face))))
+                        purescript-constructor-face
+                      purescript-operator-face))))
     (unless (boundp 'font-lock-syntactic-keywords)
       (case literate
         (bird
          (setq keywords
-               `(("^[^>\n].*$" 0 haskell-comment-face t)
+               `(("^[^>\n].*$" 0 purescript-comment-face t)
                  ,@keywords
-                 ("^>" 0 haskell-default-face t))))
+                 ("^>" 0 purescript-default-face t))))
         ((latex tex)
          (setq keywords
-               `((haskell-fl-latex-comments 0 'font-lock-comment-face t)
+               `((purescript-fl-latex-comments 0 'font-lock-comment-face t)
                  ,@keywords)))))
     keywords))
 
 ;; The next three aren't used in Emacs 21.
 
-(defvar haskell-fl-latex-cache-pos nil
-  "Position of cache point used by `haskell-fl-latex-cache-in-comment'.
+(defvar purescript-fl-latex-cache-pos nil
+  "Position of cache point used by `purescript-fl-latex-cache-in-comment'.
 Should be at the start of a line.")
 
-(defvar haskell-fl-latex-cache-in-comment nil
-  "If `haskell-fl-latex-cache-pos' is outside a
+(defvar purescript-fl-latex-cache-in-comment nil
+  "If `purescript-fl-latex-cache-pos' is outside a
 \\begin{code}..\\end{code} block (and therefore inside a comment),
 this variable is set to t, otherwise nil.")
 
-(defun haskell-fl-latex-comments (end)
+(defun purescript-fl-latex-comments (end)
   "Sets `match-data' according to the region of the buffer before end
 that should be commented under LaTeX-style literate scripts."
   (let ((start (point)))
     (if (= start end)
         ;; We're at the end.  No more to fontify.
         nil
-      (if (not (eq start haskell-fl-latex-cache-pos))
+      (if (not (eq start purescript-fl-latex-cache-pos))
           ;; If the start position is not cached, calculate the state
           ;; of the start.
           (progn
-            (setq haskell-fl-latex-cache-pos start)
+            (setq purescript-fl-latex-cache-pos start)
             ;; If the previous \begin{code} or \end{code} is a
             ;; \begin{code}, then start is not in a comment, otherwise
             ;; it is in a comment.
-            (setq haskell-fl-latex-cache-in-comment
+            (setq purescript-fl-latex-cache-in-comment
                   (if (and
                        (re-search-backward
                         "^\\(\\(\\\\begin{code}\\)\\|\\(\\\\end{code}\\)\\)$"
@@ -432,7 +432,7 @@ that should be commented under LaTeX-style literate scripts."
                       nil t))
             ;; Restore position.
             (goto-char start)))
-      (if haskell-fl-latex-cache-in-comment
+      (if purescript-fl-latex-cache-in-comment
           (progn
             ;; If start is inside a comment, search for next \begin{code}.
             (re-search-forward "^\\\\begin{code}$" end 'move)
@@ -446,7 +446,7 @@ that should be commented under LaTeX-style literate scripts."
             ;; If one found, mark it as a comment, otherwise finish.
             (point))))))
 
-(defconst haskell-basic-syntactic-keywords
+(defconst purescript-basic-syntactic-keywords
   '(;; Character constants (since apostrophe can't have string syntax).
     ;; Beware: do not match something like 's-}' or '\n"+' since the first '
     ;; might be inside a comment or a string.
@@ -468,35 +468,35 @@ that should be commented under LaTeX-style literate scripts."
                              (t "_")))) ; other symbol sequence
     ))
 
-(defconst haskell-bird-syntactic-keywords
+(defconst purescript-bird-syntactic-keywords
   (cons '("^[^\n>]"  (0 "<"))
-        haskell-basic-syntactic-keywords))
+        purescript-basic-syntactic-keywords))
 
-(defconst haskell-latex-syntactic-keywords
+(defconst purescript-latex-syntactic-keywords
   (append
    '(("^\\\\begin{code}\\(\n\\)" 1 "!")
      ;; Note: buffer is widened during font-locking.
      ("\\`\\(.\\|\n\\)" (1 "!"))               ; start comment at buffer start
      ("^\\(\\\\\\)end{code}$" 1 "!"))
-   haskell-basic-syntactic-keywords))
+   purescript-basic-syntactic-keywords))
 
-(defcustom haskell-font-lock-haddock (boundp 'font-lock-doc-face)
+(defcustom purescript-font-lock-haddock (boundp 'font-lock-doc-face)
   "If non-nil try to highlight Haddock comments specially."
   :type 'boolean
-  :group 'haskell)
+  :group 'purescript)
 
-(defvar haskell-font-lock-seen-haddock nil)
-(make-variable-buffer-local 'haskell-font-lock-seen-haddock)
+(defvar purescript-font-lock-seen-haddock nil)
+(make-variable-buffer-local 'purescript-font-lock-seen-haddock)
 
-(defun haskell-syntactic-face-function (state)
-  "`font-lock-syntactic-face-function' for Haskell."
+(defun purescript-syntactic-face-function (state)
+  "`font-lock-syntactic-face-function' for PureScript."
   (cond
    ((nth 3 state) font-lock-string-face) ; as normal
    ;; Else comment.  If it's from syntax table, use default face.
    ((or (eq 'syntax-table (nth 7 state))
-        (and (eq haskell-literate 'bird)
+        (and (eq purescript-literate 'bird)
              (memq (char-before (nth 8 state)) '(nil ?\n))))
-    haskell-literate-comment-face)
+    purescript-literate-comment-face)
    ;; Try and recognize Haddock comments.  From what I gather from its
    ;; documentation, its comments can take the following forms:
    ;; a) {-| ... -}
@@ -512,11 +512,11 @@ that should be commented under LaTeX-style literate scripts."
    ;; requires extra work for each and every non-Haddock comment, so I only
    ;; go through the more expensive check if we've already seen a Haddock
    ;; comment in the buffer.
-   ((and haskell-font-lock-haddock
+   ((and purescript-font-lock-haddock
          (save-excursion
            (goto-char (nth 8 state))
            (or (looking-at "\\(-- \\|{-\\)[ \\t]*[|^]")
-               (and haskell-font-lock-seen-haddock
+               (and purescript-font-lock-seen-haddock
                     (looking-at "-- ")
                     (let ((doc nil)
                           pos)
@@ -527,68 +527,68 @@ that should be commented under LaTeX-style literate scripts."
                                   (looking-at "--\\( [|^]\\)?"))
                         (setq doc (match-beginning 1)))
                       doc)))))
-    (set (make-local-variable 'haskell-font-lock-seen-haddock) t)
+    (set (make-local-variable 'purescript-font-lock-seen-haddock) t)
     font-lock-doc-face)
    (t font-lock-comment-face)))
 
-(defconst haskell-font-lock-keywords
-  (haskell-font-lock-keywords-create nil)
-  "Font lock definitions for non-literate Haskell.")
+(defconst purescript-font-lock-keywords
+  (purescript-font-lock-keywords-create nil)
+  "Font lock definitions for non-literate PureScript.")
 
-(defconst haskell-font-lock-bird-literate-keywords
-  (haskell-font-lock-keywords-create 'bird)
-  "Font lock definitions for Bird-style literate Haskell.")
+(defconst purescript-font-lock-bird-literate-keywords
+  (purescript-font-lock-keywords-create 'bird)
+  "Font lock definitions for Bird-style literate PureScript.")
 
-(defconst haskell-font-lock-latex-literate-keywords
-  (haskell-font-lock-keywords-create 'latex)
-  "Font lock definitions for LaTeX-style literate Haskell.")
+(defconst purescript-font-lock-latex-literate-keywords
+  (purescript-font-lock-keywords-create 'latex)
+  "Font lock definitions for LaTeX-style literate PureScript.")
 
 ;;;###autoload
-(defun haskell-font-lock-choose-keywords ()
-  (let ((literate (if (boundp 'haskell-literate) haskell-literate)))
+(defun purescript-font-lock-choose-keywords ()
+  (let ((literate (if (boundp 'purescript-literate) purescript-literate)))
     (case literate
-      (bird haskell-font-lock-bird-literate-keywords)
-      ((latex tex) haskell-font-lock-latex-literate-keywords)
-      (t haskell-font-lock-keywords))))
+      (bird purescript-font-lock-bird-literate-keywords)
+      ((latex tex) purescript-font-lock-latex-literate-keywords)
+      (t purescript-font-lock-keywords))))
 
-(defun haskell-font-lock-choose-syntactic-keywords ()
-  (let ((literate (if (boundp 'haskell-literate) haskell-literate)))
+(defun purescript-font-lock-choose-syntactic-keywords ()
+  (let ((literate (if (boundp 'purescript-literate) purescript-literate)))
     (case literate
-      (bird haskell-bird-syntactic-keywords)
-      ((latex tex) haskell-latex-syntactic-keywords)
-      (t haskell-basic-syntactic-keywords))))
+      (bird purescript-bird-syntactic-keywords)
+      ((latex tex) purescript-latex-syntactic-keywords)
+      (t purescript-basic-syntactic-keywords))))
 
-(defun haskell-font-lock-defaults-create ()
-  "Locally set `font-lock-defaults' for Haskell."
+(defun purescript-font-lock-defaults-create ()
+  "Locally set `font-lock-defaults' for PureScript."
   (set (make-local-variable 'font-lock-defaults)
-       '(haskell-font-lock-choose-keywords
+       '(purescript-font-lock-choose-keywords
          nil nil ((?\' . "w") (?_  . "w")) nil
          (font-lock-syntactic-keywords
-          . haskell-font-lock-choose-syntactic-keywords)
+          . purescript-font-lock-choose-syntactic-keywords)
          (font-lock-syntactic-face-function
-          . haskell-syntactic-face-function)
+          . purescript-syntactic-face-function)
          ;; Get help from font-lock-syntactic-keywords.
          (parse-sexp-lookup-properties . t))))
 
 ;; The main functions.
-(defun turn-on-haskell-font-lock ()
-  "Turns on font locking in current buffer for Haskell 1.4 scripts.
+(defun turn-on-purescript-font-lock ()
+  "Turns on font locking in current buffer for PureScript 1.4 scripts.
 
 Changes the current buffer's `font-lock-defaults', and adds the
 following variables:
 
-   `haskell-keyword-face'      for reserved keywords and syntax,
-   `haskell-constructor-face'  for data- and type-constructors, class names,
+   `purescript-keyword-face'      for reserved keywords and syntax,
+   `purescript-constructor-face'  for data- and type-constructors, class names,
                                and module names,
-   `haskell-operator-face'     for symbolic and alphanumeric operators,
-   `haskell-default-face'      for ordinary code.
+   `purescript-operator-face'     for symbolic and alphanumeric operators,
+   `purescript-default-face'      for ordinary code.
 
 The variables are initialised to the following font lock default faces:
 
-   `haskell-keyword-face'      `font-lock-keyword-face'
-   `haskell-constructor-face'  `font-lock-type-face'
-   `haskell-operator-face'     `font-lock-function-name-face'
-   `haskell-default-face'      <default face>
+   `purescript-keyword-face'      `font-lock-keyword-face'
+   `purescript-constructor-face'  `font-lock-type-face'
+   `purescript-operator-face'     `font-lock-function-name-face'
+   `purescript-default-face'      <default face>
 
 Two levels of fontification are defined: level one (the default)
 and level two (more colour).  The former does not colour operators.
@@ -596,9 +596,9 @@ Use the variable `font-lock-maximum-decoration' to choose
 non-default levels of fontification.  For example, adding this to
 .emacs:
 
-  (setq font-lock-maximum-decoration '((haskell-mode . 2) (t . 0)))
+  (setq font-lock-maximum-decoration '((purescript-mode . 2) (t . 0)))
 
-uses level two fontification for `haskell-mode' and default level for
+uses level two fontification for `purescript-mode' and default level for
 all other modes.  See documentation on this variable for further
 details.
 
@@ -606,42 +606,42 @@ To alter an attribute of a face, add a hook.  For example, to change
 the foreground colour of comments to brown, add the following line to
 .emacs:
 
-  (add-hook 'haskell-font-lock-hook
+  (add-hook 'purescript-font-lock-hook
       (lambda ()
-          (set-face-foreground 'haskell-comment-face \"brown\")))
+          (set-face-foreground 'purescript-comment-face \"brown\")))
 
 Note that the colours available vary from system to system.  To see
 what colours are available on your system, call
 `list-colors-display' from emacs.
 
-To turn font locking on for all Haskell buffers, add this to .emacs:
+To turn font locking on for all PureScript buffers, add this to .emacs:
 
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-font-lock)
+  (add-hook 'purescript-mode-hook 'turn-on-purescript-font-lock)
 
 To turn font locking on for the current buffer, call
-`turn-on-haskell-font-lock'.  To turn font locking off in the current
-buffer, call `turn-off-haskell-font-lock'.
+`turn-on-purescript-font-lock'.  To turn font locking off in the current
+buffer, call `turn-off-purescript-font-lock'.
 
-Bird-style literate Haskell scripts are supported: If the value of
-`haskell-literate-bird-style' (automatically set by the Haskell mode
+Bird-style literate PureScript scripts are supported: If the value of
+`purescript-literate-bird-style' (automatically set by the PureScript mode
 of Moss&Thorn) is non-nil, a Bird-style literate script is assumed.
 
-Invokes `haskell-font-lock-hook' if not nil."
-  (haskell-font-lock-defaults-create)
-  (run-hooks 'haskell-font-lock-hook)
+Invokes `purescript-font-lock-hook' if not nil."
+  (purescript-font-lock-defaults-create)
+  (run-hooks 'purescript-font-lock-hook)
   (turn-on-font-lock))
 
-(defun turn-off-haskell-font-lock ()
+(defun turn-off-purescript-font-lock ()
   "Turns off font locking in current buffer."
   (font-lock-mode -1))
 
 ;; Provide ourselves:
 
-(provide 'haskell-font-lock)
+(provide 'purescript-font-lock)
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not cl-functions)
 ;; tab-width: 8
 ;; End:
 
-;;; haskell-font-lock.el ends here
+;;; purescript-font-lock.el ends here

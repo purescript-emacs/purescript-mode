@@ -1,6 +1,6 @@
 *.elc
 *~
-haskell-mode-autoloads.el
-haskell-mode.info
-haskell-mode.tmp.texi
+purescript-mode-autoloads.el
+purescript-mode.info
+purescript-mode.tmp.texi
 dir

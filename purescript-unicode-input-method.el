@@ -1,4 +1,4 @@
-;;; haskell-unicode-input-method.el --- Haskell Unicode helper functions  -*- coding: utf-8 -*-
+;;; purescript-unicode-input-method.el --- PureScript Unicode helper functions  -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2010-2011  Roel van Dijk
 
@@ -26,19 +26,19 @@
 (require 'quail)
 
 ;;;###autoload
-(defun turn-on-haskell-unicode-input-method ()
-  "Set input method `haskell-unicode'.
-See Info node `Unicode(haskell-mode)' for more details."
+(defun turn-on-purescript-unicode-input-method ()
+  "Set input method `purescript-unicode'.
+See Info node `Unicode(purescript-mode)' for more details."
   (interactive)
-  (set-input-method "haskell-unicode"))
+  (set-input-method "purescript-unicode"))
 
 (quail-define-package
- "haskell-unicode" ;; name
+ "purescript-unicode" ;; name
  "UTF-8"           ;; language
  "\\"              ;; title
  t                 ;; guidance
- "Haskell Unicode input method.
-Designed to be used with the Haskell UnicodeSyntax language
+ "PureScript Unicode input method.
+Designed to be used with the PureScript UnicodeSyntax language
 extension in combination with the x-unicode-symbols set of
 packages (base-unicode-symbols and containers-unicode-symbols).
 "                  ;; docstring
@@ -296,6 +296,6 @@ packages (base-unicode-symbols and containers-unicode-symbols).
  ("^9 "              ["⁹"])
  )
 
-(provide 'haskell-unicode-input-method)
+(provide 'purescript-unicode-input-method)
 
-;;; haskell-unicode-input-method.el ends here
+;;; purescript-unicode-input-method.el ends here

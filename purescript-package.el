@@ -1,4 +1,4 @@
-;;; haskell-package.el --- Interface for working with Cabal packages
+;;; purescript-package.el --- Interface for working with Cabal packages
 
 ;; Copyright (C) 2011  Chris Done
 
@@ -31,53 +31,53 @@
 
 ;; Dynamically scoped variables.
 ;; TODO What actually sets this?
-(defvar haskell-config-use-cabal-dev)
+(defvar purescript-config-use-cabal-dev)
 
-;; (defun haskell-package-conf-path-get (&optional project)
+;; (defun purescript-package-conf-path-get (&optional project)
 ;;   "Gets the user conf or the cabal-dev conf. Get the global conf elsewhere."
-;;   (if haskell-config-use-cabal-dev
+;;   (if purescript-config-use-cabal-dev
 ;;       (if project
-;;           (let* ((cabal-path (haskell-project-cabal-dir project)))
+;;           (let* ((cabal-path (purescript-project-cabal-dir project)))
 ;;             (format "%scabal-dev/packages-%s.conf/"
 ;;                     (if (string-match "/$" cabal-path)
 ;;                         cabal-path
 ;;                       (concat cabal-path "/"))
-;;                     (haskell-ghc-version)))
-;;         (haskell-package-conf-user-path-get))
-;;     (haskell-package-conf-user-path-get)))
+;;                     (purescript-ghc-version)))
+;;         (purescript-package-conf-user-path-get))
+;;     (purescript-package-conf-user-path-get)))
 
-(defun haskell-package-conf-user-path-get ()
+(defun purescript-package-conf-user-path-get ()
   "Get the user conf path."
   (let ((out (shell-command-to-string "ghc-pkg --user list no-results-please")))
     (string-match "\n\\(.*\\):\n" out) (match-string 1 out)))
 
-(defun haskell-package-conf-global-path-get ()
+(defun purescript-package-conf-global-path-get ()
   "Get the global conf path."
   (let ((out (shell-command-to-string "ghc-pkg --global list no-results-please")))
     (string-match "\n\\(.*\\):\n" out) (match-string 1 out)))
 
-(defun haskell-package-get-all (conf)
+(defun purescript-package-get-all (conf)
   "Get all package descriptions for the given `conf'."
   (let ((all (shell-command-to-string (format "ghc-pkg -f %s dump" conf))))
     (mapcar (lambda (text)
-              (haskell-package-parse text))
+              (purescript-package-parse text))
             (split-string all "\n---\n"))))
 
-(defun haskell-package-get (conf name version)
+(defun purescript-package-get (conf name version)
   "Get a package description for the given `name' and `version' in the given `conf'."
-  (haskell-package-parse
+  (purescript-package-parse
    (shell-command-to-string
     (format "ghc-pkg -f %s describe %s-%s"
             conf
             name
             version))))
 
-(defstruct haskell-package "Haskell package object.")
+(defstruct purescript-package "PureScript package object.")
 
-(defun haskell-package-parse (text)
+(defun purescript-package-parse (text)
   "Parse a package into a package object."
-  (let ((pkg (haskell-package-read-description text)))
-    (make-haskell-package
+  (let ((pkg (purescript-package-read-description text)))
+    (make-purescript-package
      :name (cdr (assoc "name" pkg))
      :version (cdr (assoc "version" pkg))
      :id (cdr (assoc "id" pkg))
@@ -97,7 +97,7 @@
                                    "[\n ]")
      :imports-dirs (cdr (assoc "imports-dirs" pkg))
      :library-dirs (cdr (assoc "library-dirs" pkg))
-     :haskell-libraries (cdr (assoc "haskell-libraries" pkg))
+     :purescript-libraries (cdr (assoc "purescript-libraries" pkg))
      :extra-libraries (cdr (assoc "extra-libraries" pkg))
      :extra-ghci-libraries (cdr (assoc "extra-ghci-libraries" pkg))
      :include-dirs (cdr (assoc "include-dirs" pkg))
@@ -111,18 +111,18 @@
      :haddock-interfaces (cdr (assoc "haddock-interfaces" pkg))
      :haddock-html (cdr (assoc "haddock-html" pkg)))))
 
-(defun haskell-package-read-description (text)
+(defun purescript-package-read-description (text)
   "Return an association list of key-values from a pkg description string."
   (let* ((marked (replace-regexp-in-string
                   "\n\\([^ ]\\)"
                   (lambda (match)
                     (concat "\n:" (substring match 1)))
                   text))
-         (alist (mapcar 'haskell-package-key-value
+         (alist (mapcar 'purescript-package-key-value
                         (split-string marked "\n:"))))
     alist))
 
-(defun haskell-package-key-value (entry)
+(defun purescript-package-key-value (entry)
   "Return a (key . value) pair from an entry."
   (let ((key-values (split-string entry ": ")))
     (if (listp key-values)
@@ -133,14 +133,14 @@
                (mapconcat 'identity (cdr key-values) ": ")))
       key-values)))
 
-(defun haskell-package-list-get (conf)
+(defun purescript-package-list-get (conf)
   "Get the list of packages in the given config."
-  (haskell-package-list-parse
+  (purescript-package-list-parse
    (shell-command-to-string
     (format "ghc-pkg -f %s list"
             conf))))
 
-(defun haskell-package-list-parse (text)
+(defun purescript-package-list-parse (text)
   "Parse the list of installed packges."
   (let* ((lines (split-string text "\n    ")))
     (mapcar
@@ -152,10 +152,10 @@
         (not (string-match "^{?[a-zA-Z0-9-_]+-[0-9.]+}?$" line)))
       lines))))
 
-(provide 'haskell-package)
+(provide 'purescript-package)
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not cl-functions)
 ;; End:
 
-;;; haskell-package.el ends here
+;;; purescript-package.el ends here

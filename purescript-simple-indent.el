@@ -1,10 +1,10 @@
-;;; haskell-simple-indent.el --- Simple indentation module for Haskell Mode
+;;; purescript-simple-indent.el --- Simple indentation module for PureScript Mode
 
 ;; Copyright (C) 1998  Heribert Schuetz, Graeme E Moss
 
 ;; Author: Heribert Schuetz <Heribert.Schuetz@informatik.uni-muenchen.de>
 ;;         Graeme E Moss <gem@cs.york.ac.uk>
-;; Keywords: indentation files Haskell
+;; Keywords: indentation files PureScript
 
 ;; This file is not part of GNU Emacs.
 
@@ -25,17 +25,17 @@
 
 ;; Purpose:
 ;;
-;; To support simple indentation of Haskell scripts.
+;; To support simple indentation of PureScript scripts.
 ;;
 ;;
 ;; Installation:
 ;;
-;; To bind TAB to the indentation command for all Haskell buffers, add
+;; To bind TAB to the indentation command for all PureScript buffers, add
 ;; this to .emacs:
 ;;
-;;    (add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+;;    (add-hook 'purescript-mode-hook 'turn-on-purescript-simple-indent)
 ;;
-;; Otherwise, call `turn-on-haskell-simple-indent'.
+;; Otherwise, call `turn-on-purescript-simple-indent'.
 ;;
 ;;
 ;; Customisation:
@@ -51,7 +51,7 @@
 ;; the problem or suggestion.
 ;;
 ;; Version 1.0:
-;;   Brought over from Haskell mode v1.1.
+;;   Brought over from PureScript mode v1.1.
 ;;
 ;; Present Limitations/Future Work (contributions are most welcome!):
 ;;
@@ -60,27 +60,27 @@
 ;;; Code:
 
 ;; All functions/variables start with
-;; `(turn-(on/off)-)haskell-simple-indent'.
+;; `(turn-(on/off)-)purescript-simple-indent'.
 
-(require 'haskell-mode)
+(require 'purescript-mode)
 
-(defgroup haskell-simple-indent nil
-  "Simple Haskell indentation."
-  :link '(custom-manual "(haskell-mode)Indentation")
-  :group 'haskell
-  :prefix "haskell-simple-indent-")
+(defgroup purescript-simple-indent nil
+  "Simple PureScript indentation."
+  :link '(custom-manual "(purescript-mode)Indentation")
+  :group 'purescript
+  :prefix "purescript-simple-indent-")
 
 ;; Version.
-(defconst haskell-simple-indent-version "1.2"
-  "`haskell-simple-indent' version number.")
-(defun haskell-simple-indent-version ()
-  "Echo the current version of `haskell-simple-indent' in the minibuffer."
+(defconst purescript-simple-indent-version "1.2"
+  "`purescript-simple-indent' version number.")
+(defun purescript-simple-indent-version ()
+  "Echo the current version of `purescript-simple-indent' in the minibuffer."
   (interactive)
-  (message "Using haskell-simple-indent version %s"
-           haskell-simple-indent-version))
+  (message "Using purescript-simple-indent version %s"
+           purescript-simple-indent-version))
 
 ;; Partly stolen from `indent-relative' in indent.el:
-(defun haskell-simple-indent ()
+(defun purescript-simple-indent ()
   "Space out to under next visible indent point.
 Indent points are positions of non-whitespace following whitespace in
 lines preceeding point.  A position is visible if it is to the left of
@@ -91,7 +91,7 @@ column, `tab-to-tab-stop' is done instead."
   (let* ((start-column (current-column))
          (invisible-from nil)           ; `nil' means infinity here
          (indent
-          (catch 'haskell-simple-indent-break
+          (catch 'purescript-simple-indent-break
             (save-excursion
               (while (progn (beginning-of-line)
                             (not (bobp)))
@@ -111,7 +111,7 @@ column, `tab-to-tab-stop' is done instead."
                                   (skip-chars-forward "^ \t" end))
                               (skip-chars-forward " \t" end)
                               (let ((col (current-column)))
-                                (throw 'haskell-simple-indent-break
+                                (throw 'purescript-simple-indent-break
                                        (if (or (= (point) end)
                                                (and invisible-from
                                                     (> col invisible-from)))
@@ -125,8 +125,8 @@ column, `tab-to-tab-stop' is done instead."
           (set-marker opoint nil))
       (tab-to-tab-stop))))
 
-(defun haskell-simple-indent-backtab ()
-  "Indent backwards.  Dual to `haskell-simple-indent'."
+(defun purescript-simple-indent-backtab ()
+  "Indent backwards.  Dual to `purescript-simple-indent'."
   (interactive)
   (let ((current-point (point))
         (i 0)
@@ -134,13 +134,13 @@ column, `tab-to-tab-stop' is done instead."
     (goto-char (line-beginning-position))
     (save-excursion
       (while (< (point) current-point)
-        (haskell-simple-indent)
+        (purescript-simple-indent)
         (setq i (+ i 1))))
     (while (< x (- i 1))
-      (haskell-simple-indent)
+      (purescript-simple-indent)
       (setq x (+ x 1)))))
 
-(defun haskell-simple-indent-newline-same-col ()
+(defun purescript-simple-indent-newline-same-col ()
   "Make a newline and go to the same column as the current line."
   (interactive)
   (let ((point (point)))
@@ -157,45 +157,45 @@ column, `tab-to-tab-stop' is done instead."
                           (car start-end) (cdr start-end))))
         (newline)))))
 
-(defun haskell-simple-indent-newline-indent ()
+(defun purescript-simple-indent-newline-indent ()
   "Make a newline on the current column and indent on step."
   (interactive)
-  (haskell-simple-indent-newline-same-col)
-  (insert (make-string haskell-indent-spaces ? )))
+  (purescript-simple-indent-newline-same-col)
+  (insert (make-string purescript-indent-spaces ? )))
 
 ;;;###autoload
-(define-minor-mode haskell-simple-indent-mode
-  "Simple Haskell indentation mode that uses simple heuristic.
+(define-minor-mode purescript-simple-indent-mode
+  "Simple PureScript indentation mode that uses simple heuristic.
 In this minor mode, `indent-for-tab-command' (bound to <tab> by
 default) will move the cursor to the next indent point in the
-previous nonblank line, whereas `haskell-simple-indent-backtab'
+previous nonblank line, whereas `purescript-simple-indent-backtab'
 \ (bound to <backtab> by default) will move the cursor the
 previous indent point.  An indent point is a non-whitespace
 character following whitespace.
 
-Runs `haskell-simple-indent-hook' on activation."
+Runs `purescript-simple-indent-hook' on activation."
   :lighter " Ind"
-  :group 'haskell-simple-indent
-  :keymap '(([backtab] . haskell-simple-indent-backtab))
+  :group 'purescript-simple-indent
+  :keymap '(([backtab] . purescript-simple-indent-backtab))
   (kill-local-variable 'indent-line-function)
-  (when haskell-simple-indent-mode
-    (set (make-local-variable 'indent-line-function) 'haskell-simple-indent)
-    (run-hooks 'haskell-simple-indent-hook)))
+  (when purescript-simple-indent-mode
+    (set (make-local-variable 'indent-line-function) 'purescript-simple-indent)
+    (run-hooks 'purescript-simple-indent-hook)))
 
 ;; The main functions.
 ;;;###autoload
-(defun turn-on-haskell-simple-indent ()
-  "Turn on function `haskell-simple-indent-mode'."
+(defun turn-on-purescript-simple-indent ()
+  "Turn on function `purescript-simple-indent-mode'."
   (interactive)
-  (haskell-simple-indent-mode))
+  (purescript-simple-indent-mode))
 
-(defun turn-off-haskell-simple-indent ()
-  "Turn off function `haskell-simple-indent-mode'."
+(defun turn-off-purescript-simple-indent ()
+  "Turn off function `purescript-simple-indent-mode'."
   (interactive)
-  (haskell-simple-indent-mode 0))
+  (purescript-simple-indent-mode 0))
 
 ;; Provide ourselves:
 
-(provide 'haskell-simple-indent)
+(provide 'purescript-simple-indent)
 
-;;; haskell-simple-indent.el ends here
+;;; purescript-simple-indent.el ends here

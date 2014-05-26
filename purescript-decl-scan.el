@@ -1,12 +1,12 @@
-;;; haskell-decl-scan.el --- Declaration scanning module for Haskell Mode
+;;; purescript-decl-scan.el --- Declaration scanning module for PureScript Mode
 
 ;; Copyright (C) 2004, 2005, 2007, 2009  Free Software Foundation, Inc.
 ;; Copyright (C) 1997-1998  Graeme E Moss
 
 ;; Author: 1997-1998 Graeme E Moss <gem@cs.york.ac.uk>
 ;; Maintainer: Stefan Monnier <monnier@gnu.org>
-;; Keywords: declarations menu files Haskell
-;; URL: http://cvs.haskell.org/cgi-bin/cvsweb.cgi/fptools/CONTRIB/haskell-modes/emacs/haskell-decl-scan.el?rev=HEAD
+;; Keywords: declarations menu files PureScript
+;; URL: http://cvs.purescript.org/cgi-bin/cvsweb.cgi/fptools/CONTRIB/purescript-modes/emacs/purescript-decl-scan.el?rev=HEAD
 
 ;; This file is not part of GNU Emacs.
 
@@ -28,22 +28,22 @@
 ;; Purpose:
 ;;
 ;; Top-level declarations are scanned and placed in a menu.  Supports
-;; full Latin1 Haskell 1.4 as well as literate scripts.
+;; full Latin1 PureScript 1.4 as well as literate scripts.
 ;;
 ;;
 ;; Installation:
 ;;
-;; To turn declaration scanning on for all Haskell buffers under the
-;; Haskell mode of Moss&Thorn, add this to .emacs:
+;; To turn declaration scanning on for all PureScript buffers under the
+;; PureScript mode of Moss&Thorn, add this to .emacs:
 ;;
-;;    (add-hook 'haskell-mode-hook 'turn-on-haskell-decl-scan)
+;;    (add-hook 'purescript-mode-hook 'turn-on-purescript-decl-scan)
 ;;
-;; Otherwise, call `turn-on-haskell-decl-scan'.
+;; Otherwise, call `turn-on-purescript-decl-scan'.
 ;;
 ;;
 ;; Customisation:
 ;;
-;; M-x customize-group haskell-decl-scan
+;; M-x customize-group purescript-decl-scan
 ;;
 ;;
 ;; History:
@@ -64,7 +64,7 @@
 ;;   markers instead of pointers (markers move with the text).
 ;;
 ;; Version 1.0:
-;;   Brought over from Haskell mode v1.1.
+;;   Brought over from PureScript mode v1.1.
 ;;
 ;;
 ;; Present Limitations/Future Work (contributions are most welcome!):
@@ -85,13 +85,13 @@
 ;;
 ;; . Support for GreenCard?
 ;;
-;; . Re-running (literate-)haskell-imenu should not cause the problems
+;; . Re-running (literate-)purescript-imenu should not cause the problems
 ;;   that it does.  The ability to turn off scanning would also be
-;;   useful.  (Note that re-running (literate-)haskell-mode seems to
+;;   useful.  (Note that re-running (literate-)purescript-mode seems to
 ;;   cause no problems.)
 
 ;; All functions/variables start with
-;; `(turn-(on/off)-)haskell-decl-scan' or `haskell-ds-'.
+;; `(turn-(on/off)-)purescript-decl-scan' or `purescript-ds-'.
 
 ;; The imenu support is based on code taken from `hugs-mode',
 ;; thanks go to Chris Van Humbeeck.
@@ -100,47 +100,47 @@
 
 ;;; Code:
 
-(require 'haskell-mode)
+(require 'purescript-mode)
 (require 'syntax)
 (with-no-warnings (require 'cl))
 (require 'imenu)
 
-(defgroup haskell-decl-scan nil
-  "Haskell declaration scanning (`imenu' support)."
-  :link '(custom-manual "(haskell-mode)haskell-decl-scan-mode")
-  :group 'haskell
-  :prefix "haskell-decl-scan-")
+(defgroup purescript-decl-scan nil
+  "PureScript declaration scanning (`imenu' support)."
+  :link '(custom-manual "(purescript-mode)purescript-decl-scan-mode")
+  :group 'purescript
+  :prefix "purescript-decl-scan-")
 
-(defcustom haskell-decl-scan-bindings-as-variables nil
+(defcustom purescript-decl-scan-bindings-as-variables nil
   "Whether to put top-level value bindings into a \"Variables\" category."
-  :group 'haskell-decl-scan
+  :group 'purescript-decl-scan
   :type 'boolean)
 
-(defcustom haskell-decl-scan-add-to-menubar t
+(defcustom purescript-decl-scan-add-to-menubar t
   "Whether to add a \"Declarations\" menu entry to menu bar."
-  :group 'haskell-decl-scan
+  :group 'purescript-decl-scan
   :type 'boolean)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General declaration scanning functions.
 
-(defvar haskell-ds-start-keywords-re
+(defvar purescript-ds-start-keywords-re
   (concat "\\(\\<"
           "class\\|data\\|i\\(mport\\|n\\(fix\\(\\|[lr]\\)\\|stance\\)\\)\\|"
           "module\\|primitive\\|type\\|newtype"
           "\\)\\>")
   "Keywords that may start a declaration.")
 
-(defvar haskell-ds-syntax-table
-  (let ((table (copy-syntax-table haskell-mode-syntax-table)))
+(defvar purescript-ds-syntax-table
+  (let ((table (copy-syntax-table purescript-mode-syntax-table)))
     (modify-syntax-entry ?\' "w" table)
     (modify-syntax-entry ?_  "w" table)
     (modify-syntax-entry ?\\ "_" table)
     table)
-  "Syntax table used for Haskell declaration scanning.")
+  "Syntax table used for PureScript declaration scanning.")
 
 
-(defun haskell-ds-get-variable (prefix)
+(defun purescript-ds-get-variable (prefix)
   "Return variable involved in value binding or type signature.
 Assumes point is looking at the regexp PREFIX followed by the
 start of a declaration (perhaps in the middle of a series of
@@ -149,10 +149,10 @@ Point is not changed."
   ;; I think I can now handle all declarations bar those with comments
   ;; nested before the second lexeme.
   (save-excursion
-    (with-syntax-table haskell-ds-syntax-table
+    (with-syntax-table purescript-ds-syntax-table
       (if (looking-at prefix) (goto-char (match-end 0)))
       ;; Keyword.
-      (if (looking-at haskell-ds-start-keywords-re)
+      (if (looking-at purescript-ds-start-keywords-re)
           nil
         (or ;; Parenthesized symbolic variable.
          (and (looking-at "(\\(\\s_+\\))") (match-string-no-properties 1))
@@ -180,7 +180,7 @@ Point is not changed."
          ;; Variable identifier.
          (and (looking-at "\\sw+") (match-string-no-properties 0)))))))
 
-(defun haskell-ds-move-to-start-regexp (inc regexp)
+(defun purescript-ds-move-to-start-regexp (inc regexp)
   "Move to beginning of line that succeeds/precedes (INC = 1/-1)
 current line that starts with REGEXP and is not in `font-lock-comment-face'."
   ;; Making this defsubst instead of defun appears to have little or
@@ -191,31 +191,31 @@ current line that starts with REGEXP and is not in `font-lock-comment-face'."
                   (eq (get-text-property (point) 'face)
                       'font-lock-comment-face)))))
 
-(defun haskell-ds-move-to-start-regexp-skipping-comments (inc regexp)
-  "Like haskell-ds-move-to-start-regexp, but uses syntax-ppss to
+(defun purescript-ds-move-to-start-regexp-skipping-comments (inc regexp)
+  "Like purescript-ds-move-to-start-regexp, but uses syntax-ppss to
   skip comments"
   (let (p)
     (loop
      do (setq p (point))
-     (haskell-ds-move-to-start-regexp inc regexp)
+     (purescript-ds-move-to-start-regexp inc regexp)
      while (and (nth 4 (syntax-ppss))
                 (/= p (point))))))
 
-(defvar literate-haskell-ds-line-prefix "> ?"
+(defvar literate-purescript-ds-line-prefix "> ?"
   "Regexp matching start of a line of Bird-style literate code.
 Current value is \"> \" as we assume top-level declarations start
 at column 3.  Must not contain the special \"^\" regexp as we may
 not use the regexp at the start of a regexp string.  Note this is
 only for `imenu' support.")
 
-(defvar haskell-ds-start-decl-re "\\(\\sw\\|(\\)"
-  "The regexp that starts a Haskell declaration.")
+(defvar purescript-ds-start-decl-re "\\(\\sw\\|(\\)"
+  "The regexp that starts a PureScript declaration.")
 
-(defvar literate-haskell-ds-start-decl-re
-  (concat literate-haskell-ds-line-prefix haskell-ds-start-decl-re)
-  "The regexp that starts a Bird-style literate Haskell declaration.")
+(defvar literate-purescript-ds-start-decl-re
+  (concat literate-purescript-ds-line-prefix purescript-ds-start-decl-re)
+  "The regexp that starts a Bird-style literate PureScript declaration.")
 
-(defun haskell-ds-move-to-decl (direction bird-literate fix)
+(defun purescript-ds-move-to-decl (direction bird-literate fix)
   "General function for moving to the start of a declaration,
 either forwards or backwards from point, with normal or with Bird-style
 literate scripts.  If DIRECTION is t, then forward, else backward.  If
@@ -224,7 +224,7 @@ normal scripts.  Returns point if point is left at the start of a
 declaration, and nil otherwise, ie. because point is at the beginning
 or end of the buffer and no declaration starts there.  If FIX is t,
 then point does not move if already at the start of a declaration."
-  ;; As `haskell-ds-get-variable' cannot separate an infix variable
+  ;; As `purescript-ds-get-variable' cannot separate an infix variable
   ;; identifier out of a value binding with non-alphanumeric first
   ;; argument, this function will treat such value bindings as
   ;; separate from the declarations surrounding it.
@@ -237,15 +237,15 @@ then point does not move if already at the start of a declaration."
         ;; that start with a declaration.  We are in the abyss if
         ;; point is before start of this declaration.
         abyss
-        (line-prefix (if bird-literate literate-haskell-ds-line-prefix ""))
+        (line-prefix (if bird-literate literate-purescript-ds-line-prefix ""))
         ;; The regexp to match for the start of a declaration.
         (start-decl-re (if bird-literate
-                           literate-haskell-ds-start-decl-re
-                         haskell-ds-start-decl-re))
+                           literate-purescript-ds-start-decl-re
+                         purescript-ds-start-decl-re))
         (increment (if direction 1 -1))
         (bound (if direction (point-max) (point-min))))
     ;; Change syntax table.
-    (with-syntax-table haskell-ds-syntax-table
+    (with-syntax-table purescript-ds-syntax-table
       ;; move to beginning of line that starts the "current
       ;; declaration" (dependent on DIRECTION and FIX), and then get
       ;; the variable typed or bound by this declaration, if any.
@@ -281,7 +281,7 @@ then point does not move if already at the start of a declaration."
               (setq abyss t)
             ;; Otherwise we move to the start of the first declaration
             ;; on a line preceding the current one, skipping comments
-            (haskell-ds-move-to-start-regexp-skipping-comments -1 start-decl-re))))
+            (purescript-ds-move-to-start-regexp-skipping-comments -1 start-decl-re))))
       ;; If we are in the abyss, position and return as appropriate.
       (if abyss
           (if (not direction)
@@ -289,23 +289,23 @@ then point does not move if already at the start of a declaration."
             (re-search-forward (concat "\\=" line-prefix) nil t)
             (point))
         ;; Get the variable typed or bound by this declaration, if any.
-        (setq name (haskell-ds-get-variable line-prefix))
+        (setq name (purescript-ds-get-variable line-prefix))
         (if (not name)
             ;; If no such variable, stop at the start of this
             ;; declaration if moving backward, or move to the next
             ;; declaration if moving forward.
             (if direction
-                (haskell-ds-move-to-start-regexp-skipping-comments 1 start-decl-re))
+                (purescript-ds-move-to-start-regexp-skipping-comments 1 start-decl-re))
           ;; If there is a variable, find the first
           ;; succeeding/preceding declaration that does not type or
           ;; bind it.  Check for reaching start/end of buffer and
           ;; comments.
-          (haskell-ds-move-to-start-regexp-skipping-comments increment start-decl-re)
+          (purescript-ds-move-to-start-regexp-skipping-comments increment start-decl-re)
           (while (and (/= (point) bound)
-                      (and (setq newname (haskell-ds-get-variable line-prefix))
+                      (and (setq newname (purescript-ds-get-variable line-prefix))
                            (string= name newname)))
             (setq name newname)
-            (haskell-ds-move-to-start-regexp-skipping-comments increment start-decl-re))
+            (purescript-ds-move-to-start-regexp-skipping-comments increment start-decl-re))
           ;; If we are going backward, and have either reached a new
           ;; declaration or the beginning of a buffer that does not
           ;; start with a declaration, move forward to start of next
@@ -318,11 +318,11 @@ then point does not move if already at the start of a declaration."
                                           ;; not have been set if we
                                           ;; have reached the beginning
                                           ;; of the buffer.
-                                          (haskell-ds-get-variable
+                                          (purescript-ds-get-variable
                                            line-prefix))))
                        (and (not (looking-at start-decl-re))
                             (bobp))))
-              (haskell-ds-move-to-start-regexp-skipping-comments 1 start-decl-re)))
+              (purescript-ds-move-to-start-regexp-skipping-comments 1 start-decl-re)))
         ;; Store whether we are at the start of a declaration or not.
         ;; Used to calculate final result.
         (let ((at-start-decl (looking-at start-decl-re)))
@@ -334,10 +334,10 @@ then point does not move if already at the start of a declaration."
           ;; otherwise.
           (if at-start-decl (point) nil))))))
 
-(defun haskell-ds-bird-p ()
-  (and (boundp 'haskell-literate) (eq haskell-literate 'bird)))
+(defun purescript-ds-bird-p ()
+  (and (boundp 'purescript-literate) (eq purescript-literate 'bird)))
 
-(defun haskell-ds-backward-decl ()
+(defun purescript-ds-backward-decl ()
   "Move backward to the first character that starts a top-level declaration.
 A series of declarations concerning one variable is treated as one
 declaration by this function.  So, if point is within a top-level
@@ -348,14 +348,14 @@ left at the start of a declaration, and nil otherwise, ie. because
 point is at the beginning of the buffer and no declaration starts
 there."
   (interactive)
-  (haskell-ds-move-to-decl nil (haskell-ds-bird-p) nil))
+  (purescript-ds-move-to-decl nil (purescript-ds-bird-p) nil))
 
-(defun haskell-ds-forward-decl ()
-  "As `haskell-ds-backward-decl' but forward."
+(defun purescript-ds-forward-decl ()
+  "As `purescript-ds-backward-decl' but forward."
   (interactive)
-  (haskell-ds-move-to-decl t (haskell-ds-bird-p) nil))
+  (purescript-ds-move-to-decl t (purescript-ds-bird-p) nil))
 
-(defun haskell-ds-generic-find-next-decl (bird-literate)
+(defun purescript-ds-generic-find-next-decl (bird-literate)
   "Find the name, position and type of the declaration at or after point.
 Return ((NAME . (START-POSITION . NAME-POSITION)) . TYPE)
 if one exists and nil otherwise.  The start-position is at the start
@@ -373,12 +373,12 @@ positions and the type is one of the symbols \"variable\", \"datatype\",
         start
         end)
     ;; Change to declaration scanning syntax.
-    (with-syntax-table haskell-ds-syntax-table
+    (with-syntax-table purescript-ds-syntax-table
       ;; Stop when we are at the end of the buffer or when a valid
       ;; declaration is grabbed.
       (while (not (or (eobp) name))
         ;; Move forward to next declaration at or after point.
-        (haskell-ds-move-to-decl t bird-literate t)
+        (purescript-ds-move-to-decl t bird-literate t)
         ;; Start and end of search space is currently just the starting
         ;; line of the declaration.
         (setq start (point)
@@ -388,8 +388,8 @@ positions and the type is one of the symbols \"variable\", \"datatype\",
          ;; with a starting keyword, then (if legal) must be a type
          ;; signature or value binding, and the variable concerned is
          ;; grabbed.
-         ((not (looking-at haskell-ds-start-keywords-re))
-          (setq name (haskell-ds-get-variable ""))
+         ((not (looking-at purescript-ds-start-keywords-re))
+          (setq name (purescript-ds-get-variable ""))
           (if name
               (progn
                 (setq type 'variable)
@@ -457,13 +457,13 @@ positions and the type is one of the symbols \"variable\", \"datatype\",
 ;; Declaration scanning via `imenu'.
 
 ;;;###autoload
-(defun haskell-ds-create-imenu-index ()
-  "Function for finding `imenu' declarations in Haskell mode.
+(defun purescript-ds-create-imenu-index ()
+  "Function for finding `imenu' declarations in PureScript mode.
 Finds all declarations (classes, variables, imports, instances and
-datatypes) in a Haskell file for the `imenu' package."
+datatypes) in a PureScript file for the `imenu' package."
   ;; Each list has elements of the form `(INDEX-NAME . INDEX-POSITION)'.
   ;; These lists are nested using `(INDEX-TITLE . INDEX-ALIST)'.
-  (let* ((bird-literate (haskell-ds-bird-p))
+  (let* ((bird-literate (purescript-ds-bird-p))
          (index-alist '())
          (index-class-alist '()) ;; Classes
          (index-var-alist '())   ;; Variables
@@ -482,7 +482,7 @@ datatypes) in a Haskell file for the `imenu' package."
       (message "Scanning declarations in %s... (%3d%%)" bufname
                (/ (- (point) (point-min)) divisor-of-progress))
       ;; Grab the next declaration.
-      (setq result (haskell-ds-generic-find-next-decl bird-literate))
+      (setq result (purescript-ds-generic-find-next-decl bird-literate))
       (if result
           ;; If valid, extract the components of the result.
           (let* ((name-posns (car result))
@@ -502,66 +502,66 @@ datatypes) in a Haskell file for the `imenu' package."
     (message "Sorting declarations in %s..." bufname)
     (when index-type-alist
       (push (cons "Datatypes"
-                  (sort index-type-alist 'haskell-ds-imenu-label-cmp))
+                  (sort index-type-alist 'purescript-ds-imenu-label-cmp))
             index-alist))
     (when index-inst-alist
       (push (cons "Instances"
-                  (sort index-inst-alist 'haskell-ds-imenu-label-cmp))
+                  (sort index-inst-alist 'purescript-ds-imenu-label-cmp))
             index-alist))
     (when index-imp-alist
       (push (cons "Imports"
-                  (sort index-imp-alist 'haskell-ds-imenu-label-cmp))
+                  (sort index-imp-alist 'purescript-ds-imenu-label-cmp))
             index-alist))
     (when index-class-alist
       (push (cons "Classes"
-                  (sort index-class-alist 'haskell-ds-imenu-label-cmp))
+                  (sort index-class-alist 'purescript-ds-imenu-label-cmp))
             index-alist))
     (when index-var-alist
-      (if haskell-decl-scan-bindings-as-variables
+      (if purescript-decl-scan-bindings-as-variables
           (push (cons "Variables"
-                      (sort index-var-alist 'haskell-ds-imenu-label-cmp))
+                      (sort index-var-alist 'purescript-ds-imenu-label-cmp))
                 index-alist)
         (setq index-alist (append index-alist
-                                  (sort index-var-alist 'haskell-ds-imenu-label-cmp)))))
+                                  (sort index-var-alist 'purescript-ds-imenu-label-cmp)))))
     (message "Sorting declarations in %s...done" bufname)
     ;; Return the alist.
     index-alist))
 
-(defun haskell-ds-imenu-label-cmp (el1 el2)
-  "Predicate to compare labels in lists from `haskell-ds-create-imenu-index'."
+(defun purescript-ds-imenu-label-cmp (el1 el2)
+  "Predicate to compare labels in lists from `purescript-ds-create-imenu-index'."
   (string< (car el1) (car el2)))
 
-(defun haskell-ds-imenu ()
-  "Install `imenu' for Haskell scripts."
-  (setq imenu-create-index-function 'haskell-ds-create-imenu-index)
-  (when haskell-decl-scan-add-to-menubar
+(defun purescript-ds-imenu ()
+  "Install `imenu' for PureScript scripts."
+  (setq imenu-create-index-function 'purescript-ds-create-imenu-index)
+  (when purescript-decl-scan-add-to-menubar
     (imenu-add-to-menubar "Declarations")))
 
 ;; The main functions to turn on declaration scanning.
 ;;;###autoload
-(defun turn-on-haskell-decl-scan ()
-  "Unconditionally activate `haskell-decl-scan-mode'."
+(defun turn-on-purescript-decl-scan ()
+  "Unconditionally activate `purescript-decl-scan-mode'."
   (interactive)
-  (haskell-decl-scan-mode))
+  (purescript-decl-scan-mode))
 
 ;;;###autoload
-(define-minor-mode haskell-decl-scan-mode
-  "Toggle Haskell declaration scanning minor mode on or off.
+(define-minor-mode purescript-decl-scan-mode
+  "Toggle PureScript declaration scanning minor mode on or off.
 With a prefix argument ARG, enable minor mode if ARG is
 positive, and disable it otherwise.  If called from Lisp, enable
 the mode if ARG is omitted or nil, and toggle it if ARG is `toggle'.
 
-See also info node `(haskell-mode)haskell-decl-scan-mode' for
+See also info node `(purescript-mode)purescript-decl-scan-mode' for
 more details about this minor mode.
 
 Top-level declarations are scanned and listed in the menu item
 \"Declarations\" (if enabled via option
-`haskell-decl-scan-add-to-menubar').  Selecting an item from this
+`purescript-decl-scan-add-to-menubar').  Selecting an item from this
 menu will take point to the start of the declaration.
 
 \\[beginning-of-defun] and \\[end-of-defun] move forward and backward to the start of a declaration.
 
-This may link with `haskell-doc-mode'.
+This may link with `purescript-doc-mode'.
 
 For non-literate and LaTeX-style literate scripts, we assume the
 common convention that top-level declarations start at the first
@@ -570,40 +570,40 @@ convention that top-level declarations start at the third column,
 ie. after \"> \".
 
 Anything in `font-lock-comment-face' is not considered for a
-declaration.  Therefore, using Haskell font locking with comments
+declaration.  Therefore, using PureScript font locking with comments
 coloured in `font-lock-comment-face' improves declaration scanning.
 
-Literate Haskell scripts are supported: If the value of
-`haskell-literate' (set automatically by `literate-haskell-mode')
+Literate PureScript scripts are supported: If the value of
+`purescript-literate' (set automatically by `literate-purescript-mode')
 is `bird', a Bird-style literate script is assumed.  If it is nil
 or `tex', a non-literate or LaTeX-style literate script is
 assumed, respectively.
 
-Invokes `haskell-decl-scan-mode-hook' on activation."
-  :group 'haskell-decl-scan
+Invokes `purescript-decl-scan-mode-hook' on activation."
+  :group 'purescript-decl-scan
 
   (kill-local-variable 'beginning-of-defun-function)
   (kill-local-variable 'end-of-defun-function)
   (kill-local-variable 'imenu-create-index-function)
-  (unless haskell-decl-scan-mode
+  (unless purescript-decl-scan-mode
     ;; How can we cleanly remove the "Declarations" menu?
-    (when haskell-decl-scan-add-to-menubar
+    (when purescript-decl-scan-add-to-menubar
       (local-set-key [menu-bar index] nil)))
 
-  (when haskell-decl-scan-mode
+  (when purescript-decl-scan-mode
     (set (make-local-variable 'beginning-of-defun-function)
-         'haskell-ds-backward-decl)
+         'purescript-ds-backward-decl)
     (set (make-local-variable 'end-of-defun-function)
-         'haskell-ds-forward-decl)
-    (haskell-ds-imenu)))
+         'purescript-ds-forward-decl)
+    (purescript-ds-imenu)))
 
 
 ;; Provide ourselves:
 
-(provide 'haskell-decl-scan)
+(provide 'purescript-decl-scan)
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not cl-functions)
 ;; End:
 
-;;; haskell-decl-scan.el ends here
+;;; purescript-decl-scan.el ends here

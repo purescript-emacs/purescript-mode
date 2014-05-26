@@ -1,4 +1,4 @@
-;;; haskell-collapse.el --- Collapse expressions
+;;; purescript-collapse.el --- Collapse expressions
 
 ;; Copyright (c) 2014 Chris Done. All rights reserved.
 
@@ -17,12 +17,12 @@
 
 ;;; Code:
 
-(define-button-type 'haskell-collapse-toggle-button
-  'action 'haskell-collapse-toggle-button-callback
+(define-button-type 'purescript-collapse-toggle-button
+  'action 'purescript-collapse-toggle-button-callback
   'follow-link t
   'help-echo "Click to expand…")
 
-(defun haskell-collapse (beg end)
+(defun purescript-collapse (beg end)
   "Collapse."
   (interactive "r")
   (goto-char end)
@@ -31,13 +31,13 @@
                 (search-backward-regexp "[[({]" beg t 1))
       (unless (eq (get-text-property (point) 'face) 'font-lock-string-face)
         (let ((orig (point)))
-          (haskell-collapse-sexp)
+          (purescript-collapse-sexp)
           (goto-char orig)
           (forward-char -1)
           (when (= (point) orig)
             (setq break t)))))))
 
-(defun haskell-collapse-sexp ()
+(defun purescript-collapse-sexp ()
   "Collapse the sexp starting at point."
   (let ((beg (point)))
     (forward-sexp)
@@ -47,11 +47,11 @@
         (let ((start (point)))
           (insert "…")
           (let ((button (make-text-button start (point)
-                                          :type 'haskell-collapse-toggle-button)))
+                                          :type 'purescript-collapse-toggle-button)))
             (button-put button 'overlay o)
             (button-put button 'hide-on-click t)))))))
 
-(defun haskell-collapse-toggle-button-callback (btn)
+(defun purescript-collapse-toggle-button-callback (btn)
   "The callback to toggle the overlay visibility."
   (let ((overlay (button-get btn 'overlay)))
     (when overlay
@@ -62,4 +62,4 @@
   (button-put btn 'invisible t)
   (delete-region (button-start btn) (button-end btn)))
 
-(provide 'haskell-collapse)
+(provide 'purescript-collapse)

@@ -1,11 +1,11 @@
-;;; haskell-indent.el --- "semi-intelligent" indentation module for Haskell Mode
+;;; purescript-indent.el --- "semi-intelligent" indentation module for PureScript Mode
 
 ;; Copyright 2004, 2005, 2007, 2008, 2009  Free Software Foundation, Inc.
 ;; Copyright 1997-1998  Guy Lapalme
 
 ;; Author: 1997-1998 Guy Lapalme <lapalme@iro.umontreal.ca>
 
-;; Keywords: indentation Haskell layout-rule
+;; Keywords: indentation PureScript layout-rule
 ;; Version: 1.2
 ;; URL: http://www.iro.umontreal.ca/~lapalme/layout/index.html
 
@@ -28,99 +28,99 @@
 
 ;; Purpose:
 ;;
-;; To support automatic indentation of Haskell programs using
+;; To support automatic indentation of PureScript programs using
 ;; the layout rule described in section 1.5 and appendix B.3 of the
-;; the Haskell report.  The rationale and the implementation principles
+;; the PureScript report.  The rationale and the implementation principles
 ;; are described in an article to appear in Journal of Functional Programming.
 ;;   "Dynamic tabbing for automatic indentation with the layout rule"
 ;;
 ;; It supports literate scripts.
-;; Haskell indentation is performed
+;; PureScript indentation is performed
 ;;     within \begin{code}...\end{code} sections of a literate script
 ;;     and in lines beginning with > with Bird style literate script
 ;; TAB aligns to the left column outside of these sections.
 ;;
 ;; Installation:
 ;;
-;; To turn indentation on for all Haskell buffers under the Haskell
-;; mode of Moss&Thorn <http://www.haskell.org/haskell-mode/>
+;; To turn indentation on for all PureScript buffers under the PureScript
+;; mode of Moss&Thorn <http://www.purescript.org/purescript-mode/>
 ;; add this to .emacs:
 ;;
-;;    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+;;    (add-hook 'purescript-mode-hook 'turn-on-purescript-indent)
 ;;
-;; Otherwise, call `turn-on-haskell-indent'.
+;; Otherwise, call `turn-on-purescript-indent'.
 ;;
 ;;
 ;; Customisation:
 ;;       The "standard" offset for statements is 4 spaces.
-;;       It can be changed by setting the variable "haskell-indent-offset" to
+;;       It can be changed by setting the variable "purescript-indent-offset" to
 ;;       another value
 ;;
 ;;       The default number of blanks after > in a Bird style literate script
 ;;       is 1; it can be changed by setting the variable
-;;       "haskell-indent-literate-Bird-default-offset"
+;;       "purescript-indent-literate-Bird-default-offset"
 ;;
-;;       `haskell-indent-hook' is invoked if not nil.
+;;       `purescript-indent-hook' is invoked if not nil.
 ;;
 ;; All functions/variables start with
-;; `(turn-(on/off)-)haskell-indent' or `haskell-indent-'.
+;; `(turn-(on/off)-)purescript-indent' or `purescript-indent-'.
 
 ;; This file can also be used as a hook for the Hugs Mode developed by
 ;;         Chris Van Humbeeck <chris.vanhumbeeck@cs.kuleuven.ac.be>
 ;; It can be obtained at:
-;; http://www-i2.informatik.rwth-aachen.de/Forschung/FP/Haskell/hugs-mode.el
+;; http://www-i2.informatik.rwth-aachen.de/Forschung/FP/PureScript/hugs-mode.el
 ;;
 ;; For the Hugs mode put the following in your .emacs
 ;;
-;;(setq auto-mode-alist (append auto-mode-alist '(("\\.hs\\'" . hugs-mode))))
+;;(setq auto-mode-alist (append auto-mode-alist '(("\\.purs\\'" . hugs-mode))))
 ;;(autoload 'hugs-mode "hugs-mode" "Go into hugs mode" t)
 ;;
 ;; If only the indentation mode is used then replace the two
 ;; preceding lines with
 ;;(setq auto-mode-alist (append auto-mode-alist
-;;                              '(("\\.hs\\'" . turn-on-haskell-indent))))
-;;(autoload 'turn-on-haskell-indent "hindent" "Indentation mode for Haskell" t)
+;;                              '(("\\.purs\\'" . turn-on-purescript-indent))))
+;;(autoload 'turn-on-purescript-indent "hindent" "Indentation mode for PureScript" t)
 ;;
 ;; For indentation in both cases then add the following to your .emacs
-;;(add-hook 'hugs-mode-hook 'turn-on-haskell-indent)
-;;(autoload 'haskell-indent-cycle "hindent" "Indentation cycle for Haskell" t)
+;;(add-hook 'hugs-mode-hook 'turn-on-purescript-indent)
+;;(autoload 'purescript-indent-cycle "hindent" "Indentation cycle for PureScript" t)
 ;;
 
 ;;; Code:
 
-(require 'haskell-string)
+(require 'purescript-string)
 (with-no-warnings (require 'cl))
 
-(defvar haskell-literate)
+(defvar purescript-literate)
 
-(defgroup haskell-indent nil
-  "Haskell indentation."
-  :group 'haskell
-  :link '(custom-manual "(haskell-mode)Indentation")
-  :prefix "haskell-indent-")
+(defgroup purescript-indent nil
+  "PureScript indentation."
+  :group 'purescript
+  :link '(custom-manual "(purescript-mode)Indentation")
+  :prefix "purescript-indent-")
 
-(defcustom haskell-indent-offset 4
-  "Indentation of Haskell statements with respect to containing block."
+(defcustom purescript-indent-offset 4
+  "Indentation of PureScript statements with respect to containing block."
   :type 'integer
-  :group 'haskell-indent)
+  :group 'purescript-indent)
 
-(defcustom haskell-indent-literate-Bird-default-offset 1
+(defcustom purescript-indent-literate-Bird-default-offset 1
   "Default number of blanks after > in a Bird style literate script."
   :type 'integer
-  :group 'haskell-indent)
+  :group 'purescript-indent)
 
-(defcustom haskell-indent-rhs-align-column 0
+(defcustom purescript-indent-rpurs-align-column 0
   "Column on which to align right-hand sides (use 0 for ad-hoc alignment)."
   :type 'integer
-  :group 'haskell-indent)
+  :group 'purescript-indent)
 
-(defun haskell-indent-point-to-col (apoint)
+(defun purescript-indent-point-to-col (apoint)
   "Return the column number of APOINT."
   (save-excursion
     (goto-char apoint)
     (current-column)))
 
-(defconst haskell-indent-start-keywords-re
+(defconst purescript-indent-start-keywords-re
   (concat "\\<"
           (regexp-opt '("class" "data" "import" "infix" "infixl" "infixr"
                         "instance" "module" "newtype" "primitive" "type") t)
@@ -130,7 +130,7 @@
 
 ;; Customizations for different kinds of environments
 ;; in which dealing with low-level events are different.
-(defun haskell-indent-mark-active ()
+(defun purescript-indent-mark-active ()
   (if (featurep 'xemacs)
       (if zmacs-regions
           zmacs-region-active-p
@@ -139,95 +139,95 @@
 
 ;;  for pushing indentation information
 
-(defvar haskell-indent-info)            ;Used with dynamic scoping.
+(defvar purescript-indent-info)            ;Used with dynamic scoping.
 
-(defun haskell-indent-push-col (col &optional name)
+(defun purescript-indent-push-col (col &optional name)
   "Push indentation information for the column COL.
 The info is followed by NAME (if present).
 Makes sure that the same indentation info is not pushed twice.
-Uses free var `haskell-indent-info'."
+Uses free var `purescript-indent-info'."
   (let ((tmp (cons col name)))
-    (if (member tmp haskell-indent-info)
-        haskell-indent-info
-      (push tmp haskell-indent-info))))
+    (if (member tmp purescript-indent-info)
+        purescript-indent-info
+      (push tmp purescript-indent-info))))
 
-(defun haskell-indent-push-pos (pos &optional name)
+(defun purescript-indent-push-pos (pos &optional name)
   "Push indentation information for POS followed by NAME (if present)."
-  (haskell-indent-push-col (haskell-indent-point-to-col pos) name))
+  (purescript-indent-push-col (purescript-indent-point-to-col pos) name))
 
-;; (defvar haskell-indent-tab-align nil
+;; (defvar purescript-indent-tab-align nil
 ;;   "Align all indentations on TAB stops.")
 
-(defun haskell-indent-column+offset (column offset)
-  (unless offset (setq offset haskell-indent-offset))
+(defun purescript-indent-column+offset (column offset)
+  (unless offset (setq offset purescript-indent-offset))
   (setq column (+ column offset))
-  ;; (if (and haskell-indent-tab-align (> offset 0))
+  ;; (if (and purescript-indent-tab-align (> offset 0))
   ;;     (* 8 (/ (+ column 7) 8))
   column) ;; )
 
-(defun haskell-indent-push-pos-offset (pos &optional offset)
+(defun purescript-indent-push-pos-offset (pos &optional offset)
   "Pushes indentation information for the column corresponding to POS
 followed by an OFFSET (if present use its value otherwise use
-`haskell-indent-offset')."
-  (haskell-indent-push-col (haskell-indent-column+offset
-                            (haskell-indent-point-to-col pos)
+`purescript-indent-offset')."
+  (purescript-indent-push-col (purescript-indent-column+offset
+                            (purescript-indent-point-to-col pos)
                             offset)))
 
 ;; redefinition of some Emacs function for dealing with
 ;; Bird Style literate scripts
 
-(defun haskell-indent-bolp ()
+(defun purescript-indent-bolp ()
   "`bolp' but dealing with Bird-style literate scripts."
   (or (bolp)
-      (and (eq haskell-literate 'bird)
-           (<= (current-column) (1+ haskell-indent-literate-Bird-default-offset))
+      (and (eq purescript-literate 'bird)
+           (<= (current-column) (1+ purescript-indent-literate-Bird-default-offset))
            (eq (char-after (line-beginning-position)) ?\>))))
 
-(defun haskell-indent-empty-line-p ()
+(defun purescript-indent-empty-line-p ()
   "Checks if the current line is empty; deals with Bird style scripts."
   (save-excursion
     (beginning-of-line)
-    (if (and (eq haskell-literate 'bird)
+    (if (and (eq purescript-literate 'bird)
              (eq (following-char) ?\>))
         (forward-char 1))
     (looking-at "[ \t]*$")))
 
-(defun haskell-indent-back-to-indentation ()
+(defun purescript-indent-back-to-indentation ()
   "`back-to-indentation' function but dealing with Bird-style literate scripts."
-  (if (and (eq haskell-literate 'bird)
+  (if (and (eq purescript-literate 'bird)
            (progn (beginning-of-line) (eq (following-char) ?\>)))
       (progn
         (forward-char 1)
         (skip-chars-forward " \t"))
     (back-to-indentation)))
 
-(defun haskell-indent-current-indentation ()
+(defun purescript-indent-current-indentation ()
   "`current-indentation' function dealing with Bird-style literate scripts."
-  (if (eq haskell-literate 'bird)
+  (if (eq purescript-literate 'bird)
       (save-excursion
-        (haskell-indent-back-to-indentation)
+        (purescript-indent-back-to-indentation)
         (current-column))
     (current-indentation)))
 
-(defun haskell-indent-backward-to-indentation (n)
+(defun purescript-indent-backward-to-indentation (n)
   "`backward-to-indentation' function dealing with Bird-style literate scripts."
-  (if (eq haskell-literate 'bird)
+  (if (eq purescript-literate 'bird)
       (progn
         (forward-line (- n))
-        (haskell-indent-back-to-indentation))
+        (purescript-indent-back-to-indentation))
     (backward-to-indentation n)))
 
-(defun haskell-indent-forward-line (&optional n)
+(defun purescript-indent-forward-line (&optional n)
   "`forward-line' function but dealing with Bird-style literate scripts."
   (prog1
       (forward-line n)
-    (if (and (eq haskell-literate 'bird) (eq (following-char) ?\>))
+    (if (and (eq purescript-literate 'bird) (eq (following-char) ?\>))
         (progn (forward-char 1)                ; skip > and initial blanks...
                (skip-chars-forward " \t")))))
 
-(defun haskell-indent-line-to (n)
+(defun purescript-indent-line-to (n)
   "`indent-line-to' function but dealing with Bird-style literate scripts."
-  (if (eq haskell-literate 'bird)
+  (if (eq purescript-literate 'bird)
       (progn
         (beginning-of-line)
         (if (eq (following-char) ?\>)
@@ -240,20 +240,20 @@ followed by an OFFSET (if present use its value otherwise use
           (insert ?\>)))                ; inserting a >
     (indent-line-to n)))
 
-(defun haskell-indent-skip-blanks-and-newlines-forward (end)
+(defun purescript-indent-skip-blanks-and-newlines-forward (end)
   "Skip forward blanks, tabs and newlines until END.
 Take account of Bird-style literate scripts."
   (skip-chars-forward " \t\n" end)
-  (if (eq haskell-literate 'bird)
+  (if (eq purescript-literate 'bird)
       (while (and (bolp) (eq (following-char) ?\>))
         (forward-char 1)                ; skip >
         (skip-chars-forward " \t\n" end))))
 
-(defun haskell-indent-skip-blanks-and-newlines-backward (start)
+(defun purescript-indent-skip-blanks-and-newlines-backward (start)
   "Skip backward blanks, tabs and newlines up to START.
 Take account of Bird-style literate scripts."
   (skip-chars-backward " \t\n" start)
-  (if (eq haskell-literate 'bird)
+  (if (eq purescript-literate 'bird)
       (while (and (eq (current-column) 1)
                   (eq (preceding-char) ?\>))
         (forward-char -1)               ; skip back >
@@ -261,13 +261,13 @@ Take account of Bird-style literate scripts."
 
 ;; specific functions for literate code
 
-(defun haskell-indent-within-literate-code ()
-  "Check if point is within a part of literate Haskell code.
+(defun purescript-indent-within-literate-code ()
+  "Check if point is within a part of literate PureScript code.
 If so, return its start; otherwise return nil:
 If it is Bird-style, then return the position of the >;
 otherwise return the ending position of \\begin{code}."
   (save-excursion
-    (case haskell-literate
+    (case purescript-literate
       (bird
        (beginning-of-line)
        (if (or (eq (following-char) ?\>)
@@ -284,16 +284,16 @@ otherwise return the ending position of \\begin{code}."
             "^\\(\\\\begin{code}$\\)\\|\\(\\\\end{code}$\\)" nil t)
            ;; within a literate code part if it was a \\begin{code}.
            (match-end 1)))
-      (t (error "haskell-indent-within-literate-code: should not happen!")))))
+      (t (error "purescript-indent-within-literate-code: should not happen!")))))
 
-(defun haskell-indent-put-region-in-literate (beg end &optional arg)
+(defun purescript-indent-put-region-in-literate (beg end &optional arg)
   "Put lines of the region as a piece of literate code.
 With prefix arg, remove indication that the region is literate code.
 It deals with both Bird style and non Bird-style scripts."
   (interactive "r\nP")
-  (unless haskell-literate
+  (unless purescript-literate
     (error "Cannot put a region in literate in a non literate script"))
-  (if (eq haskell-literate 'bird)
+  (if (eq purescript-literate 'bird)
       (let ((comment-start "> ")        ; Change dynamic bindings for
             (comment-start-skip "^> ?") ; comment-region.
             (comment-end "")
@@ -321,35 +321,35 @@ It deals with both Bird style and non Bird-style scripts."
 
 ;;; Start of indentation code
 
-(defcustom haskell-indent-look-past-empty-line t
+(defcustom purescript-indent-look-past-empty-line t
   "If nil, indentation engine will not look past an empty line for layout points."
-  :group 'haskell-indent
+  :group 'purescript-indent
   :type 'boolean)
 
-(defun haskell-indent-start-of-def ()
+(defun purescript-indent-start-of-def ()
   "Return the position of the start of a definition.
 The start of a def is expected to be recognizable by starting in column 0,
-unless `haskell-indent-look-past-empty-line' is nil, in which case we
+unless `purescript-indent-look-past-empty-line' is nil, in which case we
 take a coarser approximation and stop at the first empty line."
   (save-excursion
-    (let ((start-code (and haskell-literate
-                           (haskell-indent-within-literate-code)))
-          (top-col (if (eq haskell-literate 'bird) 2 0))
+    (let ((start-code (and purescript-literate
+                           (purescript-indent-within-literate-code)))
+          (top-col (if (eq purescript-literate 'bird) 2 0))
           (save-point (point)))
       ;; determine the starting point of the current piece of code
       (setq start-code (if start-code (1+ start-code) (point-min)))
       ;; go backward until the first preceding empty line
-      (haskell-indent-forward-line -1)
-      (while (and (if haskell-indent-look-past-empty-line
-                      (or (> (haskell-indent-current-indentation) top-col)
-                          (haskell-indent-empty-line-p))
-                    (and (> (haskell-indent-current-indentation) top-col)
-                         (not (haskell-indent-empty-line-p))))
+      (purescript-indent-forward-line -1)
+      (while (and (if purescript-indent-look-past-empty-line
+                      (or (> (purescript-indent-current-indentation) top-col)
+                          (purescript-indent-empty-line-p))
+                    (and (> (purescript-indent-current-indentation) top-col)
+                         (not (purescript-indent-empty-line-p))))
                   (> (point) start-code)
-                  (= 0 (haskell-indent-forward-line -1))))
+                  (= 0 (purescript-indent-forward-line -1))))
       ;; go forward after the empty line
-      (if (haskell-indent-empty-line-p)
-          (haskell-indent-forward-line 1))
+      (if (purescript-indent-empty-line-p)
+          (purescript-indent-forward-line 1))
       (setq start-code (point))
       ;; find the first line of code which is not a comment
       (forward-comment (point-max))
@@ -357,20 +357,20 @@ take a coarser approximation and stop at the first empty line."
           start-code
         (point)))))
 
-(defun haskell-indent-open-structure (start end)
+(defun purescript-indent-open-structure (start end)
   "If any structure (list or tuple) is not closed, between START and END,
 returns the location of the opening symbol, nil otherwise."
   (save-excursion
     (nth 1 (parse-partial-sexp start end))))
 
-(defun haskell-indent-in-string (start end)
+(defun purescript-indent-in-string (start end)
   "If a string is not closed , between START and END, returns the
 location of the opening symbol, nil otherwise."
   (save-excursion
     (let ((pps (parse-partial-sexp start end)))
       (if (nth 3 pps) (nth 8 pps)))))
 
-(defun haskell-indent-in-comment (start end)
+(defun purescript-indent-in-comment (start end)
   "Check, starting from START, if END is at or within a comment.
 Returns the location of the start of the comment, nil otherwise."
   (let (pps)
@@ -385,67 +385,67 @@ Returns the location of the start of the comment, nil otherwise."
                          (setq pps (parse-partial-sexp end (+ end 2))))))
            (nth 8 pps)))))
 
-(defvar haskell-indent-off-side-keywords-re
+(defvar purescript-indent-off-side-keywords-re
   "\\<\\(do\\|let\\|of\\|where\\|mdo\\|rec\\)\\>[ \t]*")
 
-(defun haskell-indent-type-at-point ()
+(defun purescript-indent-type-at-point ()
   "Return the type of the line (also puts information in `match-data')."
   (cond
-   ((haskell-indent-empty-line-p) 'empty)
-   ((haskell-indent-in-comment (point-min) (point)) 'comment)
+   ((purescript-indent-empty-line-p) 'empty)
+   ((purescript-indent-in-comment (point-min) (point)) 'comment)
    ((looking-at "\\(\\([[:alpha:]]\\(\\sw\\|'\\)*\\)\\|_\\)[ \t\n]*")
     'ident)
    ((looking-at "\\(|[^|]\\)[ \t\n]*") 'guard)
-   ((looking-at "\\(=[^>=]\\|::\\|->\\|<-\\)[ \t\n]*") 'rhs)
+   ((looking-at "\\(=[^>=]\\|::\\|->\\|<-\\)[ \t\n]*") 'rpurs)
    (t 'other)))
 
-(defvar haskell-indent-current-line-first-ident ""
+(defvar purescript-indent-current-line-first-ident ""
   "Global variable that keeps track of the first ident of the line to indent.")
 
 
-(defun haskell-indent-contour-line (start end)
+(defun purescript-indent-contour-line (start end)
   "Generate contour information between START and END points."
   (if (< start end)
       (save-excursion
         (goto-char end)
-        (haskell-indent-skip-blanks-and-newlines-backward start)
+        (purescript-indent-skip-blanks-and-newlines-backward start)
         (let ((cur-col (current-column)) ; maximum column number
               (fl 0) ; number of lines that forward-line could not advance
               contour)
           (while (and (> cur-col 0) (= fl 0) (>= (point) start))
-            (haskell-indent-back-to-indentation)
+            (purescript-indent-back-to-indentation)
             (if (< (point) start) (goto-char start))
-            (and (not (member (haskell-indent-type-at-point)
+            (and (not (member (purescript-indent-type-at-point)
                               '(empty comment))) ; skip empty and comment lines
                  (< (current-column) cur-col) ; less indented column found
                  (push (point) contour) ; new contour point found
                  (setq cur-col (current-column)))
-            (setq fl (haskell-indent-forward-line -1)))
+            (setq fl (purescript-indent-forward-line -1)))
           contour))))
 
-(defun haskell-indent-next-symbol (end)
+(defun purescript-indent-next-symbol (end)
   "Move point to the next symbol."
   (skip-syntax-forward ")" end)
   (if (< (point) end)
       (progn
         (forward-sexp 1)
-        (haskell-indent-skip-blanks-and-newlines-forward end))))
+        (purescript-indent-skip-blanks-and-newlines-forward end))))
 
-(defun haskell-indent-next-symbol-safe (end)
+(defun purescript-indent-next-symbol-safe (end)
   "Puts point to the next following symbol, or to end if there are no more symbols in the sexp."
-  (condition-case errlist (haskell-indent-next-symbol end)
+  (condition-case errlist (purescript-indent-next-symbol end)
     (error (goto-char end))))
 
-(defun haskell-indent-separate-valdef (start end)
+(defun purescript-indent-separate-valdef (start end)
   "Return a list of positions for important parts of a valdef."
   (save-excursion
     (let (valname valname-string aft-valname
                   guard aft-guard
-                  rhs-sign aft-rhs-sign
+                  rpurs-sign aft-rpurs-sign
                   type)
       ;; "parse" a valdef separating important parts
       (goto-char start)
-      (setq type (haskell-indent-type-at-point))
+      (setq type (purescript-indent-type-at-point))
       (if (or (memq type '(ident other))) ; possible start of a value def
           (progn
             (if (eq type 'ident)
@@ -455,74 +455,74 @@ Returns the location of the start of the comment, nil otherwise."
                   (goto-char (match-end 0)))
               (skip-chars-forward " \t" end)
               (setq valname (point))    ; type = other
-              (haskell-indent-next-symbol-safe end))
+              (purescript-indent-next-symbol-safe end))
             (while (and (< (point) end)
-                        (setq type (haskell-indent-type-at-point))
+                        (setq type (purescript-indent-type-at-point))
                         (or (memq type '(ident other))))
               (if (null aft-valname)
                   (setq aft-valname (point)))
-              (haskell-indent-next-symbol-safe end))))
+              (purescript-indent-next-symbol-safe end))))
       (if (and (< (point) end) (eq type 'guard)) ; start of a guard
           (progn
             (setq guard (match-beginning 0))
             (goto-char (match-end 0))
             (while (and (< (point) end)
-                        (setq type (haskell-indent-type-at-point))
-                        (not (eq type 'rhs)))
+                        (setq type (purescript-indent-type-at-point))
+                        (not (eq type 'rpurs)))
               (if (null aft-guard)
                   (setq aft-guard (point)))
-              (haskell-indent-next-symbol-safe end))))
-      (if (and (< (point) end) (eq type 'rhs)) ; start of a rhs
+              (purescript-indent-next-symbol-safe end))))
+      (if (and (< (point) end) (eq type 'rpurs)) ; start of a rpurs
           (progn
-            (setq rhs-sign (match-beginning 0))
+            (setq rpurs-sign (match-beginning 0))
             (goto-char (match-end 0))
             (if (< (point) end)
-                (setq aft-rhs-sign (point)))))
+                (setq aft-rpurs-sign (point)))))
       (list valname valname-string aft-valname
-            guard aft-guard rhs-sign aft-rhs-sign))))
+            guard aft-guard rpurs-sign aft-rpurs-sign))))
 
-(defsubst haskell-indent-no-otherwise (guard)
+(defsubst purescript-indent-no-otherwise (guard)
   "Check if there is no otherwise at GUARD."
   (save-excursion
     (goto-char guard)
     (not (looking-at "|[ \t]*otherwise\\>"))))
 
 
-(defun haskell-indent-guard (start end end-visible indent-info)
+(defun purescript-indent-guard (start end end-visible indent-info)
   "Find indentation information for a line starting with a guard."
   (save-excursion
-    (let* ((haskell-indent-info indent-info)
-           (sep (haskell-indent-separate-valdef start end))
+    (let* ((purescript-indent-info indent-info)
+           (sep (purescript-indent-separate-valdef start end))
            (valname (nth 0 sep))
            (guard (nth 3 sep))
-           (rhs-sign (nth 5 sep)))
+           (rpurs-sign (nth 5 sep)))
       ;; push information indentation for the visible part
-      (if (and guard (< guard end-visible) (haskell-indent-no-otherwise guard))
-          (haskell-indent-push-pos guard)
-        (if rhs-sign
-            (haskell-indent-push-pos rhs-sign) ; probably within a data definition...
+      (if (and guard (< guard end-visible) (purescript-indent-no-otherwise guard))
+          (purescript-indent-push-pos guard)
+        (if rpurs-sign
+            (purescript-indent-push-pos rpurs-sign) ; probably within a data definition...
           (if valname
-              (haskell-indent-push-pos-offset valname))))
-      haskell-indent-info)))
+              (purescript-indent-push-pos-offset valname))))
+      purescript-indent-info)))
 
-(defun haskell-indent-rhs (start end end-visible indent-info)
-  "Find indentation information for a line starting with a rhs."
+(defun purescript-indent-rpurs (start end end-visible indent-info)
+  "Find indentation information for a line starting with a rpurs."
   (save-excursion
-    (let* ((haskell-indent-info indent-info)
-           (sep (haskell-indent-separate-valdef start end))
+    (let* ((purescript-indent-info indent-info)
+           (sep (purescript-indent-separate-valdef start end))
            (valname (nth 0 sep))
            (guard (nth 3 sep))
-           (rhs-sign (nth 5 sep)))
+           (rpurs-sign (nth 5 sep)))
       ;; push information indentation for the visible part
-      (if (and rhs-sign (< rhs-sign end-visible))
-          (haskell-indent-push-pos rhs-sign)
+      (if (and rpurs-sign (< rpurs-sign end-visible))
+          (purescript-indent-push-pos rpurs-sign)
         (if (and guard (< guard end-visible))
-            (haskell-indent-push-pos-offset guard)
+            (purescript-indent-push-pos-offset guard)
           (if valname                   ; always visible !!
-              (haskell-indent-push-pos-offset valname))))
-      haskell-indent-info)))
+              (purescript-indent-push-pos-offset valname))))
+      purescript-indent-info)))
 
-(defconst haskell-indent-decision-table
+(defconst purescript-indent-decision-table
   (let ((or "\\)\\|\\("))
     (concat "\\("
             "1.1.11" or                 ; 1= vn gd rh arh
@@ -542,297 +542,297 @@ Returns the location of the start of the comment, nil otherwise."
             "000000"                    ;15=
             "\\)")))
 
-(defun haskell-indent-find-case (test)
+(defun purescript-indent-find-case (test)
   "Find the index that matches TEST in the decision table."
-  (if (string-match haskell-indent-decision-table test)
+  (if (string-match purescript-indent-decision-table test)
       ;; use the fact that the resulting match-data is a list of the form
       ;; (0 6 [2*(n-1) nil] 0 6) where n is the number of the matching regexp
       ;; so n= ((length match-data)/2)-1
       (- (/ (length (match-data 'integers)) 2) 1)
-    (error "haskell-indent-find-case: impossible case: %s" test)))
+    (error "purescript-indent-find-case: impossible case: %s" test)))
 
-(defun haskell-indent-empty (start end end-visible indent-info)
+(defun purescript-indent-empty (start end end-visible indent-info)
   "Find indentation points for an empty line."
   (save-excursion
-    (let* ((haskell-indent-info indent-info)
-           (sep (haskell-indent-separate-valdef start end))
+    (let* ((purescript-indent-info indent-info)
+           (sep (purescript-indent-separate-valdef start end))
            (valname (pop sep))
            (valname-string (pop sep))
            (aft-valname (pop sep))
            (guard (pop sep))
            (aft-guard (pop sep))
-           (rhs-sign (pop sep))
-           (aft-rhs-sign (pop sep))
+           (rpurs-sign (pop sep))
+           (aft-rpurs-sign (pop sep))
            (last-line (= end end-visible))
            (test (string
                   (if valname ?1 ?0)
                   (if (and aft-valname (< aft-valname end-visible)) ?1 ?0)
                   (if (and guard (< guard end-visible)) ?1 ?0)
                   (if (and aft-guard (< aft-guard end-visible)) ?1 ?0)
-                  (if (and rhs-sign (< rhs-sign end-visible)) ?1 ?0)
-                  (if (and aft-rhs-sign (< aft-rhs-sign end-visible)) ?1 ?0))))
+                  (if (and rpurs-sign (< rpurs-sign end-visible)) ?1 ?0)
+                  (if (and aft-rpurs-sign (< aft-rpurs-sign end-visible)) ?1 ?0))))
       (if (and valname-string           ; special case for start keywords
-               (string-match haskell-indent-start-keywords-re valname-string))
+               (string-match purescript-indent-start-keywords-re valname-string))
           (progn
-            (haskell-indent-push-pos valname)
+            (purescript-indent-push-pos valname)
             ;; very special for data keyword
             (if (string-match "\\<data\\>" valname-string)
-                (if rhs-sign (haskell-indent-push-pos rhs-sign)
-                  (haskell-indent-push-pos-offset valname))
-              (haskell-indent-push-pos-offset valname)))
+                (if rpurs-sign (purescript-indent-push-pos rpurs-sign)
+                  (purescript-indent-push-pos-offset valname))
+              (purescript-indent-push-pos-offset valname)))
         (case                           ; general case
-            (haskell-indent-find-case test)
+            (purescript-indent-find-case test)
           ;; "1.1.11"   1= vn gd rh arh
-          (1 (haskell-indent-push-pos valname)
-             (haskell-indent-push-pos valname valname-string)
-             (if (haskell-indent-no-otherwise guard) (haskell-indent-push-pos guard "| "))
-             (haskell-indent-push-pos aft-rhs-sign))
+          (1 (purescript-indent-push-pos valname)
+             (purescript-indent-push-pos valname valname-string)
+             (if (purescript-indent-no-otherwise guard) (purescript-indent-push-pos guard "| "))
+             (purescript-indent-push-pos aft-rpurs-sign))
           ;; "1.1.10"   2= vn gd rh
-          (2 (haskell-indent-push-pos valname)
-             (haskell-indent-push-pos valname valname-string)
+          (2 (purescript-indent-push-pos valname)
+             (purescript-indent-push-pos valname valname-string)
              (if last-line
-                 (haskell-indent-push-pos-offset guard)
-               (if (haskell-indent-no-otherwise guard) (haskell-indent-push-pos guard "| "))))
+                 (purescript-indent-push-pos-offset guard)
+               (if (purescript-indent-no-otherwise guard) (purescript-indent-push-pos guard "| "))))
           ;; "1.1100"   3= vn gd agd
-          (3 (haskell-indent-push-pos valname)
-             (haskell-indent-push-pos aft-guard)
-             (if last-line (haskell-indent-push-pos-offset valname)))
+          (3 (purescript-indent-push-pos valname)
+             (purescript-indent-push-pos aft-guard)
+             (if last-line (purescript-indent-push-pos-offset valname)))
           ;; "1.1000"   4= vn gd
-          (4 (haskell-indent-push-pos valname)
-             (if last-line (haskell-indent-push-pos-offset guard 2)))
+          (4 (purescript-indent-push-pos valname)
+             (if last-line (purescript-indent-push-pos-offset guard 2)))
           ;; "1.0011"   5= vn rh arh
-          (5 (haskell-indent-push-pos valname)
-             (if (or (and aft-valname (= (char-after rhs-sign) ?\=))
-                     (= (char-after rhs-sign) ?\:))
-                 (haskell-indent-push-pos valname valname-string))
-             (haskell-indent-push-pos aft-rhs-sign))
+          (5 (purescript-indent-push-pos valname)
+             (if (or (and aft-valname (= (char-after rpurs-sign) ?\=))
+                     (= (char-after rpurs-sign) ?\:))
+                 (purescript-indent-push-pos valname valname-string))
+             (purescript-indent-push-pos aft-rpurs-sign))
           ;; "1.0010"   6= vn rh
-          (6 (haskell-indent-push-pos valname)
-             (haskell-indent-push-pos valname valname-string)
-             (if last-line (haskell-indent-push-pos-offset valname)))
+          (6 (purescript-indent-push-pos valname)
+             (purescript-indent-push-pos valname valname-string)
+             (if last-line (purescript-indent-push-pos-offset valname)))
           ;; "110000"   7= vn avn
-          (7 (haskell-indent-push-pos valname)
+          (7 (purescript-indent-push-pos valname)
              (if last-line
-                 (haskell-indent-push-pos aft-valname)
-               (haskell-indent-push-pos valname valname-string)))
+                 (purescript-indent-push-pos aft-valname)
+               (purescript-indent-push-pos valname valname-string)))
           ;; "100000"   8= vn
-          (8 (haskell-indent-push-pos valname))
+          (8 (purescript-indent-push-pos valname))
           ;; "001.11"   9= gd rh arh
-          (9 (if (haskell-indent-no-otherwise guard) (haskell-indent-push-pos guard "| "))
-             (haskell-indent-push-pos aft-rhs-sign))
+          (9 (if (purescript-indent-no-otherwise guard) (purescript-indent-push-pos guard "| "))
+             (purescript-indent-push-pos aft-rpurs-sign))
           ;; "001.10"  10= gd rh
-          (10 (if (haskell-indent-no-otherwise guard) (haskell-indent-push-pos guard "| "))
-              (if last-line (haskell-indent-push-pos-offset guard)))
+          (10 (if (purescript-indent-no-otherwise guard) (purescript-indent-push-pos guard "| "))
+              (if last-line (purescript-indent-push-pos-offset guard)))
           ;; "001100"  11= gd agd
-          (11 (if (haskell-indent-no-otherwise guard) (haskell-indent-push-pos guard "| "))
-              (haskell-indent-push-pos aft-guard))
+          (11 (if (purescript-indent-no-otherwise guard) (purescript-indent-push-pos guard "| "))
+              (purescript-indent-push-pos aft-guard))
           ;; "001000"  12= gd
-          (12 (if (haskell-indent-no-otherwise guard) (haskell-indent-push-pos guard "| "))
-              (if last-line (haskell-indent-push-pos-offset guard 2)))
+          (12 (if (purescript-indent-no-otherwise guard) (purescript-indent-push-pos guard "| "))
+              (if last-line (purescript-indent-push-pos-offset guard 2)))
           ;; "000011"  13= rh arh
-          (13 (haskell-indent-push-pos aft-rhs-sign))
+          (13 (purescript-indent-push-pos aft-rpurs-sign))
           ;; "000010"  14= rh
-          (14 (if last-line (haskell-indent-push-pos-offset rhs-sign 2 )))
+          (14 (if last-line (purescript-indent-push-pos-offset rpurs-sign 2 )))
           ;; "000000"  15=
-          (t (error "haskell-indent-empty: %s impossible case" test ))))
-      haskell-indent-info)))
+          (t (error "purescript-indent-empty: %s impossible case" test ))))
+      purescript-indent-info)))
 
-(defun haskell-indent-ident (start end end-visible indent-info)
+(defun purescript-indent-ident (start end end-visible indent-info)
   "Find indentation points for a line starting with an identifier."
   (save-excursion
     (let*
-        ((haskell-indent-info indent-info)
-         (sep (haskell-indent-separate-valdef start end))
+        ((purescript-indent-info indent-info)
+         (sep (purescript-indent-separate-valdef start end))
          (valname (pop sep))
          (valname-string (pop sep))
          (aft-valname (pop sep))
          (guard (pop sep))
          (aft-guard (pop sep))
-         (rhs-sign (pop sep))
-         (aft-rhs-sign (pop sep))
+         (rpurs-sign (pop sep))
+         (aft-rpurs-sign (pop sep))
          (last-line (= end end-visible))
          (is-where
-          (string-match "where[ \t]*" haskell-indent-current-line-first-ident))
+          (string-match "where[ \t]*" purescript-indent-current-line-first-ident))
          (diff-first                 ; not a function def with the same name
           (or (null valname-string)
-              (not (string= (haskell-trim valname-string)
-                            (haskell-trim haskell-indent-current-line-first-ident)))))
+              (not (string= (purescript-trim valname-string)
+                            (purescript-trim purescript-indent-current-line-first-ident)))))
 
          ;; (is-type-def
-         ;;  (and rhs-sign (eq (char-after rhs-sign) ?\:)))
+         ;;  (and rpurs-sign (eq (char-after rpurs-sign) ?\:)))
          (test (string
                 (if valname ?1 ?0)
                 (if (and aft-valname (< aft-valname end-visible)) ?1 ?0)
                 (if (and guard (< guard end-visible)) ?1 ?0)
                 (if (and aft-guard (< aft-guard end-visible)) ?1 ?0)
-                (if (and rhs-sign (< rhs-sign end-visible)) ?1 ?0)
-                (if (and aft-rhs-sign (< aft-rhs-sign end-visible)) ?1 ?0))))
+                (if (and rpurs-sign (< rpurs-sign end-visible)) ?1 ?0)
+                (if (and aft-rpurs-sign (< aft-rpurs-sign end-visible)) ?1 ?0))))
       (if (and valname-string           ; special case for start keywords
-               (string-match haskell-indent-start-keywords-re valname-string))
+               (string-match purescript-indent-start-keywords-re valname-string))
           (progn
-            (haskell-indent-push-pos valname)
+            (purescript-indent-push-pos valname)
             (if (string-match "\\<data\\>" valname-string)
                 ;; very special for data keyword
-                (if aft-rhs-sign (haskell-indent-push-pos aft-rhs-sign)
-                  (haskell-indent-push-pos-offset valname))
+                (if aft-rpurs-sign (purescript-indent-push-pos aft-rpurs-sign)
+                  (purescript-indent-push-pos-offset valname))
               (if (not (string-match
-                        haskell-indent-start-keywords-re
-                        haskell-indent-current-line-first-ident))
-                  (haskell-indent-push-pos-offset valname))))
-        (if (string= haskell-indent-current-line-first-ident "::")
-            (if valname (haskell-indent-push-pos valname))
+                        purescript-indent-start-keywords-re
+                        purescript-indent-current-line-first-ident))
+                  (purescript-indent-push-pos-offset valname))))
+        (if (string= purescript-indent-current-line-first-ident "::")
+            (if valname (purescript-indent-push-pos valname))
           (case                         ; general case
-              (haskell-indent-find-case test)
+              (purescript-indent-find-case test)
             ;; "1.1.11"   1= vn gd rh arh
             (1 (if is-where
-                   (haskell-indent-push-pos guard)
-                 (haskell-indent-push-pos valname)
-                 (if diff-first (haskell-indent-push-pos aft-rhs-sign))))
+                   (purescript-indent-push-pos guard)
+                 (purescript-indent-push-pos valname)
+                 (if diff-first (purescript-indent-push-pos aft-rpurs-sign))))
             ;; "1.1.10"   2= vn gd rh
             (2 (if is-where
-                   (haskell-indent-push-pos guard)
-                 (haskell-indent-push-pos valname)
+                   (purescript-indent-push-pos guard)
+                 (purescript-indent-push-pos valname)
                  (if last-line
-                     (haskell-indent-push-pos-offset guard))))
+                     (purescript-indent-push-pos-offset guard))))
             ;; "1.1100"   3= vn gd agd
             (3 (if is-where
-                   (haskell-indent-push-pos-offset guard)
-                 (haskell-indent-push-pos valname)
+                   (purescript-indent-push-pos-offset guard)
+                 (purescript-indent-push-pos valname)
                  (if diff-first
-                     (haskell-indent-push-pos aft-guard))))
+                     (purescript-indent-push-pos aft-guard))))
             ;; "1.1000"   4= vn gd
             (4 (if is-where
-                   (haskell-indent-push-pos guard)
-                 (haskell-indent-push-pos valname)
+                   (purescript-indent-push-pos guard)
+                 (purescript-indent-push-pos valname)
                  (if last-line
-                     (haskell-indent-push-pos-offset guard 2))))
+                     (purescript-indent-push-pos-offset guard 2))))
             ;; "1.0011"   5= vn rh arh
             (5 (if is-where
-                   (haskell-indent-push-pos-offset valname)
-                 (haskell-indent-push-pos valname)
+                   (purescript-indent-push-pos-offset valname)
+                 (purescript-indent-push-pos valname)
                  (if diff-first
-                     (haskell-indent-push-pos aft-rhs-sign))))
+                     (purescript-indent-push-pos aft-rpurs-sign))))
             ;; "1.0010"   6= vn rh
             (6 (if is-where
-                   (haskell-indent-push-pos-offset valname)
-                 (haskell-indent-push-pos valname)
+                   (purescript-indent-push-pos-offset valname)
+                 (purescript-indent-push-pos valname)
                  (if last-line
-                     (haskell-indent-push-pos-offset valname))))
+                     (purescript-indent-push-pos-offset valname))))
             ;; "110000"   7= vn avn
             (7 (if is-where
-                   (haskell-indent-push-pos-offset valname)
-                 (haskell-indent-push-pos valname)
+                   (purescript-indent-push-pos-offset valname)
+                 (purescript-indent-push-pos valname)
                  (if last-line
-                     (haskell-indent-push-pos aft-valname))))
+                     (purescript-indent-push-pos aft-valname))))
             ;; "100000"   8= vn
             (8 (if is-where
-                   (haskell-indent-push-pos-offset valname)
-                 (haskell-indent-push-pos valname)))
+                   (purescript-indent-push-pos-offset valname)
+                 (purescript-indent-push-pos valname)))
             ;; "001.11"   9= gd rh arh
             (9 (if is-where
-                   (haskell-indent-push-pos guard)
-                 (haskell-indent-push-pos aft-rhs-sign)))
+                   (purescript-indent-push-pos guard)
+                 (purescript-indent-push-pos aft-rpurs-sign)))
             ;; "001.10"  10= gd rh
             (10 (if is-where
-                    (haskell-indent-push-pos guard)
+                    (purescript-indent-push-pos guard)
                   (if last-line
-                      (haskell-indent-push-pos-offset guard))))
+                      (purescript-indent-push-pos-offset guard))))
             ;; "001100"  11= gd agd
             (11 (if is-where
-                    (haskell-indent-push-pos guard)
-                  (if (haskell-indent-no-otherwise guard)
-                      (haskell-indent-push-pos aft-guard))))
+                    (purescript-indent-push-pos guard)
+                  (if (purescript-indent-no-otherwise guard)
+                      (purescript-indent-push-pos aft-guard))))
             ;; "001000"  12= gd
-            (12 (if last-line (haskell-indent-push-pos-offset guard 2)))
+            (12 (if last-line (purescript-indent-push-pos-offset guard 2)))
             ;; "000011"  13= rh arh
-            (13 (haskell-indent-push-pos aft-rhs-sign))
+            (13 (purescript-indent-push-pos aft-rpurs-sign))
             ;; "000010"  14= rh
-            (14 (if last-line (haskell-indent-push-pos-offset rhs-sign 2)))
+            (14 (if last-line (purescript-indent-push-pos-offset rpurs-sign 2)))
             ;; "000000"  15=
-            (t (error "haskell-indent-ident: %s impossible case" test )))))
-      haskell-indent-info)))
+            (t (error "purescript-indent-ident: %s impossible case" test )))))
+      purescript-indent-info)))
 
-(defun haskell-indent-other (start end end-visible indent-info)
+(defun purescript-indent-other (start end end-visible indent-info)
   "Find indentation points for a non-empty line starting with something other
-than an identifier, a guard or rhs."
+than an identifier, a guard or rpurs."
   (save-excursion
-    (let* ((haskell-indent-info indent-info)
-           (sep (haskell-indent-separate-valdef start end))
+    (let* ((purescript-indent-info indent-info)
+           (sep (purescript-indent-separate-valdef start end))
            (valname (pop sep))
            (valname-string (pop sep))
            (aft-valname (pop sep))
            (guard (pop sep))
            (aft-guard (pop sep))
-           (rhs-sign (pop sep))
-           (aft-rhs-sign (pop sep))
+           (rpurs-sign (pop sep))
+           (aft-rpurs-sign (pop sep))
            (last-line (= end end-visible))
            (test (string
                   (if valname ?1 ?0)
                   (if (and aft-valname (< aft-valname end-visible)) ?1 ?0)
                   (if (and guard (< guard end-visible)) ?1 ?0)
                   (if (and aft-guard (< aft-guard end-visible)) ?1 ?0)
-                  (if (and rhs-sign (< rhs-sign end-visible)) ?1 ?0)
-                  (if (and aft-rhs-sign (< aft-rhs-sign end-visible)) ?1 ?0))))
+                  (if (and rpurs-sign (< rpurs-sign end-visible)) ?1 ?0)
+                  (if (and aft-rpurs-sign (< aft-rpurs-sign end-visible)) ?1 ?0))))
       (if (and valname-string           ; special case for start keywords
-               (string-match haskell-indent-start-keywords-re valname-string))
-          (haskell-indent-push-pos-offset valname)
+               (string-match purescript-indent-start-keywords-re valname-string))
+          (purescript-indent-push-pos-offset valname)
         (case                           ; general case
-            (haskell-indent-find-case test)
+            (purescript-indent-find-case test)
           ;; "1.1.11"   1= vn gd rh arh
-          (1 (haskell-indent-push-pos aft-rhs-sign))
+          (1 (purescript-indent-push-pos aft-rpurs-sign))
           ;; "1.1.10"   2= vn gd rh
           (2 (if last-line
-                 (haskell-indent-push-pos-offset guard)
-               (haskell-indent-push-pos-offset rhs-sign 2)))
+                 (purescript-indent-push-pos-offset guard)
+               (purescript-indent-push-pos-offset rpurs-sign 2)))
           ;; "1.1100"   3= vn gd agd
-          (3 (haskell-indent-push-pos aft-guard))
+          (3 (purescript-indent-push-pos aft-guard))
           ;; "1.1000"   4= vn gd
-          (4 (haskell-indent-push-pos-offset guard 2))
+          (4 (purescript-indent-push-pos-offset guard 2))
           ;; "1.0011"   5= vn rh arh
-          (5 (haskell-indent-push-pos valname)
-             (haskell-indent-push-pos aft-rhs-sign))
+          (5 (purescript-indent-push-pos valname)
+             (purescript-indent-push-pos aft-rpurs-sign))
           ;; "1.0010"   6= vn rh
           (6 (if last-line
-                 (haskell-indent-push-pos-offset valname)
-               (haskell-indent-push-pos-offset rhs-sign 2)))
+                 (purescript-indent-push-pos-offset valname)
+               (purescript-indent-push-pos-offset rpurs-sign 2)))
           ;; "110000"   7= vn avn
-          (7 (haskell-indent-push-pos-offset aft-valname))
+          (7 (purescript-indent-push-pos-offset aft-valname))
           ;; "100000"   8= vn
-          (8 (haskell-indent-push-pos valname))
+          (8 (purescript-indent-push-pos valname))
           ;; "001.11"   9= gd rh arh
-          (9 (haskell-indent-push-pos aft-rhs-sign))
+          (9 (purescript-indent-push-pos aft-rpurs-sign))
           ;; "001.10"  10= gd rh
           (10 (if last-line
-                  (haskell-indent-push-pos-offset guard)
-                (haskell-indent-push-pos-offset rhs-sign 2)))
+                  (purescript-indent-push-pos-offset guard)
+                (purescript-indent-push-pos-offset rpurs-sign 2)))
           ;; "001100"  11= gd agd
-          (11 (if (haskell-indent-no-otherwise guard)
-                  (haskell-indent-push-pos aft-guard)))
+          (11 (if (purescript-indent-no-otherwise guard)
+                  (purescript-indent-push-pos aft-guard)))
           ;; "001000"  12= gd
-          (12 (if last-line (haskell-indent-push-pos-offset guard 2)))
+          (12 (if last-line (purescript-indent-push-pos-offset guard 2)))
           ;; "000011"  13= rh arh
-          (13 (haskell-indent-push-pos aft-rhs-sign))
+          (13 (purescript-indent-push-pos aft-rpurs-sign))
           ;; "000010"  14= rh
-          (14 (if last-line (haskell-indent-push-pos-offset rhs-sign 2)))
+          (14 (if last-line (purescript-indent-push-pos-offset rpurs-sign 2)))
           ;; "000000"  15=
-          (t (error "haskell-indent-other: %s impossible case" test ))))
-      haskell-indent-info)))
+          (t (error "purescript-indent-other: %s impossible case" test ))))
+      purescript-indent-info)))
 
-(defun haskell-indent-valdef-indentation (start end end-visible curr-line-type
+(defun purescript-indent-valdef-indentation (start end end-visible curr-line-type
                                                 indent-info)
   "Find indentation information for a value definition."
-  (let ((haskell-indent-info indent-info))
+  (let ((purescript-indent-info indent-info))
     (if (< start end-visible)
         (case curr-line-type
-          (empty (haskell-indent-empty start end end-visible indent-info))
-          (ident (haskell-indent-ident start end end-visible indent-info))
-          (guard (haskell-indent-guard start end end-visible indent-info))
-          (rhs   (haskell-indent-rhs start end end-visible indent-info))
+          (empty (purescript-indent-empty start end end-visible indent-info))
+          (ident (purescript-indent-ident start end end-visible indent-info))
+          (guard (purescript-indent-guard start end end-visible indent-info))
+          (rpurs   (purescript-indent-rpurs start end end-visible indent-info))
           (comment (error "Comment indent should never happen"))
-          (other (haskell-indent-other start end end-visible indent-info)))
-      haskell-indent-info)))
+          (other (purescript-indent-other start end end-visible indent-info)))
+      purescript-indent-info)))
 
-(defun haskell-indent-line-indentation (line-start line-end end-visible
+(defun purescript-indent-line-indentation (line-start line-end end-visible
                                                    curr-line-type indent-info)
   "Compute indentation info between LINE-START and END-VISIBLE.
 Separate a line of program into valdefs between offside keywords
@@ -840,16 +840,16 @@ and find indentation info for each part."
   (save-excursion
     ;; point is (already) at line-start
     (assert (eq (point) line-start))
-    (let ((haskell-indent-info indent-info)
-          (start (or (haskell-indent-in-comment line-start line-end)
-                     (haskell-indent-in-string line-start line-end))))
+    (let ((purescript-indent-info indent-info)
+          (start (or (purescript-indent-in-comment line-start line-end)
+                     (purescript-indent-in-string line-start line-end))))
       (if start                         ; if comment at the end
           (setq line-end start))  ; end line before it
       ;; loop on all parts separated by off-side-keywords
-      (while (and (re-search-forward haskell-indent-off-side-keywords-re
+      (while (and (re-search-forward purescript-indent-off-side-keywords-re
                                      line-end t)
-                  (not (or (haskell-indent-in-comment line-start (point))
-                           (haskell-indent-in-string line-start (point)))))
+                  (not (or (purescript-indent-in-comment line-start (point))
+                           (purescript-indent-in-string line-start (point)))))
         (let ((beg-match (match-beginning 0)) ; save beginning of match
               (end-match (match-end 0)))      ; save end of match
           ;; Do not try to find indentation points if off-side-keyword at
@@ -858,36 +858,36 @@ and find indentation info for each part."
                   ;; Actually, if we're looking at a "let" inside a "do", we
                   ;; should add the corresponding indentation point.
                   (eq (char-after beg-match) ?l))
-              (setq haskell-indent-info
-                    (haskell-indent-valdef-indentation line-start beg-match
+              (setq purescript-indent-info
+                    (purescript-indent-valdef-indentation line-start beg-match
                                                        end-visible
                                                        curr-line-type
-                                                       haskell-indent-info)))
+                                                       purescript-indent-info)))
           ;; ...but keep the start of the line if keyword alone on the line
           (if (= line-end end-match)
-              (haskell-indent-push-pos beg-match))
+              (purescript-indent-push-pos beg-match))
           (setq line-start end-match)
           (goto-char line-start)))
-      (haskell-indent-valdef-indentation line-start line-end end-visible
-                                         curr-line-type haskell-indent-info))))
+      (purescript-indent-valdef-indentation line-start line-end end-visible
+                                         curr-line-type purescript-indent-info))))
 
 
-(defun haskell-indent-layout-indent-info (start contour-line)
-  (let ((haskell-indent-info nil)
-        (curr-line-type (haskell-indent-type-at-point))
+(defun purescript-indent-layout-indent-info (start contour-line)
+  (let ((purescript-indent-info nil)
+        (curr-line-type (purescript-indent-type-at-point))
         line-start line-end end-visible)
     (save-excursion
       (if (eq curr-line-type 'ident)
           (let                          ; guess the type of line
               ((sep
-                (haskell-indent-separate-valdef
+                (purescript-indent-separate-valdef
                  (point) (line-end-position))))
             ;; if the first ident is where or the start of a def
             ;; keep it in a global variable
-            (setq haskell-indent-current-line-first-ident
+            (setq purescript-indent-current-line-first-ident
                   (if (string-match "where[ \t]*" (nth 1 sep))
                       (nth 1 sep)
-                    (if (nth 5 sep)              ; is there a rhs-sign
+                    (if (nth 5 sep)              ; is there a rpurs-sign
                         (if (= (char-after (nth 5 sep)) ?\:) ;is it a typdef
                             "::" (nth 1 sep))
                       "")))))
@@ -899,38 +899,38 @@ and find indentation info for each part."
               (if contour-line       ; next contour point
                   (save-excursion
                     (move-to-column
-                     (haskell-indent-point-to-col (car contour-line)))
+                     (purescript-indent-point-to-col (car contour-line)))
                     (point))
                 line-end))
-        (unless (or (haskell-indent-open-structure start line-start)
-                    (haskell-indent-in-comment start line-start))
-          (setq haskell-indent-info
-                (haskell-indent-line-indentation line-start line-end
+        (unless (or (purescript-indent-open-structure start line-start)
+                    (purescript-indent-in-comment start line-start))
+          (setq purescript-indent-info
+                (purescript-indent-line-indentation line-start line-end
                                                  end-visible curr-line-type
-                                                 haskell-indent-info)))))
-    haskell-indent-info))
+                                                 purescript-indent-info)))))
+    purescript-indent-info))
 
-(defun haskell-indent-find-matching-start (regexp limit &optional pred start)
-  (let ((open (haskell-indent-open-structure limit (point))))
+(defun purescript-indent-find-matching-start (regexp limit &optional pred start)
+  (let ((open (purescript-indent-open-structure limit (point))))
     (if open (setq limit (1+ open))))
   (unless start (setq start (point)))
   (when (re-search-backward regexp limit t)
     (let ((nestedcase (match-end 1))
-          (outer (or (haskell-indent-in-string limit (point))
-                     (haskell-indent-in-comment limit (point))
-                     (haskell-indent-open-structure limit (point))
+          (outer (or (purescript-indent-in-string limit (point))
+                     (purescript-indent-in-comment limit (point))
+                     (purescript-indent-open-structure limit (point))
                      (if (and pred (funcall pred start)) (point)))))
       (cond
        (outer
         (goto-char outer)
-        (haskell-indent-find-matching-start regexp limit pred start))
+        (purescript-indent-find-matching-start regexp limit pred start))
        (nestedcase
         ;; Nested case.
-        (and (haskell-indent-find-matching-start regexp limit pred)
-             (haskell-indent-find-matching-start regexp limit pred start)))
+        (and (purescript-indent-find-matching-start regexp limit pred)
+             (purescript-indent-find-matching-start regexp limit pred start)))
        (t (point))))))
 
-(defun haskell-indent-filter-let-no-in (start)
+(defun purescript-indent-filter-let-no-in (start)
   "Return non-nil if point is in front of a `let' that has no `in'.
 START is the position of the presumed `in'."
   ;; We're looking at either `in' or `let'.
@@ -947,14 +947,14 @@ START is the position of the presumed `in'."
           ;; Use the layout rule to see whether this let is already closed
           ;; without an `in'.
           (let ((col (current-column)))
-            (while (progn (forward-line 1) (haskell-indent-back-to-indentation)
+            (while (progn (forward-line 1) (purescript-indent-back-to-indentation)
                           (< (point) start))
               (when (< (current-column) col)
                 (setq col nil)
                 (goto-char start)))
             (null col)))))))
 
-(defun haskell-indent-comment (open start)
+(defun purescript-indent-comment (open start)
   "Compute indent info for comments and text inside comments.
 OPEN is the start position of the comment in which point is."
   ;; Ideally we'd want to guess whether it's commented out code or
@@ -970,7 +970,7 @@ OPEN is the start position of the comment in which point is."
                       (> (line-beginning-position 3) open))
                  ;; We're after another comment and there's no empty line
                  ;; between us.
-                 (list (list (haskell-indent-point-to-col (point)))))
+                 (list (list (purescript-indent-point-to-col (point)))))
                 (t nil))))              ;Else align as if it were code
           ;; Align with following code.
           (forward-comment (point-max))
@@ -987,7 +987,7 @@ OPEN is the start position of the comment in which point is."
           (append
            prev-line-info
            (let ((indent-info (save-excursion
-                                (haskell-indent-indentation-info start)))
+                                (purescript-indent-indentation-info start)))
                  (col (current-column)))
              ;; Sort the indent-info so that the current indentation comes
              ;; out first.
@@ -1002,29 +1002,29 @@ OPEN is the start position of the comment in which point is."
           (progn
             (forward-char 2)
             (forward-comment -1)
-            (list (list (1+ (haskell-indent-point-to-col (point))))))
+            (list (list (1+ (purescript-indent-point-to-col (point))))))
         (let ((offset (if (looking-at "--?")
                           (- (match-beginning 0) (match-end 0)))))
           (forward-line -1)             ;Go to previous line.
-          (haskell-indent-back-to-indentation)
+          (purescript-indent-back-to-indentation)
           (if (< (point) start) (goto-char start))
 
           (list (list (if (looking-at comment-start-skip)
                           (if offset
-                              (+ 2 offset (haskell-indent-point-to-col (point)))
-                            (haskell-indent-point-to-col (match-end 0)))
-                        (haskell-indent-point-to-col (point))))))))))
+                              (+ 2 offset (purescript-indent-point-to-col (point)))
+                            (purescript-indent-point-to-col (match-end 0)))
+                        (purescript-indent-point-to-col (point))))))))))
 
-(defcustom haskell-indent-thenelse 0
+(defcustom purescript-indent-thenelse 0
   "If non-nil, \"then\" and \"else\" are indented.
-This is necessary in the \"do\" layout under Haskell-98.
-See http://hackage.haskell.org/trac/haskell-prime/wiki/DoAndIfThenElse"
-  :group 'haskell-indent
+This is necessary in the \"do\" layout under PureScript-98.
+See http://hackage.purescript.org/trac/purescript-prime/wiki/DoAndIfThenElse"
+  :group 'purescript-indent
   :type 'integer)
 
-(defun haskell-indent-closing-keyword (start)
+(defun purescript-indent-closing-keyword (start)
   (let ((open (save-excursion
-                (haskell-indent-find-matching-start
+                (purescript-indent-find-matching-start
                  (case (char-after)
                    (?i "\\<\\(?:\\(in\\)\\|let\\)\\>")
                    (?o "\\<\\(?:\\(of\\)\\|case\\)\\>")
@@ -1033,19 +1033,19 @@ See http://hackage.haskell.org/trac/haskell-prime/wiki/DoAndIfThenElse"
                  start
                  (if (eq (char-after) ?i)
                      ;; Filter out the `let's that have no `in'.
-                     'haskell-indent-filter-let-no-in)))))
+                     'purescript-indent-filter-let-no-in)))))
     ;; For a "hanging let/case/if at EOL" we should use a different
     ;; indentation scheme.
     (save-excursion
       (goto-char open)
-      (if (haskell-indent-hanging-p)
-          (setq open (haskell-indent-virtual-indentation start))))
+      (if (purescript-indent-hanging-p)
+          (setq open (purescript-indent-virtual-indentation start))))
     ;; FIXME: we should try and figure out if the `if' is in a `do' layout
-    ;; before using haskell-indent-thenelse.
-    (list (list (+ (if (memq (char-after) '(?t ?e)) haskell-indent-thenelse 0)
-                   (haskell-indent-point-to-col open))))))
+    ;; before using purescript-indent-thenelse.
+    (list (list (+ (if (memq (char-after) '(?t ?e)) purescript-indent-thenelse 0)
+                   (purescript-indent-point-to-col open))))))
 
-(defcustom haskell-indent-after-keywords
+(defcustom purescript-indent-after-keywords
   '(("where" 2 0)
     ("of" 2)
     ("do" 2)
@@ -1063,11 +1063,11 @@ Each keyword info can have the following forms:
    KEYWORD | (KEYWORD OFFSET [OFFSET-HANGING])
 
 If absent OFFSET-HANGING defaults to OFFSET.
-If absent OFFSET defaults to `haskell-indent-offset'.
+If absent OFFSET defaults to `purescript-indent-offset'.
 
 OFFSET-HANGING is the offset to use in the case where the keyword
 is at the end of an otherwise-non-empty line."
-  :group 'haskell-indent
+  :group 'purescript-indent
   :type '(repeat (choice string
                          (cons :tag "" (string :tag "keyword:")
                                (cons :tag "" (integer :tag "offset")
@@ -1075,57 +1075,57 @@ is at the end of an otherwise-non-empty line."
                                              (list :tag ""
                                                    (integer :tag "offset-pending"))))))))
 
-(defun haskell-indent-skip-lexeme-forward ()
+(defun purescript-indent-skip-lexeme-forward ()
   (and (zerop (skip-syntax-forward "w"))
        (skip-syntax-forward "_")
        (skip-syntax-forward "(")
        (skip-syntax-forward ")")))
 
-(defvar haskell-indent-inhibit-after-offset nil)
+(defvar purescript-indent-inhibit-after-offset nil)
 
-(defun haskell-indent-offset-after-info ()
-  "Return the info from `haskell-indent-after-keywords' for keyword at point."
+(defun purescript-indent-offset-after-info ()
+  "Return the info from `purescript-indent-after-keywords' for keyword at point."
   (let ((id (buffer-substring
              (point)
              (save-excursion
-               (haskell-indent-skip-lexeme-forward)
+               (purescript-indent-skip-lexeme-forward)
                (point)))))
-    (or (assoc id haskell-indent-after-keywords)
-        (car (member id haskell-indent-after-keywords)))))
+    (or (assoc id purescript-indent-after-keywords)
+        (car (member id purescript-indent-after-keywords)))))
 
-(defcustom haskell-indent-dont-hang '("(")
+(defcustom purescript-indent-dont-hang '("(")
   "Lexemes that should never be considered as hanging."
-  :group 'haskell-indent
+  :group 'purescript-indent
   :type '(repeat string))
 
-(defun haskell-indent-hanging-p ()
+(defun purescript-indent-hanging-p ()
   ;; A Hanging keyword is one that's at the end of a line except it's not at
   ;; the beginning of a line.
-  (not (or (= (current-column) (haskell-indent-current-indentation))
+  (not (or (= (current-column) (purescript-indent-current-indentation))
            (save-excursion
              (let ((lexeme
                     (buffer-substring
                      (point)
-                     (progn (haskell-indent-skip-lexeme-forward) (point)))))
-               (or (member lexeme haskell-indent-dont-hang)
+                     (progn (purescript-indent-skip-lexeme-forward) (point)))))
+               (or (member lexeme purescript-indent-dont-hang)
                    (> (line-end-position)
                       (progn (forward-comment (point-max)) (point)))))))))
 
-(defun haskell-indent-after-keyword-column (offset-info start &optional default)
+(defun purescript-indent-after-keyword-column (offset-info start &optional default)
   (unless offset-info
-    (setq offset-info (haskell-indent-offset-after-info)))
-  (unless default (setq default haskell-indent-offset))
+    (setq offset-info (purescript-indent-offset-after-info)))
+  (unless default (setq default purescript-indent-offset))
   (setq offset-info
-        (if haskell-indent-inhibit-after-offset '(0) (cdr-safe offset-info)))
-  (if (not (haskell-indent-hanging-p))
-      (haskell-indent-column+offset (current-column)
+        (if purescript-indent-inhibit-after-offset '(0) (cdr-safe offset-info)))
+  (if (not (purescript-indent-hanging-p))
+      (purescript-indent-column+offset (current-column)
                                     (or (car offset-info) default))
     ;; The keyword is hanging at the end of the line.
-    (haskell-indent-column+offset
-     (haskell-indent-virtual-indentation start)
+    (purescript-indent-column+offset
+     (purescript-indent-virtual-indentation start)
      (or (cadr offset-info) (car offset-info) default))))
 
-(defun haskell-indent-inside-paren (open)
+(defun purescript-indent-inside-paren (open)
   ;; there is an open structure to complete
   (if (looking-at "\\s)\\|[;,]")
       ;; A close-paren or a , or ; can only correspond syntactically to
@@ -1139,30 +1139,30 @@ is at the end of an otherwise-non-empty line."
         (save-excursion
           (goto-char open)
           (list (list
-                 (if (haskell-indent-hanging-p)
-                     (haskell-indent-virtual-indentation nil)
-                   (haskell-indent-point-to-col open))))))
+                 (if (purescript-indent-hanging-p)
+                     (purescript-indent-virtual-indentation nil)
+                   (purescript-indent-point-to-col open))))))
     ;; There might still be layout within the open structure.
     (let* ((end (point))
            (basic-indent-info
             ;; Anything else than a ) is subject to layout.
             (if (looking-at "\\s.\\|\\$ ")
-                (haskell-indent-point-to-col open) ; align a punct with (
+                (purescript-indent-point-to-col open) ; align a punct with (
               (let ((follow (save-excursion
                               (goto-char (1+ open))
-                              (haskell-indent-skip-blanks-and-newlines-forward end)
+                              (purescript-indent-skip-blanks-and-newlines-forward end)
                               (point))))
                 (if (= follow end)
                     (save-excursion
                       (goto-char open)
-                      (haskell-indent-after-keyword-column nil nil 1))
-                  (haskell-indent-point-to-col follow)))))
-           (open-column (haskell-indent-point-to-col open))
-           (contour-line (haskell-indent-contour-line (1+ open) end)))
+                      (purescript-indent-after-keyword-column nil nil 1))
+                  (purescript-indent-point-to-col follow)))))
+           (open-column (purescript-indent-point-to-col open))
+           (contour-line (purescript-indent-contour-line (1+ open) end)))
       (if (null contour-line)
           (list (list basic-indent-info))
         (let ((indent-info
-               (haskell-indent-layout-indent-info
+               (purescript-indent-layout-indent-info
                 (1+ open) contour-line)))
           ;; Fix up indent info.
           (let ((base-elem (assoc open-column indent-info)))
@@ -1173,18 +1173,18 @@ is at the end of an otherwise-non-empty line."
                     (append indent-info (list (list basic-indent-info)))))
             indent-info))))))
 
-(defun haskell-indent-virtual-indentation (start)
+(defun purescript-indent-virtual-indentation (start)
   "Compute the \"virtual indentation\" of text at point.
 The \"virtual indentation\" is the indentation that text at point would have
 had, if it had been placed on its own line."
   (let ((col (current-column))
-        (haskell-indent-inhibit-after-offset (haskell-indent-hanging-p)))
+        (purescript-indent-inhibit-after-offset (purescript-indent-hanging-p)))
     (if (save-excursion (skip-chars-backward " \t") (bolp))
         ;; If the text is indeed on its own line, than the virtual indent is
         ;; the current indentation.
         col
       ;; Else, compute the indentation that it would have had.
-      (let ((info (haskell-indent-indentation-info start))
+      (let ((info (purescript-indent-indentation-info start))
             (max -1))
         ;; `info' is a list of possible indent points.  Each indent point is
         ;; assumed to correspond to a different parse.  So we need to find
@@ -1194,7 +1194,7 @@ had, if it had been placed on its own line."
         (dolist (x info)
           (setq x (car x))
           ;; Sometimes `info' includes the current indentation (or yet
-          ;; deeper) by mistake, because haskell-indent-indentation-info
+          ;; deeper) by mistake, because purescript-indent-indentation-info
           ;; wasn't designed to be called on a piece of text that is not at
           ;; BOL.  So ignore points past `col'.
           (if (and (> x max) (not (>= x col)))
@@ -1202,77 +1202,77 @@ had, if it had been placed on its own line."
         ;; In case all the indent points are past `col', just use `col'.
         (if (>= max 0) max col)))))
 
-(defun haskell-indent-indentation-info (&optional start)
+(defun purescript-indent-indentation-info (&optional start)
   "Return a list of possible indentations for the current line.
-These are then used by `haskell-indent-cycle'.
+These are then used by `purescript-indent-cycle'.
 START if non-nil is a presumed start pos of the current definition."
-  (unless start (setq start (haskell-indent-start-of-def)))
+  (unless start (setq start (purescript-indent-start-of-def)))
   (let (open contour-line)
     (cond
      ;; in string?
-     ((setq open (haskell-indent-in-string start (point)))
-      (list (list (+ (haskell-indent-point-to-col open)
+     ((setq open (purescript-indent-in-string start (point)))
+      (list (list (+ (purescript-indent-point-to-col open)
                      (if (looking-at "\\\\") 0 1)))))
 
      ;; in comment ?
-     ((setq open (haskell-indent-in-comment start (point)))
-      (haskell-indent-comment open start))
+     ((setq open (purescript-indent-in-comment start (point)))
+      (purescript-indent-comment open start))
 
      ;; Closing the declaration part of a `let' or the test exp part of a case.
      ((looking-at "\\(?:in\\|of\\|then\\|else\\)\\>")
-      (haskell-indent-closing-keyword start))
+      (purescript-indent-closing-keyword start))
 
      ;; Right after a special keyword.
      ((save-excursion
         (forward-comment (- (point-max)))
         (when (and (not (zerop (skip-syntax-backward "w")))
-                   (setq open (haskell-indent-offset-after-info)))
-          (list (list (haskell-indent-after-keyword-column open start))))))
+                   (setq open (purescript-indent-offset-after-info)))
+          (list (list (purescript-indent-after-keyword-column open start))))))
 
      ;; open structure? ie  ( { [
-     ((setq open (haskell-indent-open-structure start (point)))
-      (haskell-indent-inside-paren open))
+     ((setq open (purescript-indent-open-structure start (point)))
+      (purescript-indent-inside-paren open))
 
      ;; full indentation
-     ((setq contour-line (haskell-indent-contour-line start (point)))
-      (haskell-indent-layout-indent-info start contour-line))
+     ((setq contour-line (purescript-indent-contour-line start (point)))
+      (purescript-indent-layout-indent-info start contour-line))
 
      (t
       ;; simple contour just one indentation at start
-      (list (list (if (and (eq haskell-literate 'bird)
-                           (eq (haskell-indent-point-to-col start) 1))
+      (list (list (if (and (eq purescript-literate 'bird)
+                           (eq (purescript-indent-point-to-col start) 1))
                       ;; for a Bird style literate script put default offset
                       ;; in the case of no indentation
-                      (1+ haskell-indent-literate-Bird-default-offset)
-                    (haskell-indent-point-to-col start))))))))
+                      (1+ purescript-indent-literate-Bird-default-offset)
+                    (purescript-indent-point-to-col start))))))))
 
-(defvar haskell-indent-last-info nil)
+(defvar purescript-indent-last-info nil)
 
 
-(defun haskell-indent-cycle ()
+(defun purescript-indent-cycle ()
   "Indentation cycle.
 We stay in the cycle as long as the TAB key is pressed."
   (interactive "*")
-  (if (and haskell-literate
-           (not (haskell-indent-within-literate-code)))
+  (if (and purescript-literate
+           (not (purescript-indent-within-literate-code)))
       ;; use the ordinary tab for text...
       (funcall (default-value 'indent-line-function))
-    (let ((marker (if (> (current-column) (haskell-indent-current-indentation))
+    (let ((marker (if (> (current-column) (purescript-indent-current-indentation))
                       (point-marker)))
           (bol (progn (beginning-of-line) (point))))
-      (haskell-indent-back-to-indentation)
+      (purescript-indent-back-to-indentation)
       (unless (and (eq last-command this-command)
-                   (eq bol (car haskell-indent-last-info)))
+                   (eq bol (car purescript-indent-last-info)))
         (save-excursion
-          (setq haskell-indent-last-info
-                (list bol (haskell-indent-indentation-info) 0 0))))
+          (setq purescript-indent-last-info
+                (list bol (purescript-indent-indentation-info) 0 0))))
 
-      (let* ((il (nth 1 haskell-indent-last-info))
-             (index (nth 2 haskell-indent-last-info))
-             (last-insert-length (nth 3 haskell-indent-last-info))
+      (let* ((il (nth 1 purescript-indent-last-info))
+             (index (nth 2 purescript-indent-last-info))
+             (last-insert-length (nth 3 purescript-indent-last-info))
              (indent-info (nth index il)))
 
-        (haskell-indent-line-to (car indent-info)) ; insert indentation
+        (purescript-indent-line-to (car indent-info)) ; insert indentation
         (delete-char last-insert-length)
         (setq last-insert-length 0)
         (let ((text (cdr indent-info)))
@@ -1281,7 +1281,7 @@ We stay in the cycle as long as the TAB key is pressed."
                 (insert text)
                 (setq last-insert-length (length text)))))
 
-        (setq haskell-indent-last-info
+        (setq purescript-indent-last-info
               (list bol il (% (1+ index) (length il)) last-insert-length))
 
         (if (= (length il) 1)
@@ -1291,12 +1291,12 @@ We stay in the cycle as long as the TAB key is pressed."
         (if marker
             (goto-char (marker-position marker)))))))
 
-(defun haskell-indent-region (start end)
+(defun purescript-indent-region (start end)
   (error "Auto-reindentation of a region is not supported"))
 
 ;;; alignment functions
 
-(defun haskell-indent-shift-columns (dest-column region-stack)
+(defun purescript-indent-shift-columns (dest-column region-stack)
   "Shift columns in REGION-STACK to go to DEST-COLUMN.
 Elements of the stack are pairs of points giving the start and end
 of the regions to move."
@@ -1317,13 +1317,13 @@ of the regions to move."
                   (throw 'end-of-buffer nil))
               (move-to-column col)))))))
 
-(defun haskell-indent-align-def (p-arg type)
-  "Align guards or rhs within the current definition before point.
+(defun purescript-indent-align-def (p-arg type)
+  "Align guards or rpurs within the current definition before point.
 If P-ARG is t align all defs up to the mark.
-TYPE is either 'guard or 'rhs."
+TYPE is either 'guard or 'rpurs."
   (save-excursion
     (let (start-block end-block
-                      (maxcol (if (eq type 'rhs) haskell-indent-rhs-align-column 0))
+                      (maxcol (if (eq type 'rpurs) purescript-indent-rpurs-align-column 0))
                       contour sep defname defnamepos
                       defcol pos lastpos
                       regstack eqns-start start-found)
@@ -1337,25 +1337,25 @@ TYPE is either 'guard or 'rhs."
                         (goto-char (mark))
                         (line-beginning-position)))
                 (setq end-block
-                      (progn (if (haskell-indent-bolp)
-                                 (haskell-indent-forward-line -1))
+                      (progn (if (purescript-indent-bolp)
+                                 (purescript-indent-forward-line -1))
                              (line-end-position))))
             (error "The mark is not set for aligning definitions"))
         ;; aligning the current definition
-        (setq start-block (haskell-indent-start-of-def))
+        (setq start-block (purescript-indent-start-of-def))
         (setq end-block (line-end-position)))
       ;; find the start of the current valdef using the contour line
       ;; in reverse order because we need the nearest one from the end
       (setq contour
-            (reverse (haskell-indent-contour-line start-block end-block)))
+            (reverse (purescript-indent-contour-line start-block end-block)))
       (setq pos (car contour))          ; keep the start of the first contour
       ;; find the nearest start of a definition
       (while (and (not defname) contour)
         (goto-char (pop contour))
-        (if (haskell-indent-open-structure start-block (point))
+        (if (purescript-indent-open-structure start-block (point))
             nil
-          (setq sep (haskell-indent-separate-valdef (point) end-block))
-          (if (nth 5 sep)               ; is there a rhs?
+          (setq sep (purescript-indent-separate-valdef (point) end-block))
+          (if (nth 5 sep)               ; is there a rpurs?
               (progn (setq defnamepos (nth 0 sep))
                      (setq defname (nth 1 sep))))))
       ;; start building the region stack
@@ -1365,28 +1365,28 @@ TYPE is either 'guard or 'rhs."
             (if p-arg      ; when indenting a region
                 ;; accept any start of id or pattern as def name
                 (setq defname "\\<\\|("))
-            (setq defcol (haskell-indent-point-to-col defnamepos))
+            (setq defcol (purescript-indent-point-to-col defnamepos))
             (goto-char pos)
             (setq end-block (line-end-position))
             (catch 'top-of-buffer
               (while (and (not start-found)
                           (>= (point) start-block))
-                (if (<= (haskell-indent-current-indentation) defcol)
+                (if (<= (purescript-indent-current-indentation) defcol)
                     (progn
                       (move-to-column defcol)
                       (if (and (looking-at defname) ; start of equation
-                               (not (haskell-indent-open-structure start-block (point))))
+                               (not (purescript-indent-open-structure start-block (point))))
                           (push (cons (point) 'eqn) eqns-start)
                         ;; found a less indented point not starting an equation
                         (setq start-found t)))
                   ;; more indented line
-                  (haskell-indent-back-to-indentation)
-                  (if (and (eq (haskell-indent-type-at-point) 'guard) ; start of a guard
-                           (not (haskell-indent-open-structure start-block (point))))
+                  (purescript-indent-back-to-indentation)
+                  (if (and (eq (purescript-indent-type-at-point) 'guard) ; start of a guard
+                           (not (purescript-indent-open-structure start-block (point))))
                       (push (cons (point) 'gd) eqns-start)))
                 (if (bobp)
                     (throw 'top-of-buffer nil)
-                  (haskell-indent-backward-to-indentation 1))))
+                  (purescript-indent-backward-to-indentation 1))))
             ;; remove the spurious guards before the first equation
             (while (and eqns-start (eq (cdar eqns-start) 'gd))
               (pop eqns-start))
@@ -1396,20 +1396,20 @@ TYPE is either 'guard or 'rhs."
                 (setq lastpos (if (cdr eqns-start)
                                   (save-excursion
                                     (goto-char (caadr eqns-start))
-                                    (haskell-indent-forward-line -1)
+                                    (purescript-indent-forward-line -1)
                                     (line-end-position))
                                 end-block))
-                (setq sep (haskell-indent-separate-valdef eqn lastpos)))
+                (setq sep (purescript-indent-separate-valdef eqn lastpos)))
               (if (eq type 'guard)
                   (setq pos (nth 3 sep))
-                ;; check if what follows a rhs sign is more indented or not
-                (let ((rhs (nth 5 sep))
-                      (aft-rhs (nth 6 sep)))
-                  (if (and rhs aft-rhs
-                           (> (haskell-indent-point-to-col rhs)
-                              (haskell-indent-point-to-col aft-rhs)))
-                      (setq pos aft-rhs)
-                    (setq pos rhs))))
+                ;; check if what follows a rpurs sign is more indented or not
+                (let ((rpurs (nth 5 sep))
+                      (aft-rpurs (nth 6 sep)))
+                  (if (and rpurs aft-rpurs
+                           (> (purescript-indent-point-to-col rpurs)
+                              (purescript-indent-point-to-col aft-rpurs)))
+                      (setq pos aft-rpurs)
+                    (setq pos rpurs))))
               (if pos
                   (progn                ; update region stack
                     (push (cons pos (or lastpos pos)) regstack)
@@ -1420,39 +1420,39 @@ TYPE is either 'guard or 'rhs."
                                  (skip-chars-backward
                                   " \t"
                                   (line-beginning-position))
-                                 (if (haskell-indent-bolp)
+                                 (if (purescript-indent-bolp)
                                      ;;if on an empty prefix
-                                     (haskell-indent-point-to-col pos) ;keep original indent
-                                   (1+ (haskell-indent-point-to-col (point)))))))))
+                                     (purescript-indent-point-to-col pos) ;keep original indent
+                                   (1+ (purescript-indent-point-to-col (point)))))))))
               (pop eqns-start))
             ;; now shift according to the region stack
             (if regstack
-                (haskell-indent-shift-columns maxcol regstack)))))))
+                (purescript-indent-shift-columns maxcol regstack)))))))
 
-(defun haskell-indent-align-guards-and-rhs (start end)
-  "Align the guards and rhs of functions in the region, which must be active."
+(defun purescript-indent-align-guards-and-rpurs (start end)
+  "Align the guards and rpurs of functions in the region, which must be active."
   ;; The `start' and `end' args are dummys right now: they're just there so
   ;; we can use the "r" interactive spec which properly signals an error.
   (interactive "*r")
-  (haskell-indent-align-def t 'guard)
-  (haskell-indent-align-def t 'rhs))
+  (purescript-indent-align-def t 'guard)
+  (purescript-indent-align-def t 'rpurs))
 
 ;;;  insertion functions
 
-(defun haskell-indent-insert-equal ()
-  "Insert an = sign and align the previous rhs of the current function."
+(defun purescript-indent-insert-equal ()
+  "Insert an = sign and align the previous rpurs of the current function."
   (interactive "*")
-  (if (or (haskell-indent-bolp)
+  (if (or (purescript-indent-bolp)
           (/= (preceding-char) ?\ ))
       (insert ?\ ))
   (insert "= ")
-  (haskell-indent-align-def (haskell-indent-mark-active) 'rhs))
+  (purescript-indent-align-def (purescript-indent-mark-active) 'rpurs))
 
-(defun haskell-indent-insert-guard (&optional text)
+(defun purescript-indent-insert-guard (&optional text)
   "Insert and align a guard sign (|) followed by optional TEXT.
 Alignment works only if all guards are to the south-east of their |."
   (interactive "*")
-  (let ((pc (if (haskell-indent-bolp) ?\012
+  (let ((pc (if (purescript-indent-bolp) ?\012
               (preceding-char)))
         (pc1 (or (char-after (- (point) 2)) 0)))
     ;; check what guard to insert depending on the previous context
@@ -1466,125 +1466,125 @@ Alignment works only if all guards are to the south-east of their |."
             (insert " "))               ; after "x|"
         (insert " | ")))                ; general case
     (if text (insert text))
-    (haskell-indent-align-def (haskell-indent-mark-active) 'guard)))
+    (purescript-indent-align-def (purescript-indent-mark-active) 'guard)))
 
-(defun haskell-indent-insert-otherwise ()
+(defun purescript-indent-insert-otherwise ()
   "Insert a guard sign (|) followed by `otherwise'.
 Also align the previous guards of the current function."
   (interactive "*")
-  (haskell-indent-insert-guard "otherwise")
-  (haskell-indent-insert-equal))
+  (purescript-indent-insert-guard "otherwise")
+  (purescript-indent-insert-equal))
 
-(defun haskell-indent-insert-where ()
+(defun purescript-indent-insert-where ()
   "Insert a where keyword at point and indent resulting line.
 One indentation cycle is used."
   (interactive "*")
   (insert "where ")
-  (haskell-indent-cycle))
+  (purescript-indent-cycle))
 
 
-;;; haskell-indent-mode
+;;; purescript-indent-mode
 
-(defvar haskell-indent-mode nil
-  "Non-nil if the semi-intelligent Haskell indentation mode is in effect.")
-(make-variable-buffer-local 'haskell-indent-mode)
+(defvar purescript-indent-mode nil
+  "Non-nil if the semi-intelligent PureScript indentation mode is in effect.")
+(make-variable-buffer-local 'purescript-indent-mode)
 
-(defvar haskell-indent-map
+(defvar purescript-indent-map
   (let ((map (make-sparse-keymap)))
     ;; Removed: remapping DEL seems a bit naughty --SDM
     ;; (define-key map "\177"  'backward-delete-char-untabify)
     ;; The binding to TAB is already handled by indent-line-function.  --Stef
-    ;; (define-key map "\t"    'haskell-indent-cycle)
-    (define-key map [?\C-c ?\C-=] 'haskell-indent-insert-equal)
-    (define-key map [?\C-c ?\C-|] 'haskell-indent-insert-guard)
+    ;; (define-key map "\t"    'purescript-indent-cycle)
+    (define-key map [?\C-c ?\C-=] 'purescript-indent-insert-equal)
+    (define-key map [?\C-c ?\C-|] 'purescript-indent-insert-guard)
     ;; Alternate binding, in case C-c C-| is too inconvenient to type.
     ;; Duh, C-g is a special key, let's not use it here.
-    ;; (define-key map [?\C-c ?\C-g] 'haskell-indent-insert-guard)
-    (define-key map [?\C-c ?\C-o] 'haskell-indent-insert-otherwise)
-    (define-key map [?\C-c ?\C-w] 'haskell-indent-insert-where)
-    (define-key map [?\C-c ?\C-.] 'haskell-indent-align-guards-and-rhs)
-    (define-key map [?\C-c ?\C->] 'haskell-indent-put-region-in-literate)
+    ;; (define-key map [?\C-c ?\C-g] 'purescript-indent-insert-guard)
+    (define-key map [?\C-c ?\C-o] 'purescript-indent-insert-otherwise)
+    (define-key map [?\C-c ?\C-w] 'purescript-indent-insert-where)
+    (define-key map [?\C-c ?\C-.] 'purescript-indent-align-guards-and-rpurs)
+    (define-key map [?\C-c ?\C->] 'purescript-indent-put-region-in-literate)
     map))
 
 ;;;###autoload
-(defun turn-on-haskell-indent ()
-  "Turn on ``intelligent'' Haskell indentation mode."
-  (set (make-local-variable 'indent-line-function) 'haskell-indent-cycle)
-  (set (make-local-variable 'indent-region-function) 'haskell-indent-region)
-  (setq haskell-indent-mode t)
+(defun turn-on-purescript-indent ()
+  "Turn on ``intelligent'' PureScript indentation mode."
+  (set (make-local-variable 'indent-line-function) 'purescript-indent-cycle)
+  (set (make-local-variable 'indent-region-function) 'purescript-indent-region)
+  (setq purescript-indent-mode t)
   ;; Activate our keymap.
   (let ((map (current-local-map)))
-    (while (and map (not (eq map haskell-indent-map)))
+    (while (and map (not (eq map purescript-indent-map)))
       (setq map (keymap-parent map)))
     (if map
-        ;; haskell-indent-map is already active: nothing to do.
+        ;; purescript-indent-map is already active: nothing to do.
         nil
       ;; Put our keymap on top of the others.  We could also put it in
       ;; second place, or in a minor-mode.  The minor-mode approach would be
       ;; easier, but it's harder for the user to override it.  This approach
       ;; is the closest in behavior compared to the previous code that just
       ;; used a bunch of local-set-key.
-      (set-keymap-parent haskell-indent-map (current-local-map))
+      (set-keymap-parent purescript-indent-map (current-local-map))
       ;; Protect our keymap.
       (setq map (make-sparse-keymap))
-      (set-keymap-parent map haskell-indent-map)
+      (set-keymap-parent map purescript-indent-map)
       (use-local-map map)))
-  (run-hooks 'haskell-indent-hook))
+  (run-hooks 'purescript-indent-hook))
 
-(defun turn-off-haskell-indent ()
-  "Turn off ``intelligent'' Haskell indentation mode."
+(defun turn-off-purescript-indent ()
+  "Turn off ``intelligent'' PureScript indentation mode."
   (kill-local-variable 'indent-line-function)
-  ;; Remove haskell-indent-map from the local map.
+  ;; Remove purescript-indent-map from the local map.
   (let ((map (current-local-map)))
     (while map
       (let ((parent (keymap-parent map)))
-        (if (eq haskell-indent-map parent)
+        (if (eq purescript-indent-map parent)
             (set-keymap-parent map (keymap-parent parent))
           (setq map parent)))))
-  (setq haskell-indent-mode nil))
+  (setq purescript-indent-mode nil))
 
 ;; Put this minor mode on the global minor-mode-alist.
-(or (assq 'haskell-indent-mode (default-value 'minor-mode-alist))
+(or (assq 'purescript-indent-mode (default-value 'minor-mode-alist))
     (setq-default minor-mode-alist
                   (append (default-value 'minor-mode-alist)
-                          '((haskell-indent-mode " Ind")))))
+                          '((purescript-indent-mode " Ind")))))
 
 ;;;###autoload
-(defun haskell-indent-mode (&optional arg)
-  "``Intelligent'' Haskell indentation mode.
-This deals with the layout rule of Haskell.
-\\[haskell-indent-cycle] starts the cycle which proposes new
+(defun purescript-indent-mode (&optional arg)
+  "``Intelligent'' PureScript indentation mode.
+This deals with the layout rule of PureScript.
+\\[purescript-indent-cycle] starts the cycle which proposes new
 possibilities as long as the TAB key is pressed.  Any other key
 or mouse click terminates the cycle and is interpreted except for
 RET which merely exits the cycle.
 Other special keys are:
-    \\[haskell-indent-insert-equal]
+    \\[purescript-indent-insert-equal]
       inserts an =
-    \\[haskell-indent-insert-guard]
+    \\[purescript-indent-insert-guard]
       inserts an |
-    \\[haskell-indent-insert-otherwise]
+    \\[purescript-indent-insert-otherwise]
       inserts an | otherwise =
-these functions also align the guards and rhs of the current definition
-    \\[haskell-indent-insert-where]
+these functions also align the guards and rpurs of the current definition
+    \\[purescript-indent-insert-where]
       inserts a where keyword
-    \\[haskell-indent-align-guards-and-rhs]
-      aligns the guards and rhs of the region
-    \\[haskell-indent-put-region-in-literate]
+    \\[purescript-indent-align-guards-and-rpurs]
+      aligns the guards and rpurs of the region
+    \\[purescript-indent-put-region-in-literate]
       makes the region a piece of literate code in a literate script
 
-Invokes `haskell-indent-hook' if not nil."
+Invokes `purescript-indent-hook' if not nil."
   (interactive "P")
-  (setq haskell-indent-mode
-        (if (null arg) (not haskell-indent-mode)
+  (setq purescript-indent-mode
+        (if (null arg) (not purescript-indent-mode)
           (> (prefix-numeric-value arg) 0)))
-  (if haskell-indent-mode
-      (turn-on-haskell-indent)
-    (turn-off-haskell-indent)))
+  (if purescript-indent-mode
+      (turn-on-purescript-indent)
+    (turn-off-purescript-indent)))
 
-(provide 'haskell-indent)
+(provide 'purescript-indent)
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not cl-functions)
 ;; End:
 
-;;; haskell-indent.el ends here
+;;; purescript-indent.el ends here

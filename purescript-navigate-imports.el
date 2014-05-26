@@ -1,4 +1,4 @@
-;;; haskell-navigate-imports.el --- A function for cycling through Haskell import lists
+;;; purescript-navigate-imports.el --- A function for cycling through PureScript import lists
 
 ;; Copyright (C) 2010  Chris Done
 
@@ -26,84 +26,84 @@
 ;; that it is easy to add a new import list.
 
 ;; This module works completely independently of any libraries
-;; (including haskell-mode).
+;; (including purescript-mode).
 
 ;; Exports three interactive functions:
-;; 1. haskell-navigate-imports
-;; 2. haskell-navigate-imports-go
-;; 3. haskell-navigate-imports-return
+;; 1. purescript-navigate-imports
+;; 2. purescript-navigate-imports-go
+;; 3. purescript-navigate-imports-return
 
 ;; Example usage:
 
-;; (require 'haskell-navigate-imports)
-;; (define-key haskell-mode-map [f8] 'haskell-navigate-imports)
+;; (require 'purescript-navigate-imports)
+;; (define-key purescript-mode-map [f8] 'purescript-navigate-imports)
 
 ;;; Code:
 
-(defvar haskell-navigate-imports-start-point nil)
+(defvar purescript-navigate-imports-start-point nil)
 
 ;;;###autoload
-(defun haskell-navigate-imports (&optional return)
-  "Cycle the Haskell import lines or return to point (with prefix arg)."
+(defun purescript-navigate-imports (&optional return)
+  "Cycle the PureScript import lines or return to point (with prefix arg)."
   (interactive "P")
   (if return
-      (haskell-navigate-imports-return)
-    (haskell-navigate-imports-go)))
+      (purescript-navigate-imports-return)
+    (purescript-navigate-imports-go)))
 
 ;;;###autoload
-(defun haskell-navigate-imports-go ()
+(defun purescript-navigate-imports-go ()
   "Go to the first line of a list of consequtive import lines. Cycles."
   (interactive)
-  (unless (or (haskell-navigate-imports-line)
+  (unless (or (purescript-navigate-imports-line)
               (equal (line-beginning-position) (point-min))
               (save-excursion (forward-line -1)
-                              (haskell-navigate-imports-line)))
-    (setq haskell-navigate-imports-start-point (point)))
-  (haskell-navigate-imports-go-internal))
+                              (purescript-navigate-imports-line)))
+    (setq purescript-navigate-imports-start-point (point)))
+  (purescript-navigate-imports-go-internal))
 
 ;;;###autoload
-(defun haskell-navigate-imports-return ()
+(defun purescript-navigate-imports-return ()
   "Return to the non-import point we were at before going to the module list.
    If we were originally at an import list, we can just cycle through easily."
   (interactive)
-  (when haskell-navigate-imports-start-point
-    (goto-char haskell-navigate-imports-start-point)))
+  (when purescript-navigate-imports-start-point
+    (goto-char purescript-navigate-imports-start-point)))
 
-(defun haskell-navigate-imports-go-internal ()
+(defun purescript-navigate-imports-go-internal ()
   "Go to the first line of a list of consequtive import lines. Cycle."
-  (if (haskell-navigate-imports-line)
-      (progn (haskell-navigate-imports-goto-end)
-             (when (haskell-navigate-imports-find-forward-line)
-               (haskell-navigate-imports-go-internal)))
-    (let ((point (haskell-navigate-imports-find-forward-line)))
+  (if (purescript-navigate-imports-line)
+      (progn (purescript-navigate-imports-goto-end)
+             (when (purescript-navigate-imports-find-forward-line)
+               (purescript-navigate-imports-go-internal)))
+    (let ((point (purescript-navigate-imports-find-forward-line)))
       (if point
           (goto-char point)
         (progn (goto-char (point-min))
-               (if (haskell-navigate-imports-find-forward-line)
-                   (haskell-navigate-imports-go-internal)
+               (if (purescript-navigate-imports-find-forward-line)
+                   (purescript-navigate-imports-go-internal)
                  (when (search-forward-regexp "^module" nil t 1)
                    (search-forward "\n\n" nil t 1))))))))
 
-(defun haskell-navigate-imports-goto-end ()
+(defun purescript-navigate-imports-goto-end ()
   "Skip a bunch of consequtive import lines."
   (while (not (or (equal (point)
                          (point-max))
-                  (not (haskell-navigate-imports-line))))
+                  (not (purescript-navigate-imports-line))))
     (forward-line)))
 
-(defun haskell-navigate-imports-find-forward-line ()
+(defun purescript-navigate-imports-find-forward-line ()
   "Return a point with at an import line, or nothing."
   (save-excursion
     (while (not (or (equal (point) (point-max))
-                    (haskell-navigate-imports-after-imports-p) ;; This one just speeds it up.
-                    (haskell-navigate-imports-line)))
+                    (purescript-navigate-imports-after-imports-p) ;; This one just speeds it up.
+                    (purescript-navigate-imports-line)))
       (forward-line))
     (let ((point (point)))
-      (if (haskell-navigate-imports-line)
+      (if (purescript-navigate-imports-line)
           (point)
         nil))))
 
-(defun haskell-navigate-imports-line ()
+(defun purescript-navigate-imports-line ()
   "Try to match the current line as a regexp."
   (let ((line (buffer-substring-no-properties (line-beginning-position)
                                               (line-end-position))))
@@ -111,13 +111,13 @@
         line
       nil)))
 
-(defun haskell-navigate-imports-after-imports-p ()
+(defun purescript-navigate-imports-after-imports-p ()
   "Are we after the imports list? Just for a speed boost."
   (save-excursion
     (goto-char (line-beginning-position))
     (not (not (search-forward-regexp "\\( = \\|\\<instance\\>\\| :: \\)"
                                      (line-end-position) t 1)))))
 
-(provide 'haskell-navigate-imports)
+(provide 'purescript-navigate-imports)
 
-;;; haskell-navigate-imports.el ends here
+;;; purescript-navigate-imports.el ends here

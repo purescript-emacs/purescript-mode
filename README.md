@@ -1,16 +1,16 @@
-Haskell Mode for Emacs
+PureScript Mode for Emacs
 ----------------------
 
-[![Build Status](https://travis-ci.org/haskell/haskell-mode.png?branch=master)](https://travis-ci.org/haskell/haskell-mode)
+[![Build Status](https://travis-ci.org/purescript/purescript-mode.png?branch=master)](https://travis-ci.org/purescript/purescript-mode)
 
-This is the Haskell mode package for Emacs.
+This is the PureScript mode package for Emacs.
 
 Please see
-[the online haskell-mode manual](https://github.com/haskell/haskell-mode/wiki)
+[the online purescript-mode manual](https://github.com/purescript/purescript-mode/wiki)
 for setup and use guide.
 
 To report problems or suggestions, please
-[open an issue](https://github.com/haskell/haskell-mode/issues?state=open)
+[open an issue](https://github.com/purescript/purescript-mode/issues?state=open)
 in the issue tracker.
 
 Below is a brief setup guide.
@@ -33,7 +33,7 @@ GNU Emacs version 23 or later is officially supported.  It may work
 with other Emacsen, but we don't have the resources to support other
 versions.
 
-There are many ways to install `haskell-mode`. The following sections
+There are many ways to install `purescript-mode`. The following sections
 describe the most common ones; pick the one that you're most
 comfortable with.
 
@@ -50,8 +50,8 @@ somewhere in your
 
 #### Marmalade
 
-**Stable releases** of `haskell-mode` are available on
-[Marmalade](http://marmalade-repo.org/packages/haskell-mode).
+**Stable releases** of `purescript-mode` are available on
+[Marmalade](http://marmalade-repo.org/packages/purescript-mode).
 
 If you're not already using Marmalade, add the following snippet to
 your `.emacs` and evaluate it with `M-x eval-buffer`:
@@ -64,10 +64,10 @@ your `.emacs` and evaluate it with `M-x eval-buffer`:
 ```
 
 Refresh the package index by `M-x package-refresh-contents` and install
-`haskell-mode` via `M-x package-install [RET] haskell-mode`.
+`purescript-mode` via `M-x package-install [RET] purescript-mode`.
 
 Alternatively, you can also download the `.tar` file via the
-_Download_ link at http://marmalade-repo.org/packages/haskell-mode and
+_Download_ link at http://marmalade-repo.org/packages/purescript-mode and
 install the package `.tar`-file via `M-x package-install-file`
 
 #### MELPA
@@ -85,79 +85,79 @@ For MELPA the code you need to add is:
 ```
 
 Refresh the package index by `M-x package-refresh-contents` and install
-`haskell-mode` via `M-x package-install [RET] haskell-mode`.
+`purescript-mode` via `M-x package-install [RET] purescript-mode`.
 
 ### el-get based Installation
 
 [el-get](https://github.com/dimitri/el-get) is another popular package manager for Emacs.
-If you're an el-get user just do `M-x el-get-install` to get `haskell-mode` installed.
+If you're an el-get user just do `M-x el-get-install` to get `purescript-mode` installed.
 
 ### Emacs Prelude
 
-`haskell-mode` is bundled with
+`purescript-mode` is bundled with
 [Emacs Prelude](https://github.com/bbatsov/prelude). If you're a
 Prelude user you can start using it right away.
 
 ### Debian
 
 If you are using Debian, you can install an older version (e.g. Wheezy
-ships with version 2.8.0) of `haskell-mode` with a command like:
+ships with version 2.8.0) of `purescript-mode` with a command like:
 
 ```bash
-$ apt-get install haskell-mode
+$ apt-get install purescript-mode
 ```
 
 ### Installation from Git
 
-*This installation method requires more work and recommended for haskell-mode developers/contributors only as it allows to load haskell-mode directly from the checked out Git working copy. If you just want to use bleeding edge versions of haskell-mode please use the MELPA installation method described above.*
+*This installation method requires more work and recommended for purescript-mode developers/contributors only as it allows to load purescript-mode directly from the checked out Git working copy. If you just want to use bleeding edge versions of purescript-mode please use the MELPA installation method described above.*
 
--   `git clone https://github.com/haskell/haskell-mode.git` into a
-    suitable directory, e.g. `~/lib/emacs/haskell-mode/` where `~`
+-   `git clone https://github.com/purescript/purescript-mode.git` into a
+    suitable directory, e.g. `~/lib/emacs/purescript-mode/` where `~`
     stands for your home directory.
 
--   Assuming you have unpacked the various haskell-mode modules
-    (`haskell-mode.el` and the rest) in the directory
-    `~/lib/emacs/haskell-mode/`, you need generate the autoloads file
-    (`haskell-mode-autoloads.el`) by either
+-   Assuming you have unpacked the various purescript-mode modules
+    (`purescript-mode.el` and the rest) in the directory
+    `~/lib/emacs/purescript-mode/`, you need generate the autoloads file
+    (`purescript-mode-autoloads.el`) by either
 
-    - Invoking `make haskell-mode-autoloads.el`, or `make all` (use
+    - Invoking `make purescript-mode-autoloads.el`, or `make all` (use
       this to perform byte-compilation and Info manual generation)
 
     - From inside Emacs, `M-x update-directory-autoloads` and answering the question for
-      the folder with `~/lib/emacs/haskell-mode/` and the question for the output-file with
-      `~/lib/emacs/haskell-mode/haskell-mode-autoloads.el`
+      the folder with `~/lib/emacs/purescript-mode/` and the question for the output-file with
+      `~/lib/emacs/purescript-mode/purescript-mode-autoloads.el`
 
     and then adding the following command to your `.emacs`:
 
     ```el
-    (add-to-list 'load-path "~/lib/emacs/haskell-mode/")
-    (require 'haskell-mode-autoloads)
-    (add-to-list 'Info-default-directory-list "~/lib/emacs/haskell-mode/")
+    (add-to-list 'load-path "~/lib/emacs/purescript-mode/")
+    (require 'purescript-mode-autoloads)
+    (add-to-list 'Info-default-directory-list "~/lib/emacs/purescript-mode/")
     ```
 
--   After updating your haskell-mode working directory, you need to
+-   After updating your purescript-mode working directory, you need to
     re-run `make all` or `M-x update-directory-autoloads`.
 
 Basic Configuration
 -------------------
 
-For setup instructions, please consult the new integrated haskell-mode
+For setup instructions, please consult the new integrated purescript-mode
 [Info](https://www.gnu.org/software/texinfo/manual/info/info.html)
 manual which can be accessed after installation via
-`M-x info-display-manual [RET] haskell-mode`.
+`M-x info-display-manual [RET] purescript-mode`.
 Alternatively, you can also direct your browser to the
-[latest online HTML version](http://haskell.github.io/haskell-mode/manual/latest/).
+[latest online HTML version](http://purescript.github.io/purescript-mode/manual/latest/).
 
 Support
 -------
 
-- [Mailing list](http://projects.haskell.org/cgi-bin/mailman/listinfo/haskellmode-emacs)
-- [Github homepage](https://github.com/haskell/haskell-mode)
+- [Mailing list](http://projects.purescript.org/cgi-bin/mailman/listinfo/purescriptmode-emacs)
+- [Github homepage](https://github.com/purescript/purescript-mode)
 
 Contributing
 ------------
 
 For submitting pull requests, please see the wiki
-[page on contributing](https://github.com/haskell/haskell-mode/wiki/Contributing). You
+[page on contributing](https://github.com/purescript/purescript-mode/wiki/Contributing). You
 don't have to follow this guide, but please make sure your pull
 requests are at least properly rebased and up to date.

@@ -1,4 +1,4 @@
-;;; haskell-show.el --- A pretty printer for Haskell Show values
+;;; purescript-show.el --- A pretty printer for PureScript Show values
 
 ;; Copyright (C) 2011  Chris Done
 
@@ -30,40 +30,40 @@
 ;;; Code:
 
 (defvar sexp-show "sexp-show")
-(require 'haskell-string)
+(require 'purescript-string)
 (with-no-warnings (require 'cl))
 
-(defun haskell-show-replace-region ()
+(defun purescript-show-replace-region ()
   "Replace the given region with a pretty printed version."
   (interactive)
-  (haskell-show-replace (region-beginning) (region-end)))
+  (purescript-show-replace (region-beginning) (region-end)))
 
 ;;;###autoload
-(defun haskell-show-replace (start end)
+(defun purescript-show-replace (start end)
   "Replace the given region containing a Show value with a pretty
   printed collapsible version."
   (let ((text (buffer-substring-no-properties start end)))
     (goto-char start)
     (delete-region start end)
-    (haskell-show-parse-and-insert text)))
+    (purescript-show-parse-and-insert text)))
 
 ;;;###autoload
-(defun haskell-show-parse-and-insert (given)
+(defun purescript-show-parse-and-insert (given)
   "Parse a `string' containing a Show instance value and insert
   it pretty printed into the current buffer."
-  (when (not (string= "" (haskell-trim given)))
+  (when (not (string= "" (purescript-trim given)))
     (let ((current-column (- (point)
                              (line-beginning-position)))
-          (result (haskell-show-parse given)))
+          (result (purescript-show-parse given)))
       (if (string-match "^[\\(]" result)
           (let ((v (read result)))
             (if (equal (car v) 'arbitrary)
                 (insert given)
-              (haskell-show-insert-pretty current-column v)))
+              (purescript-show-insert-pretty current-column v)))
         (insert given)))))
 
 ;;;###autoload
-(defun haskell-show-parse (given)
+(defun purescript-show-parse (given)
   "Parse the given input into a tree."
   (with-temp-buffer
     (insert given)
@@ -74,29 +74,29 @@
      t)
     (buffer-substring-no-properties (point-min) (point-max))))
 
-(defun haskell-show-insert-pretty (column tree &optional parens)
+(defun purescript-show-insert-pretty (column tree &optional parens)
   "Insert a Show `tree' into the current buffer with collapsible nodes."
   (case (car tree)
     ('list (let ((start (point)))
              (insert "[")
-             (haskell-show-mapcar/i (lambda (x i len)
-                                      (haskell-show-insert-pretty (+ column 1) x)
+             (purescript-show-mapcar/i (lambda (x i len)
+                                      (purescript-show-insert-pretty (+ column 1) x)
                                       (unless (> i (- len 2))
-                                        (if (< (+ column (length (haskell-show-pretty tree parens)))
+                                        (if (< (+ column (length (purescript-show-pretty tree parens)))
                                                80)
                                             (insert ",")
-                                          (insert (concat ",\n" (haskell-show-indent (+ 1 column) ""))))))
+                                          (insert (concat ",\n" (purescript-show-indent (+ 1 column) ""))))))
                                     (cdr tree))
              (insert "]")))
     ('tuple (let ((start (point)))
               (insert "(")
-              (haskell-show-mapcar/i (lambda (x i len)
-                                       (haskell-show-insert-pretty (+ column 1) x)
+              (purescript-show-mapcar/i (lambda (x i len)
+                                       (purescript-show-insert-pretty (+ column 1) x)
                                        (unless (> i (- len 2))
-                                         (if (< (+ column (length (haskell-show-pretty tree parens)))
+                                         (if (< (+ column (length (purescript-show-pretty tree parens)))
                                                 80)
                                              (insert ",")
-                                           (insert (concat ",\n" (haskell-show-indent (+ 1 column) ""))))))
+                                           (insert (concat ",\n" (purescript-show-indent (+ 1 column) ""))))))
                                      (cdr tree))
               (insert ")")))
     ('record
@@ -104,21 +104,21 @@
        (insert (if parens "(" ""))
        (let ((link-start (point)))
          (insert (car record))
-         (let ((button (make-text-button link-start (point) :type 'haskell-show-toggle-button)))
+         (let ((button (make-text-button link-start (point) :type 'purescript-show-toggle-button)))
            (put-text-property link-start (point) 'face 'font-lock-type-face)
            (button-put button 'overlay overlay)))
        (insert " {\n")
        (let ((curly-start (1- (point)))
-             (show-len (+ column (length (haskell-show-pretty tree parens)))))
-         (haskell-show-mapcar/i (lambda (field i len)
+             (show-len (+ column (length (purescript-show-pretty tree parens)))))
+         (purescript-show-mapcar/i (lambda (field i len)
                                   (insert
-                                   (haskell-show-indent
+                                   (purescript-show-indent
                                     (if (and (> i 0) (< show-len 80)) 0 column)
                                     (car field)))
                                   (insert " = ")
                                   (put-text-property (- (point) 3) (point) 'face
                                                      'font-lock-constant-face)
-                                  (haskell-show-insert-pretty
+                                  (purescript-show-insert-pretty
                                    (if (< show-len 80)
                                        0
                                      (+ (length (car field)) column 3))
@@ -128,7 +128,7 @@
                                         (insert ", ")
                                       (insert ",\n"))))
                                 (cdr record))
-         (insert (concat "\n" (haskell-show-indent column "}")))
+         (insert (concat "\n" (purescript-show-indent column "}")))
          (progn
            (setf (car overlay) (make-overlay curly-start (- (point) 1) nil t))
            (overlay-put (car overlay) 'invisible t))
@@ -149,7 +149,7 @@
                      (overlay-put overlay 'invisible t)
                      (put-text-property (+ 2 str-start) (point) 'face 'font-lock-string-face)
                      (let ((button (make-text-button (+ 1 str-start) (+ 2 str-start)
-                                                     :type 'haskell-show-toggle-button)))
+                                                     :type 'purescript-show-toggle-button)))
                        (put-text-property (+ 1 str-start) (+ 2 str-start)
                                           'face 'font-lock-keyword-face)
                        (button-put button 'overlay (list overlay))
@@ -162,9 +162,9 @@
                (put-text-property cons-start (point) 'face 'font-lock-type-face))
              (unless (null (cdr data))
                (progn (insert " ")
-                      (haskell-show-mapcar/i
+                      (purescript-show-mapcar/i
                        (lambda (x i len)
-                         (haskell-show-insert-pretty column x t)
+                         (purescript-show-insert-pretty column x t)
                          (unless (> i (- len 2))
                            (insert " ")))
                        (cdr data))))
@@ -178,12 +178,12 @@
                   (put-text-property start (point) 'face 'font-lock-comment-face)))
     (otherwise (error "Unsupported node type: %S" tree))))
 
-(define-button-type 'haskell-show-toggle-button
-  'action 'haskell-show-toggle-button-callback
+(define-button-type 'purescript-show-toggle-button
+  'action 'purescript-show-toggle-button-callback
   'follow-link t
   'help-echo "Click to expand…")
 
-(defun haskell-show-toggle-button-callback (btn)
+(defun purescript-show-toggle-button-callback (btn)
   "The callback to toggle the overlay visibility."
   (let ((overlay (button-get btn 'overlay)))
     (when overlay
@@ -194,13 +194,13 @@
     (when hide
       (button-put btn 'invisible t))))
 
-(defun haskell-show-pretty (tree &optional parens)
+(defun purescript-show-pretty (tree &optional parens)
   "Show a Show `tree'."
   (case (car tree)
     ('list (format "[%s]"
                    (mapconcat
                     (lambda (x)
-                      (haskell-show-pretty x))
+                      (purescript-show-pretty x))
                     (cdr tree)
                     ",")))
     ('record (let ((record (cdr tree)))
@@ -210,7 +210,7 @@
                        (mapconcat (lambda (field)
                                     (format "%s = %s"
                                             (car field)
-                                            (haskell-show-pretty (cdr field))))
+                                            (purescript-show-pretty (cdr field))))
                                   (cdr record)
                                   ", ")
                        (if parens ")" ""))))
@@ -224,14 +224,14 @@
                          ""
                        (concat " "
                                (mapconcat
-                                (lambda (x) (haskell-show-pretty x t))
+                                (lambda (x) (purescript-show-pretty x t))
                                 (cdr data)
                                 " ")))
                      (if parens ")" ""))))
     ('tuple (format "(%s)"
                     (mapconcat
                      (lambda (x)
-                       (haskell-show-pretty x))
+                       (purescript-show-pretty x))
                      (cdr tree)
                      ",")))
     ('char (format "'%s'" (if (= (cdr tree) ?')
@@ -240,7 +240,7 @@
     ('arbitrary (cdr tree))
     (otherwise (error "Unsupported node type: %S" tree))))
 
-(defun haskell-show-mapcar/i (f xs)
+(defun purescript-show-mapcar/i (f xs)
   "Map `f' across `xs' giving the index and length to `f' as extra parameters."
   (let ((len (length xs))
         (i 0))
@@ -249,15 +249,15 @@
               (setq i (1+ i)))
             xs)))
 
-(defun haskell-show-indent (n s)
+(defun purescript-show-indent (n s)
   "Indent a string `s' at colum `n'."
   (concat (make-string n ? )
           s))
 
-(provide 'haskell-show)
+(provide 'purescript-show)
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not cl-functions)
 ;; End:
 
-;;; haskell-show.el ends here
+;;; purescript-show.el ends here

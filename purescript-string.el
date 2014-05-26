@@ -1,5 +1,5 @@
 ;;;###autoload
-(defun haskell-trim (string)
+(defun purescript-trim (string)
   (replace-regexp-in-string
    "^[ \t\n]+" ""
    (replace-regexp-in-string
@@ -7,17 +7,17 @@
     string)))
 
 ;;;###autoload
-(defun haskell-string-take (string n)
+(defun purescript-string-take (string n)
   "Take n chars from string."
   (substring string
              0
              (min (length string) n)))
 
 ;;;###autoload
-(defun haskell-is-prefix-of (x y)
+(defun purescript-is-prefix-of (x y)
   "Is x string a prefix of y string?"
   (string= x (substring y 0 (min (length y) (length x)))))
 
-(defun haskell-string ())
+(defun purescript-string ())
 
-(provide 'haskell-string)
+(provide 'purescript-string)

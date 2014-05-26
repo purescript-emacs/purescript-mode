@@ -1,10 +1,10 @@
-;;; haskell-yas.el --- Customization support for Luke Hoersten's yasnippets
+;;; purescript-yas.el --- Customization support for Luke Hoersten's yasnippets
 
 ;; Copyright (C) 2013  John Wiegley, Luke Hoersten
 
 ;; Author: John Wiegley <johnw@newartisans.com>
 ;;         Luke Hoersten <Luke@Hoersten.org>
-;; Keywords: faces files Haskell
+;; Keywords: faces files PureScript
 
 ;; This file is not part of GNU Emacs.
 
@@ -28,28 +28,28 @@
 
 ;;; Code:
 
-(defgroup haskell-yas nil
-  "Customizations for Luke Hoersten's yasnippet collection for haskell-mode."
-  :group 'haskell
-  :prefix "haskell-yas-")
+(defgroup purescript-yas nil
+  "Customizations for Luke Hoersten's yasnippet collection for purescript-mode."
+  :group 'purescript
+  :prefix "purescript-yas-")
 
-(defcustom haskell-yas-ghc-language-pragmas
+(defcustom purescript-yas-ghc-language-pragmas
   (split-string (shell-command-to-string "ghc --supported-extensions"))
   "List of language pragmas supported by the installed version of GHC."
-  :group 'haskell-yas
+  :group 'purescript-yas
   :type '(repeat string))
 
-(defcustom haskell-yas-completing-function 'ido-completing-read
+(defcustom purescript-yas-completing-function 'ido-completing-read
   "Function to use for completing among alternatives."
-  :group 'haskell-yas
+  :group 'purescript-yas
   :type 'function)
 
 ;;;###autoload
-(defun haskell-yas-complete (&rest args)
-  (apply haskell-yas-completing-function args))
+(defun purescript-yas-complete (&rest args)
+  (apply purescript-yas-completing-function args))
 
 ;; Provide ourselves:
 
-(provide 'haskell-yas)
+(provide 'purescript-yas)
 
-;;; haskell-yas.el ends here
+;;; purescript-yas.el ends here

@@ -1,0 +1,435 @@
+\input texinfo          @c -*-texinfo-*-
+@c %**start of header
+@setfilename purescript-mode.info
+@documentencoding UTF-8
+@settitle PureScript Mode @@VERSION@@
+@c %**end of header
+
+@dircategory Emacs
+@direntry
+* PureScript Mode: (purescript-mode).             PureScript Development Environment for Emacs(en)
+@end direntry
+
+@copying
+This manual is for PureScript mode, version @@GIT_VERSION@@
+
+Copyright @copyright{} 2013 PureScript Mode contributors.
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document under the terms of the @uref{http://www.gnu.org/licenses/fdl.html,GNU Free Documentation License}, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts and no Back-Cover Texts.
+@end quotation
+@end copying
+
+@iftex
+@titlepage
+@title PureScript Mode
+@subtitle PureScript Development Environment for Emacs
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+@end iftex
+
+@ifhtml
+@titlepage
+@title PureScript Mode
+@subtitle PureScript Development Environment for Emacs
+
+@end titlepage
+@insertcopying
+@end ifhtml
+
+@ifnottex
+@node Top
+@top PureScript Mode
+
+PureScript Mode is an PureScript development Environment for GNU Emacs version 23 or later.  It provides syntax-based indentation, font locking, editing cabal files, and supports running an inferior PureScript interpreter (e.g. GHCi).
+
+@end ifnottex
+
+@menu
+* Introduction::
+* Getting Help and Reporting Bugs::
+* Getting Started::
+* Editing PureScript Code::
+* Unicode::
+* Indentation::
+* Compilation::
+* purescript-decl-scan-mode::
+* inferior-purescript-mode::
+* purescript-interactive-mode::
+* purescript-cabal-mode::
+* Concept index::
+* Function index::
+* Variable index::
+
+@end menu
+
+@node Introduction
+@chapter Introduction
+
+@dfn{PureScript Mode} is a major mode providing a convenient environment for editing @uref{http://www.purescript.org,PureScript} programs.
+
+Some of its major features are:
+
+@itemize
+@item
+Syntax highlighting (font lock),
+@item
+automatic indentation,
+@item
+on-the-fly documentation,
+@item
+interaction with inferior GHCi/Hugs instance, and
+@item
+scanning declarations and placing them in a menu.
+@end itemize
+
+@node Getting Help and Reporting Bugs
+@chapter Getting Help and Reporting Bugs
+
+This Info manual is work in progress and incomplete. However, you can find more information at these locations in the meantime:
+
+@itemize
+@item
+@uref{https://github.com/purescript/purescript-mode,PureScript Mode's GitHub Home}
+@item
+@uref{http://www.purescript.org/purescriptwiki/PureScript_mode_for_Emacs,PureScript Wiki Emacs Page}
+@end itemize
+
+If you have any questions or like to discuss something regarding PureScript Mode, please consider sending an email to the @uref{http://projects.purescript.org/cgi-bin/mailman/listinfo/purescriptmode-emacs, PureScriptmode-emacs mailing list}. The mailing list is also available on @uref{http://gmane.org/, Gmane} via the @uref{http://dir.gmane.org/gmane.comp.lang.purescript.emacs, gmane.comp.lang.purescript.emacs} newsgroup.
+
+If you have discovered a bug or wish to request a new feature, you can @uref{https://github.com/purescript/purescript-mode/issues/new, file a new issue} with PureScript Mode's issue tracker. When filing a bug, please state your currently used software version (@kbd{M-x purescript-version}, @kbd{M-x version}) and what steps to perform in order to reproduce the bug you're experiencing. Finally, if you happen to be proficient in @ref{Top,Emacs Lisp,,elisp} you are welcome to submit patches via @uref{https://help.github.com/articles/using-pull-requests, GitHub Pull Requests}.
+
+@node Getting Started
+@chapter Getting Started
+
+If you are reading this, you have most likely already managed to install PureScript Mode in one way or another. However, just for the record, the officially recommended way is to install PureScript Mode via the @uref{http://marmalade-repo.org/packages/purescript-mode,Marmalade package archive} which contains the latest stable release of PureScript Mode.
+
+@findex purescript-customize
+Most of PureScript Mode's settings are configurable via customizable variables (@pxref{Easy Customization,,,emacs}, for details). You can use @kbd{M-x purescript-customize} to browse the @code{purescript} customization sub-tree.
+
+@vindex purescript-mode-hook
+One of the important setting you should customize is the @code{purescript-mode-hook} variable (@pxref{Hooks,,,emacs}) which gets run right after the @code{purescript-mode} major mode is initialized for a buffer. You can customize @code{purescript-mode-hook} by @kbd{M-x customize-variable @key{RET} purescript-mode-hook}. It's highly recommended you set up indentation to match your preferences; @xref{Indentation}, for more details about the indentation modes included with PureScript Mode.
+
+@c TODO:
+@c provide basic instructions to get up and running with purescript-mode
+@c tell about the most important commands
+
+@node Editing PureScript Code
+@chapter Editing PureScript Code
+
+@findex purescript-mode
+@cindex @code{purescript-mode}
+
+@dfn{PureScript Mode} is actually a collection of so-called major modes@footnote{for more information about the concept of @dfn{major modes} @pxref{Major Modes,,,emacs}} one of which is called @code{purescript-mode}.  To avoid confusion, when referring to this package the name ``PureScript mode'' is written in a normal font, whereas when referring the major mode of the same name @code{purescript-mode} written with a dash in-between in a typewriter font is used.
+
+As one might guess, @code{purescript-mode} is the (programming language@footnote{@code{purescript-mode} is derived from @code{prog-mode}}) major mode for editing (non-literate) PureScript source code. @code{purescript-mode} is associated with the file extensions listed below by default@footnote{for more information about file associations, @pxref{Choosing Modes,,,emacs}}.
+
+@table @file
+@item .purs
+official file extension for (non-literate) PureScript 98/2010 files
+@item .pursc
+``almost-PureScript'' input file for the @uref{http://www.purescript.org/ghc/docs/latest/html/users_guide/pursc2purs.html,pursc2purs} pre-processor
+@item .cpppurs
+input file for the @uref{http://projects.purescript.org/cpppurs/,cpppurs} pre-processor
+@end table
+
+@cindex literate programming
+@findex literate-purescript-mode
+
+@noindent
+The major mode @code{literate-purescript-mode} (which is derived from @code{purescript-mode} and thus transitively from @code{prog-mode}) provides support for @uref{http://www.purescript.org/purescriptwiki/Literate_programming,literate PureScript programs} and is associated with the @file{.lpurs} file extension by default.
+
+@code{literate-purescript-mode} supports Bird-style as well as @TeX{}-style literate PureScript files. The currently detected literate PureScript variant is shown in the mode line (@pxref{Mode Line,,,emacs}) as either @samp{LitPureScript/bird} or @samp{LitPureScript/tex}.
+
+@section Font Lock Support
+
+@code{purescript-mode} supports @dfn{syntax highlighting} via Emacs' Font Lock minor mode which should be enabled by default in current Emacsen. @xref{Font Lock,,,emacs}, for more information on how to control @code{font-lock-mode}.
+
+@node Unicode
+@chapter Unicode support
+
+@cindex Unicode
+
+See the PureScript Wiki's entry on @uref{http://www.purescript.org/purescriptwiki/Unicode-symbols, Unicode Symbols} for general information about Unicode support in PureScript.
+
+As Emacs supports editing files containing Unicode out of the box, so does PureScript Mode. As an add-on, PureScript Mode includes the @code{purescript-unicode} input method which allows you to easily type a number of Unicode symbols that are useful when writing PureScript code; @xref{Input Methods,,,emacs}, for more details.
+
+To automatically enable the @code{purescript-unicode} input method in purescript-mode buffers use @kbd{M-x customize-variable @key{RET} purescript-mode-hook} or put the following code in your @file{.emacs} file:
+
+@lisp
+(add-hook 'purescript-mode-hook 'turn-on-purescript-unicode-input-method)
+@end lisp
+
+@noindent
+To temporarily enable this input method for a single buffer you can use @kbd{M-x turn-on-purescript-unicode-input-method}.
+
+When the @code{purescript-unicode} input method is active, you can simply type @samp{->} and it is immediately replaced with @samp{→}. Use @kbd{C-\} to toggle the input method. To see a table of all key sequences use @kbd{M-x describe-input-method @key{RET} purescript-unicode}. A sequence like @samp{<=} is ambiguous and can mean either @samp{⇐} or @samp{≤}. Typing it presents you with a choice. Type @kbd{1} or @kbd{2} to select an option or keep typing to use the default option.
+
+If you don't like the highlighting of partially matching tokens you can turn it off by setting @code{input-method-highlight-flag} to @code{nil} via @kbd{M-x customize-variable}.
+
+@node Indentation
+@chapter Indentation
+
+@cindex indentation
+@cindex layout rule
+@cindex off-side rule
+
+For general information about indentation support in GNU Emacs, @pxref{Indentation,,,emacs}.
+
+In PureScript, code indentation has semantic meaning as it defines the block structure@footnote{PureScript also supports braces and semicolons notation for conveying the block structure. However, most PureScript programs written by humans use indentation for block structuring.}.
+
+As GNU Emacs' default indentation function (i.e. @code{indent-relative}) is not designed for use with PureScript's layout rule, PureScript mode includes three different indentation minor modes with different trade-offs:
+
+@ftable @code
+
+@item turn-on-purescript-simple-indent
+
+A very simple indentation scheme; In this scheme, @key{TAB} will now move the cursor to the next indent point in the previous non-blank line.  An indent point is a non-whitespace character following whitespace.
+
+@item turn-on-purescript-indent
+
+Intelligent semi-automatic indentation for PureScript's layout rule.  The basic idea is to have @key{TAB} cycle through possibilities indentation points based on some clever heuristics.
+
+The rationale and the implementation principles are described in more detail in the article @cite{Dynamic tabbing for automatic indentation with the layout rule} published in the Journal of Functional Programming 8.5 (1998).
+
+@item turn-on-purescript-indentation
+
+Improved variation of @code{turn-on-purescript-indent} indentation mode. Rebinds @key{RET} and @key{DEL}, so that indentations can be set and deleted as if they were real tabs.
+
+@end ftable
+
+To enable one of these three mutually exclusive indentation schemes, you just need call one (and only one!) of the @code{turn-on-*} commands while in the buffer you want the indentation scheme to be activated for.
+
+The recommended way is to add one of @code{turn-on-*} commands to @code{purescript-mode-hook}. This can be done either by using @kbd{M-x customize-variable @key{RET} purescript-mode-hook} which provides a convenient user interface or by adding @emph{one} of the following three lines to your @file{.emacs} file:
+
+@lisp
+(add-hook 'purescript-mode-hook 'turn-on-purescript-simple-indent)
+(add-hook 'purescript-mode-hook 'turn-on-purescript-indent)
+(add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)
+@end lisp
+
+@section Interactive Block Indentation
+
+By inserting the key bindings for @kbd{C-,} and @kbd{C-.} (these bindings are convenient on keyboard layouts where @key{,} and @key{.} are adjacent keys) as shown below you can interactively de/indent either the following nested block or, if a region is active while in Transient Mark Mode (@pxref{Disabled Transient Mark,,,emacs}), de/indent the active region.
+
+By using a numeric prefix argument (@pxref{Prefix Command Arguments,,,elisp}) you can modify the shift-amount; for instance, @kbd{C-u C-,} increases indentation by 4 characters at once.
+
+@findex purescript-move-nested-left
+@findex purescript-move-nested-right
+
+@lisp
+(eval-after-load "purescript-mode"
+  '(progn
+     (define-key purescript-mode-map (kbd "C-,") 'purescript-move-nested-left)
+     (define-key purescript-mode-map (kbd "C-.") 'purescript-move-nested-right)))
+@end lisp
+
+@section Rectangle Commands
+
+@cindex rectangle
+@cindex CUA mode
+
+GNU Emacs provides so-called @dfn{rectangle commands} which operate on rectangular areas of text, which are particularly useful for languages with a layout rule such as PureScript. @xref{Rectangles,,,emacs}, to learn more about rectangle commands.
+
+Moreover, CUA mode (@pxref{CUA Bindings,,,emacs}) provides enhanced rectangle support with visible rectangle highlighting. When CUA mode is active, you can initiate a rectangle selection by @kbd{C-RET} and extend it simply by movement commands. You don't have to enable full CUA mode to benefit from these enhanced rectangle commands; you can activate CUA selection mode (without redefining  @kbd{C-x},@kbd{C-c},@kbd{C-v}, and @kbd{C-z}) by calling @kbd{M-x cua-selection-mode} (or adding @code{(cua-selection-mode nil)} to your @code{purescript-mode-hook}).
+
+@node purescript-decl-scan-mode
+@chapter @code{purescript-decl-scan-mode}
+
+@findex turn-on-purescript-decl-scan
+@findex purescript-decl-scan-mode
+@vindex purescript-decl-scan-mode-hook
+
+@code{purescript-decl-scan-mode} is a minor mode which performs declaration scanning and provides @kbd{M-x imenu} support (@pxref{Imenu,,,emacs} for more information).
+
+For non-literate and @TeX{}-style literate scripts, the common convention that top-level declarations start at the first column is assumed.  For Bird-style literate scripts, the common convention that top-level declarations start at the third column, ie. after @samp{> }, is assumed.
+
+When @code{purescript-decl-scan-mode} is active, the standard Emacs top-level definition movement commands (@pxref{Moving by Defuns,,,emacs}) are enabled to operate on PureScript declarations:
+
+@table @kbd
+@item C-M-a
+Move to beginning of current or preceding declaration (@code{beginning-of-defun}).
+
+@item C-M-e
+Move to end of current or following declaration (@code{end-of-defun}).
+
+@item C-M-h
+Select whole current or following declaration (@code{mark-defun}).
+@end table
+
+Moreover, if enabled via the option @code{purescript-decl-scan-add-to-menubar}, a menu item ``Declarations'' is added to the menu bar listing the scanned declarations and allowing to jump to declarations in the source buffer.
+
+It's recommended to have font lock mode enabled (@pxref{Font Lock,,,emacs}) as @code{purescript-decl-scan-mode} ignores text highlighted with @code{font-lock-comment-face}.
+
+As usual, in order to activate @code{purescript-decl-scan-mode} automatically for PureScript buffers, add @code{turn-on-purescript-decl-scan} to @code{purescript-mode-hook}:
+
+@lisp
+(add-hook 'purescript-mode-hook 'turn-on-purescript-decl-scan)
+@end lisp
+
+@code{purescript-decl-scan-mode} enables the use of features that build upon @code{imenu} support such as Speedbar Frames (@pxref{Speedbar,,,emacs}) or the global ``Which Function'' minor mode (@pxref{Which Function,,,emacs}).
+
+In order to enable @code{which-function-mode} for PureScript buffers you need to add the following to your Emacs initialization:
+
+@lisp
+(eval-after-load "which-func"
+  '(add-to-list 'which-func-modes 'purescript-mode))
+@end lisp
+
+@node Compilation
+@chapter Compilation
+
+@findex purescript-compile
+
+PureScript mode comes equipped with a specialized @dfn{Compilation mode} tailored to GHC's compiler messages with optional support for Cabal projects. @xref{Compilation Mode,,,emacs}, for more information about the basic commands provided by the Compilation mode which are available in the PureScript compilation sub-mode as well. The additional features provided compared to Emacs' basic Compilation mode are:
+
+@itemize
+@item
+DWIM-style auto-detection of compile command (including support for CABAL projects)
+@item
+Support for GHC's compile messages and recognizing error, warning and info source locations (including @option{-ferror-spans} syntax)
+@item
+Support for filtering out GHC's uninteresting @samp{Loading package...} linker messages
+@end itemize
+
+In order to use it, invoke the @code{purescript-compile} command instead of @code{compile} as you would for the ordinary Compilation mode. It's recommended to bind @code{purescript-compile} to a convenient key binding. For instance, you can add the following to your Emacs initialization to bind @code{purescript-compile} to @kbd{C-c C-c}.
+
+@lisp
+(eval-after-load "purescript-mode"
+    '(define-key purescript-mode-map (kbd "C-c C-c") 'purescript-compile))
+
+(eval-after-load "purescript-cabal"
+    '(define-key purescript-cabal-mode-map (kbd "C-c C-c") 'purescript-compile))
+@end lisp
+
+@noindent
+The following description assumes that @code{purescript-compile} has been bound to @kbd{C-c C-c}.
+
+@vindex purescript-compile-cabal-build-command
+@vindex purescript-compile-cabal-build-command-alt
+@vindex purescript-compile-command
+
+When invoked, @code{purescript-compile} tries to guess how to compile the PureScript program your currently visited buffer belongs to, by searching for a @file{.cabal} file in the current of enclosing parent folders. If a @file{.cabal} file was found, the command defined in the @code{purescript-compile-cabal-build-command} option is used. Moreover, when requesting to compile a @file{.cabal}-file is detected and a negative prefix argument (e.g. @kbd{C-- C-c C-c}) was given, the alternative @code{purescript-compile-cabal-build-command-alt} is invoked. By default, @code{purescript-compile-cabal-build-command-alt} contains a @samp{cabal clean -s} command in order to force a full rebuild.
+
+Otherwise if no @file{.cabal} could be found, a single-module compilation is assumed and @code{purescript-compile-command} is used (@emph{if} the currently visited buffer contains PureScript source code).
+
+You can also inspect and modify the compile command to be invoked temporarily by invoking @code{purescript-compile} with a prefix argument (e.g. @kbd{C-u C-c C-c}). If later-on you want to recompile using the same customized compile command, invoke @code{recompile} (bound to @kbd{g}) inside the @samp{*purescript-compilation*} buffer.
+
+@node inferior-purescript-mode
+@chapter @code{inferior-purescript-mode}
+
+@findex inferior-purescript-find-definition
+@findex inferior-purescript-find-haddock
+@findex inferior-purescript-info
+@findex inferior-purescript-load-and-run
+@findex inferior-purescript-load-file
+@findex inferior-purescript-mode
+@findex inferior-purescript-reload-file
+@findex inferior-purescript-start-process
+@findex inferior-purescript-type
+@vindex purescript-program-name
+@vindex inferior-purescript-mode-hook
+
+The major mode @code{inferior-purescript-mode} provides support for interacting with an inferior PureScript process based on @code{comint-mode}.
+
+By default the @code{purescript-mode-map} keymap is setup to use this mode:
+
+@table @kbd
+@item C-c C-z
+is bound to @code{switch-to-purescript}
+@item C-c C-b
+is bound to @code{switch-to-purescript}
+@item C-c C-l
+is bound to @code{inferior-purescript-load-file}
+@item C-c C-t
+is bound to @code{inferior-purescript-type}
+@item C-c C-i
+is bound to @code{inferior-purescript-info}
+@end table
+
+The PureScript interpreter used by the inferior PureScript mode is auto-detected by default, but is customizable via the @code{purescript-program-name} variable.
+
+Currently, GHCi and Hugs are support as PureScript interpreter.
+
+TODO/WRITEME
+@c write about supported features
+
+@node purescript-interactive-mode
+@chapter @code{purescript-interactive-mode}
+
+An alternative mode providing a @acronym{REPL,read–eval–print loop} via GHCi sessions is called @code{purescript-interactive-mode}, which effectively replaces @code{inferior-purescript-mode}, but comes with a different set of features:
+
+@itemize
+@item
+Separate sessions per Cabal project @file{purescript-session.el}.
+@item
+A new inferior PureScript process handling code @file{purescript-process.el}.
+@item
+New REPL implementation similiar to SLIME/IELM @file{purescript-interactive-mode.el}.
+@end itemize
+
+In order to use @code{purescript-interactive-mode} instead of the default @code{inferior-purescript-mode}, you need to replace some of the default keybindings in the @code{purescript-mode-map} keymap with the respective @code{purescript-interactive-mode} counterparts:
+
+@lisp
+(eval-after-load "purescript-mode"
+  '(progn
+    (define-key purescript-mode-map (kbd "C-x C-d") nil)
+    (define-key purescript-mode-map (kbd "C-c C-z") 'purescript-interactive-switch)
+    (define-key purescript-mode-map (kbd "C-c C-l") 'purescript-process-load-file)
+    (define-key purescript-mode-map (kbd "C-c C-b") 'purescript-interactive-switch)
+    (define-key purescript-mode-map (kbd "C-c C-t") 'purescript-process-do-type)
+    (define-key purescript-mode-map (kbd "C-c C-i") 'purescript-process-do-info)
+    (define-key purescript-mode-map (kbd "C-c M-.") nil)
+    (define-key purescript-mode-map (kbd "C-c C-d") nil)))
+@end lisp
+
+With @code{purescript-interactive-mode}, each PureScript source buffer is associated with at most one GHCi session, so when you call @code{purescript-process-load-file} for a PureScript source buffer which has no session associated yet, you're asked which GHCi session to create or associate with.
+
+TODO/WRITEME
+
+@node purescript-cabal-mode
+@chapter @code{purescript-cabal-mode}
+
+@findex purescript-cabal-mode
+@vindex purescript-cabal-mode-hook
+
+@code{purescript-cabal-mode} is a major mode for editing @uref{http://www.purescript.org/cabal/users-guide/developing-packages.html,Cabal package description files} and is automatically associated with files having a @file{.cabal} extension.
+
+@findex purescript-cabal-visit-file
+
+For quickly locating and jumping to the nearest @file{.cabal} file from a PureScript source buffer, you can use @kbd{M-x purescript-cabal-visit-file}; with a prefix argument (i.e. @kbd{C-u}) @code{find-file-other-window} is used to visit the @file{.cabal} file.  If you wish, you can bind @code{purescript-cabal-visit-file} to a convenient key sequence, e.g.
+
+@lisp
+(eval-after-load "purescript-mode"
+  (define-key purescript-mode-map (kbd "C-c v c") 'purescript-cabal-visit-file))
+@end lisp
+
+TODO/WRITEME
+
+@node Concept index
+@unnumbered Concept index
+
+@printindex cp
+
+@node Function index
+@unnumbered Function index
+
+@printindex fn
+
+@node Variable index
+@unnumbered Variable index
+
+@printindex vr
+
+@bye
+
+@c Local Variables:
+@c eval: (visual-line-mode t)
+@c eval: (linum-mode t)
+@c eval: (hl-line-mode t)
+@c End:

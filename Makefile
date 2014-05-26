@@ -8,49 +8,34 @@ BATCH = $(EMACS) $(EFLAGS) --batch -Q -L .
 SUBST_ATAT = sed -e 's/@@GIT_VERSION@@/$(GIT_VERSION)/g;s/@GIT_VERSION@/$(GIT_VERSION)/g;s/@@VERSION@@/$(VERSION)/g;s/@VERSION@/$(VERSION)/g'
 
 ELFILES = \
-	ghc-core.el \
-	haskell-align-imports.el \
-	haskell-c.el \
-	haskell-cabal.el \
-	haskell-checkers.el \
-	haskell-compat.el \
-	haskell-compile.el \
-	haskell-decl-scan.el \
-	haskell-doc.el \
-	haskell-font-lock.el \
-	haskell-indent.el \
-	haskell-indentation.el \
-	haskell-collapse.el \
-	haskell-interactive-mode.el \
-	haskell-menu.el \
-	haskell-mode.el \
-	haskell-move-nested.el \
-	haskell-navigate-imports.el \
-	haskell-package.el \
-	haskell-process.el \
-	haskell-session.el \
-	haskell-show.el \
-	haskell-simple-indent.el \
-	haskell-sort-imports.el \
-	haskell-string.el \
-	haskell-str.el \
-	haskell-unicode-input-method.el \
-	haskell-utils.el \
-	haskell-yas.el \
-	haskell-presentation-mode.el \
-	inf-haskell.el
+	purescript-align-imports.el \
+	purescript-collapse.el \
+	purescript-font-lock.el \
+	purescript-indent.el \
+	purescript-indentation.el \
+	purescript-mode.el \
+	purescript-move-nested.el \
+	purescript-navigate-imports.el \
+	purescript-package.el \
+	purescript-simple-indent.el \
+	purescript-sort-imports.el \
+	purescript-str.el \
+	purescript-string.el \
+	purescript-unicode-input-method.el \
+	purescript-utils.el \
+	purescript-yas.el
 
 ELCFILES = $(ELFILES:.el=.elc)
-AUTOLOADS = haskell-mode-autoloads.el
+AUTOLOADS = purescript-mode-autoloads.el
 
-PKG_DIST_FILES = $(ELFILES) logo.svg NEWS haskell-mode.info dir
-PKG_TAR = haskell-mode-$(VERSION).tar
+PKG_DIST_FILES = $(ELFILES) logo.svg NEWS purescript-mode.info dir
+PKG_TAR = purescript-mode-$(VERSION).tar
 ELCHECKS=$(addprefix check-, $(ELFILES:.el=))
 
 %.elc: %.el
 	@$(BATCH) \
 	   --eval "(byte-compile-disable-warning 'cl-functions)" \
-       -f batch-byte-compile $<
+	   -f batch-byte-compile $<
 
 .PHONY: all compile info clean check $(ELCHECKS) elpa package
 
@@ -61,7 +46,7 @@ compile: $(ELCFILES)
 $(ELCHECKS): check-%: %.el
 	@$(BATCH) --eval '(when (check-declare-file "$*.el") (error "check-declare failed"))'
 	@$(BATCH) \
-	     --eval "(setq byte-compile-error-on-warn t)" \
+		 --eval "(setq byte-compile-error-on-warn t)" \
 	 	 --eval "(byte-compile-disable-warning 'cl-functions)" \
 		 -f batch-byte-compile $*.el
 	@$(RM) $*.elc
@@ -79,47 +64,47 @@ check: clean $(ELCHECKS)
 	@echo "checks passed!"
 
 clean:
-	$(RM) $(ELCFILES) $(AUTOLOADS) $(AUTOLOADS:.el=.elc) $(PKG_TAR) haskell-mode.tmp.texi haskell-mode.info dir
+	$(RM) $(ELCFILES) $(AUTOLOADS) $(AUTOLOADS:.el=.elc) $(PKG_TAR) purescript-mode.tmp.texi purescript-mode.info dir
 
-info: haskell-mode.info dir
+info: purescript-mode.info dir
 
-dir: haskell-mode.info
+dir: purescript-mode.info
 	$(INSTALL_INFO) --dir=$@ $<
 
-haskell-mode.tmp.texi: haskell-mode.texi
-	$(SUBST_ATAT) < haskell-mode.texi > haskell-mode.tmp.texi
+purescript-mode.tmp.texi: purescript-mode.texi
+	$(SUBST_ATAT) < purescript-mode.texi > purescript-mode.tmp.texi
 
-haskell-mode.info: haskell-mode.tmp.texi
+purescript-mode.info: purescript-mode.tmp.texi
 	$(MAKEINFO) $(MAKEINFO_FLAGS) -o $@ $<
 
-haskell-mode.html: haskell-mode.tmp.texi
+purescript-mode.html: purescript-mode.tmp.texi
 	$(MAKEINFO) $(MAKEINFO_FLAGS) --html --no-split -o $@ $<
 
 # Generate ELPA-compatible package
 package: $(PKG_TAR)
 elpa: $(PKG_TAR)
 
-$(PKG_TAR): $(PKG_DIST_FILES) haskell-mode-pkg.el.in
-	rm -rf haskell-mode-$(VERSION)
-	mkdir haskell-mode-$(VERSION)
-	cp $(PKG_DIST_FILES) haskell-mode-$(VERSION)/
-	$(SUBST_ATAT) < haskell-mode-pkg.el.in > haskell-mode-$(VERSION)/haskell-mode-pkg.el
-	$(SUBST_ATAT) < haskell-mode.el > haskell-mode-$(VERSION)/haskell-mode.el
-	(sed -n -e '/^;;; Commentary/,/^;;;/p' | egrep '^;;( |$$)' | cut -c4-) < haskell-mode.el > haskell-mode-$(VERSION)/README
-	tar cvf $@ haskell-mode-$(VERSION)
-	rm -rf haskell-mode-$(VERSION)
+$(PKG_TAR): $(PKG_DIST_FILES) purescript-mode-pkg.el.in
+	rm -rf purescript-mode-$(VERSION)
+	mkdir purescript-mode-$(VERSION)
+	cp $(PKG_DIST_FILES) purescript-mode-$(VERSION)/
+	$(SUBST_ATAT) < purescript-mode-pkg.el.in > purescript-mode-$(VERSION)/purescript-mode-pkg.el
+	$(SUBST_ATAT) < purescript-mode.el > purescript-mode-$(VERSION)/purescript-mode.el
+	(sed -n -e '/^;;; Commentary/,/^;;;/p' | egrep '^;;( |$$)' | cut -c4-) < purescript-mode.el > purescript-mode-$(VERSION)/README
+	tar cvf $@ purescript-mode-$(VERSION)
+	rm -rf purescript-mode-$(VERSION)
 	@echo
 	@echo "Created ELPA compatible distribution package '$@' from $(GIT_VERSION)"
 
-$(AUTOLOADS): $(ELFILES) haskell-mode.elc
+$(AUTOLOADS): $(ELFILES) purescript-mode.elc
 	$(BATCH) \
 		--eval '(setq make-backup-files nil)' \
 		--eval '(setq generated-autoload-file "$(CURDIR)/$@")' \
 		-f batch-update-autoloads "."
 
 # HACK: embed version number into .elc file
-haskell-mode.elc: haskell-mode.el
-	$(SUBST_ATAT) < haskell-mode.el > haskell-mode.tmp.el
-	@$(BATCH) --eval "(byte-compile-disable-warning 'cl-functions)" -f batch-byte-compile haskell-mode.tmp.el
-	mv haskell-mode.tmp.elc haskell-mode.elc
-	$(RM) haskell-mode.tmp.el
+purescript-mode.elc: purescript-mode.el
+	$(SUBST_ATAT) < purescript-mode.el > purescript-mode.tmp.el
+	@$(BATCH) --eval "(byte-compile-disable-warning 'cl-functions)" -f batch-byte-compile purescript-mode.tmp.el
+	mv purescript-mode.tmp.elc purescript-mode.elc
+	$(RM) purescript-mode.tmp.el

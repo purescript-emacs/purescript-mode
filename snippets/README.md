@@ -3,7 +3,7 @@
 
 **Shnippet** is a collection of
 [YASnippet][yas]
-[Haskell][haskell] snippets for Emacs.
+[PureScript][purescript] snippets for Emacs.
 
 
 ## Installation
@@ -19,7 +19,7 @@ Add the cloned repository to YASnippet's `yas-snippet-dirs`:
 
     (setq yas-snippet-dirs
           '("~/.emacs.d/snippets/shnippet"
-            "/other/paths/"
+            "/other/patpurs/"
             ))
 
 Snippets may have to be recompiled and reloaded in Emacs if YASnippet
@@ -29,7 +29,7 @@ is already in use:
     M-x yas-reload-all
 
 
-Haskell snippts should now be available to use! In a `haskell-mode`
+PureScript snippts should now be available to use! In a `purescript-mode`
 buffer, type `fn<TAB>`. A prompt should appear asking which `fn`
 snippet to expand.
 
@@ -71,7 +71,7 @@ qualified`) can quickly be selected with a single key stroke.
 
 * Leverage [ido-mode][] when reasonable. For instance, to keep the
   number of snippet keys to a minimum as well as auto complete things
-  like [Haskell Langauge Extension Pragmas][lang-pragma]. When
+  like [PureScript Langauge Extension Pragmas][lang-pragma]. When
   multiple snippets share a key (ex: `fn`), the `ido-mode` prompts are
   unique to one character (ex: `guarded function` and `simple
   function` are `g` and `s` respectively).
@@ -85,5 +85,5 @@ This code is written and maintained by Luke Hoersten,
 
 [yas]: https://github.com/capitaomorte/yasnippet
 [ido-mode]: http://www.emacswiki.org/emacs/InteractivelyDoThings
-[lang-pragma]: http://hackage.haskell.org/packages/archive/Cabal/1.16.0.3/doc/html/Language-Haskell-Extension.html#t:KnownExtension
-[haskell]: http://haskell.org/
+[lang-pragma]: http://hackage.purescript.org/packages/archive/Cabal/1.16.0.3/doc/html/Language-PureScript-Extension.html#t:KnownExtension
+[purescript]: http://purescript.org/

@@ -1,0 +1,1 @@
+(define-package "purescript-mode" "@VERSION@" "A PureScript editing mode")
