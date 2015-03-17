@@ -419,6 +419,23 @@ see documentation for that variable for more details."
 
 ;;;###autoload(add-to-list 'auto-mode-alist '("\\.purs\\'" . purescript-mode))
 
+(defun purescript-pursuit (query &optional info)
+  "Do a Pursuit search for QUERY.
+When `purescript-pursuit-command' is non-nil, this command runs
+that.  Otherwise, it opens a Pursuit search result in the browser.
+
+If prefix argument INFO is given, then `purescript-pursuit-command'
+is asked to show extra info for the items matching QUERY.."
+  (interactive
+   (let ((def (purescript-ident-at-point)))
+     (if (and def (symbolp def)) (setq def (symbol-name def)))
+     (list (read-string (if def
+                            (format "Pursuit query (default %s): " def)
+                          "Pursuit query: ")
+                        nil nil def)
+           current-prefix-arg)))
+  (browse-url (format "http://pursuit.purescript.org/?q=%s" query)))
+
 (defcustom purescript-completing-read-function 'ido-completing-read
   "Default function to use for completion."
   :group 'purescript
