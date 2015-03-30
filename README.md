@@ -4,7 +4,7 @@ PureScript Mode for Emacs
 This is the PureScript mode package for Emacs.
 
 To report problems or suggestions, please
-[open an issue](https://github.com/purescript/purescript-mode/issues?state=open)
+[open an issue](https://github.com/dysinger/purescript-mode/issues?state=open)
 in the issue tracker.
 
 Below is a brief setup guide.
