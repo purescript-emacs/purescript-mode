@@ -29,7 +29,7 @@ versions.
 
 ### Installation from Git
 
--   `git clone https://github.com/purescript/purescript-mode.git` into a
+-   `git clone https://github.com/dysinger/purescript-mode.git` into a
     suitable directory, e.g. `~/lib/emacs/purescript-mode/` where `~`
     stands for your home directory.
 
