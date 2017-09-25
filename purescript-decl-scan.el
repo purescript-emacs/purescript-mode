@@ -126,7 +126,7 @@
 
 (defvar purescript-ds-start-keywords-re
   (concat "\\(\\<"
-          "class\\|data\\|i\\(mport\\|n\\(fix\\(\\|[lr]\\)\\|stance\\)\\)\\|"
+          "class\\|data\\|derive instance\\|i\\(mport\\|n\\(fix\\(\\|[lr]\\)\\|stance\\)\\)\\|"
           "module\\|primitive\\|type\\|newtype"
           "\\)\\>")
   "Keywords that may start a declaration.")
@@ -417,7 +417,7 @@ positions and the type is one of the symbols \"variable\", \"datatype\",
           (setq name-pos (match-beginning 1))
           (setq type 'import))
          ;; Instance declaration.
-         ((re-search-forward "\\=instance[ \t]+" end t)
+         ((re-search-forward "\\=\\(instance\\|derive instance\\)[ \t]+" end t)
           (re-search-forward "=>[ \t]+" end t)
           ;; The instance "title" starts just after the `instance' (and
           ;; any context) and finishes just before the _first_ `where'
