@@ -39,7 +39,7 @@
   :group 'purescript-yas
   :type '(repeat string))
 
-(defcustom purescript-yas-completing-function 'ido-completing-read
+(defcustom purescript-yas-completing-function 'completing-read
   "Function to use for completing among alternatives."
   :group 'purescript-yas
   :type 'function)

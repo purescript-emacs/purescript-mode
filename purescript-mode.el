@@ -429,13 +429,13 @@ is asked to show extra info for the items matching QUERY.."
            current-prefix-arg)))
   (browse-url (format "https://pursuit.purescript.org/search?q=%s" query)))
 
-(defcustom purescript-completing-read-function 'ido-completing-read
+(defcustom purescript-completing-read-function 'completing-read
   "Default function to use for completion."
   :group 'purescript
   :type '(choice
+          (function-item :tag "completing-read" :value completing-read)
           (function-item :tag "ido" :value ido-completing-read)
           (function-item :tag "helm" :value helm--completing-read-default)
-          (function-item :tag "completing-read" :value completing-read)
           (function :tag "Custom function")))
 
 (defcustom purescript-indent-spaces 2
