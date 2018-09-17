@@ -125,10 +125,7 @@
 ;; General declaration scanning functions.
 
 (defvar purescript-ds-start-keywords-re
-  (concat "\\(\\<"
-          "class\\|data\\|derive instance\\|i\\(mport\\|n\\(fix\\(\\|[lr]\\)\\|stance\\)\\)\\|"
-          "module\\|primitive\\|type\\|newtype"
-          "\\)\\>")
+  (regexp-opt '("class" "data" "derive instance" "import" "instance" "infixl" "infixr" "module" "primitive" "type" "newtype") 'words)
   "Keywords that may start a declaration.")
 
 (defvar purescript-ds-syntax-table
