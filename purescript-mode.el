@@ -288,13 +288,9 @@ details."
 
 (defvar eldoc-print-current-symbol-info-function)
 
-;; For compatibility with Emacs < 24, derive conditionally
-(defalias 'purescript-parent-mode
-  (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
-
 ;; The main mode functions
 ;;;###autoload
-(define-derived-mode purescript-mode purescript-parent-mode "PureScript"
+(define-derived-mode purescript-mode prog-mode "PureScript"
   "Major mode for editing PureScript programs.
 
 See also Info node `(purescript-mode)Getting Started' for more

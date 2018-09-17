@@ -23,7 +23,7 @@ be referred to as the `.emacs` file.
 Installation
 ------------
 
-GNU Emacs version 23 or later is officially supported.  It may work
+GNU Emacs version 24 or later is officially supported.  It may work
 with other Emacsen, but we don't have the resources to support other
 versions.
 
