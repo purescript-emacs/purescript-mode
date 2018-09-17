@@ -1,1 +1,2 @@
-(define-package "purescript-mode" "@VERSION@" "A PureScript editing mode")
+(define-package "purescript-mode" "@VERSION@" "A PureScript editing mode"
+  '((cl-lib "0.6")))

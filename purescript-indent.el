@@ -1584,7 +1584,6 @@ Invokes `purescript-indent-hook' if not nil."
 (provide 'purescript-indent)
 
 ;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
 ;; End:
 
 ;;; purescript-indent.el ends here

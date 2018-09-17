@@ -154,8 +154,4 @@
 
 (provide 'purescript-package)
 
-;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
-;; End:
-
 ;;; purescript-package.el ends here

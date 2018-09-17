@@ -34,7 +34,6 @@ ELCHECKS=$(addprefix check-, $(ELFILES:.el=))
 
 %.elc: %.el
 	@$(BATCH) \
-	   --eval "(byte-compile-disable-warning 'cl-functions)" \
 	   -f batch-byte-compile $<
 
 .PHONY: all compile info clean check $(ELCHECKS) elpa package
@@ -47,7 +46,6 @@ $(ELCHECKS): check-%: %.el
 	@$(BATCH) --eval '(when (check-declare-file "$*.el") (error "check-declare failed"))'
 	@$(BATCH) \
 		 --eval "(setq byte-compile-error-on-warn t)" \
-	 	 --eval "(byte-compile-disable-warning 'cl-functions)" \
 		 -f batch-byte-compile $*.el
 	@$(RM) $*.elc
 	@if [ -f "$(<:%.el=tests/%-tests.el)" ]; then \
@@ -105,6 +103,6 @@ $(AUTOLOADS): $(ELFILES) purescript-mode.elc
 # HACK: embed version number into .elc file
 purescript-mode.elc: purescript-mode.el
 	$(SUBST_ATAT) < purescript-mode.el > purescript-mode.tmp.el
-	@$(BATCH) --eval "(byte-compile-disable-warning 'cl-functions)" -f batch-byte-compile purescript-mode.tmp.el
+	@$(BATCH) -f batch-byte-compile purescript-mode.tmp.el
 	mv purescript-mode.tmp.elc purescript-mode.elc
 	$(RM) purescript-mode.tmp.el

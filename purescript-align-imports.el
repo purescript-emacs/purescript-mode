@@ -95,7 +95,7 @@
 
 ;;; Code:
 
-(with-no-warnings (require 'cl))
+(require 'cl-lib)
 
 (defvar purescript-align-imports-regexp
   (concat "^\\(import[ ]+\\)"
@@ -147,8 +147,8 @@
         (when line
           (let ((match
                  (purescript-align-imports-merge-parts
-                  (loop for i from 1 to 8
-                        collect (purescript-align-imports-chomp (match-string i line))))))
+                  (cl-loop for i from 1 to 8
+                           collect (purescript-align-imports-chomp (match-string i line))))))
             (setq imports (cons (cons match (line-beginning-position))
                                 imports)))))
       (forward-line))
@@ -226,9 +226,5 @@
                                      (line-end-position) t 1)))))
 
 (provide 'purescript-align-imports)
-
-;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
-;; End:
 
 ;;; purescript-align-imports.el ends here

@@ -35,7 +35,7 @@
 (require 'purescript-align-imports)
 (require 'purescript-sort-imports)
 (require 'purescript-string)
-(with-no-warnings (require 'cl))
+(require 'cl-lib)
 
 ;; All functions/variables start with `(literate-)purescript-'.
 
@@ -475,12 +475,6 @@ Brings up the documentation for purescript-mode-hook."
   "Function that will be called after buffer's saving."
   )
 
-;; Provide ourselves:
-
 (provide 'purescript-mode)
-
-;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
-;; End:
 
 ;;; purescript-mode.el ends here

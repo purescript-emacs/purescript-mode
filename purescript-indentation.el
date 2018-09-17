@@ -1041,7 +1041,6 @@ Preserves indentation and removes extra whitespace"
 (provide 'purescript-indentation)
 
 ;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
 ;; tab-width: 8
 ;; End:
 

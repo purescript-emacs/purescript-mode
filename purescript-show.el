@@ -256,8 +256,4 @@
 
 (provide 'purescript-show)
 
-;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
-;; End:
-
 ;;; purescript-show.el ends here

@@ -637,7 +637,6 @@ Invokes `purescript-font-lock-hook' if not nil."
 (provide 'purescript-font-lock)
 
 ;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
 ;; tab-width: 8
 ;; End:
 
