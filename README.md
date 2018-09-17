@@ -27,6 +27,12 @@ GNU Emacs version 24 or later is officially supported.  It may work
 with other Emacsen, but we don't have the resources to support other
 versions.
 
+### Installation using package.el
+
+Users of [MELPA](https://melpa.org) can install `purescript-mode`
+using `M-x package-install`. This is the most straightforward
+and recommended installation method.
+
 ### Installation from Git
 
 -   `git clone https://github.com/dysinger/purescript-mode.git` into a
