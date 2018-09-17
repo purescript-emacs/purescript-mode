@@ -439,7 +439,9 @@ is asked to show extra info for the items matching QUERY.."
           (function :tag "Custom function")))
 
 (defcustom purescript-indent-spaces 2
-  "Number of spaces to indent inwards.")
+  "Number of spaces to indent inwards."
+  :type 'integer
+  :safe 'integerp)
 
 (defun purescript-mode-suggest-indent-choice ()
   "Ran when the user tries to indent in the buffer but no indentation mode has been selected.
