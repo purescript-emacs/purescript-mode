@@ -340,8 +340,6 @@ see documentation for that variable for more details."
   (set (make-local-variable 'dabbrev-case-distinction) nil)
   (set (make-local-variable 'dabbrev-case-replace) nil)
   (set (make-local-variable 'dabbrev-abbrev-char-regexp) "\\sw\\|[.]")
-  (add-hook 'before-save-hook 'purescript-mode-before-save-handler nil t)
-  (add-hook 'after-save-hook 'purescript-mode-after-save-handler nil t)
   )
 
 (defun purescript-fill-paragraph (justify)
@@ -467,13 +465,6 @@ Brings up the documentation for purescript-mode-hook."
                            (format " [ %s .. ]" (purescript-string-take (purescript-trim (cadr lines)) 10))
                          ""))))))
 
-(defun purescript-mode-before-save-handler ()
-  "Function that will be called before buffer's saving."
-  )
-
-(defun purescript-mode-after-save-handler ()
-  "Function that will be called after buffer's saving."
-  )
 
 (provide 'purescript-mode)
 
