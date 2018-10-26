@@ -95,14 +95,14 @@ This Info manual is work in progress and incomplete. However, you can find more 
 
 @itemize
 @item
-@uref{https://github.com/purescript/purescript-mode,PureScript Mode's GitHub Home}
+@uref{https://github.com/purescript-emacs/purescript-mode,PureScript Mode's GitHub Home}
 @item
 @uref{http://www.purescript.org/purescriptwiki/PureScript_mode_for_Emacs,PureScript Wiki Emacs Page}
 @end itemize
 
 If you have any questions or like to discuss something regarding PureScript Mode, please consider sending an email to the @uref{http://projects.purescript.org/cgi-bin/mailman/listinfo/purescriptmode-emacs, PureScriptmode-emacs mailing list}. The mailing list is also available on @uref{http://gmane.org/, Gmane} via the @uref{http://dir.gmane.org/gmane.comp.lang.purescript.emacs, gmane.comp.lang.purescript.emacs} newsgroup.
 
-If you have discovered a bug or wish to request a new feature, you can @uref{https://github.com/purescript/purescript-mode/issues/new, file a new issue} with PureScript Mode's issue tracker. When filing a bug, please state your currently used software version (@kbd{M-x purescript-version}, @kbd{M-x version}) and what steps to perform in order to reproduce the bug you're experiencing. Finally, if you happen to be proficient in @ref{Top,Emacs Lisp,,elisp} you are welcome to submit patches via @uref{https://help.github.com/articles/using-pull-requests, GitHub Pull Requests}.
+If you have discovered a bug or wish to request a new feature, you can @uref{https://github.com/purescript-emacs/purescript-mode/issues/new, file a new issue} with PureScript Mode's issue tracker. When filing a bug, please state your currently used software version (@kbd{M-x purescript-version}, @kbd{M-x version}) and what steps to perform in order to reproduce the bug you're experiencing. Finally, if you happen to be proficient in @ref{Top,Emacs Lisp,,elisp} you are welcome to submit patches via @uref{https://help.github.com/articles/using-pull-requests, GitHub Pull Requests}.
 
 @node Getting Started
 @chapter Getting Started

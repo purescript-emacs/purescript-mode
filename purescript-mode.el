@@ -10,7 +10,7 @@
 ;;          2003      Dave Love <fx@gnu.org>
 ;;          2014      Tim Dysinger <tim@dysinger.net>
 ;; Keywords: faces files PureScript
-;; URL: https://github.com/purescript/purescript-mode
+;; URL: https://github.com/purescript-emacs/purescript-mode
 
 ;; This file is not part of GNU Emacs.
 
