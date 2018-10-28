@@ -102,7 +102,7 @@
 
 (require 'purescript-mode)
 (require 'syntax)
-(with-no-warnings (require 'cl))
+(require 'cl-lib)
 (require 'imenu)
 
 (defgroup purescript-decl-scan nil
@@ -125,10 +125,7 @@
 ;; General declaration scanning functions.
 
 (defvar purescript-ds-start-keywords-re
-  (concat "\\(\\<"
-          "class\\|data\\|derive instance\\|i\\(mport\\|n\\(fix\\(\\|[lr]\\)\\|stance\\)\\)\\|"
-          "module\\|primitive\\|type\\|newtype"
-          "\\)\\>")
+  (regexp-opt '("class" "data" "derive instance" "import" "instance" "infixl" "infixr" "module" "primitive" "type" "newtype") 'words)
   "Keywords that may start a declaration.")
 
 (defvar purescript-ds-syntax-table
@@ -195,7 +192,7 @@ current line that starts with REGEXP and is not in `font-lock-comment-face'."
   "Like purescript-ds-move-to-start-regexp, but uses syntax-ppss to
   skip comments"
   (let (p)
-    (loop
+    (cl-loop
      do (setq p (point))
      (purescript-ds-move-to-start-regexp inc regexp)
      while (and (nth 4 (syntax-ppss))
@@ -601,9 +598,5 @@ Invokes `purescript-decl-scan-mode-hook' on activation."
 ;; Provide ourselves:
 
 (provide 'purescript-decl-scan)
-
-;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
-;; End:
 
 ;;; purescript-decl-scan.el ends here

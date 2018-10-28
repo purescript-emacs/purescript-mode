@@ -35,7 +35,7 @@
 (require 'purescript-align-imports)
 (require 'purescript-sort-imports)
 (require 'purescript-string)
-(with-no-warnings (require 'cl))
+(require 'cl-lib)
 
 ;; All functions/variables start with `(literate-)purescript-'.
 
@@ -288,13 +288,9 @@ details."
 
 (defvar eldoc-print-current-symbol-info-function)
 
-;; For compatibility with Emacs < 24, derive conditionally
-(defalias 'purescript-parent-mode
-  (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
-
 ;; The main mode functions
 ;;;###autoload
-(define-derived-mode purescript-mode purescript-parent-mode "PureScript"
+(define-derived-mode purescript-mode prog-mode "PureScript"
   "Major mode for editing PureScript programs.
 
 See also Info node `(purescript-mode)Getting Started' for more
@@ -344,8 +340,6 @@ see documentation for that variable for more details."
   (set (make-local-variable 'dabbrev-case-distinction) nil)
   (set (make-local-variable 'dabbrev-case-replace) nil)
   (set (make-local-variable 'dabbrev-abbrev-char-regexp) "\\sw\\|[.]")
-  (add-hook 'before-save-hook 'purescript-mode-before-save-handler nil t)
-  (add-hook 'after-save-hook 'purescript-mode-after-save-handler nil t)
   )
 
 (defun purescript-fill-paragraph (justify)
@@ -433,17 +427,19 @@ is asked to show extra info for the items matching QUERY.."
            current-prefix-arg)))
   (browse-url (format "https://pursuit.purescript.org/search?q=%s" query)))
 
-(defcustom purescript-completing-read-function 'ido-completing-read
+(defcustom purescript-completing-read-function 'completing-read
   "Default function to use for completion."
   :group 'purescript
   :type '(choice
+          (function-item :tag "completing-read" :value completing-read)
           (function-item :tag "ido" :value ido-completing-read)
           (function-item :tag "helm" :value helm--completing-read-default)
-          (function-item :tag "completing-read" :value completing-read)
           (function :tag "Custom function")))
 
 (defcustom purescript-indent-spaces 2
-  "Number of spaces to indent inwards.")
+  "Number of spaces to indent inwards."
+  :type 'integer
+  :safe 'integerp)
 
 (defun purescript-mode-suggest-indent-choice ()
   "Ran when the user tries to indent in the buffer but no indentation mode has been selected.
@@ -469,20 +465,7 @@ Brings up the documentation for purescript-mode-hook."
                            (format " [ %s .. ]" (purescript-string-take (purescript-trim (cadr lines)) 10))
                          ""))))))
 
-(defun purescript-mode-before-save-handler ()
-  "Function that will be called before buffer's saving."
-  )
-
-(defun purescript-mode-after-save-handler ()
-  "Function that will be called after buffer's saving."
-  )
-
-;; Provide ourselves:
 
 (provide 'purescript-mode)
-
-;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
-;; End:
 
 ;;; purescript-mode.el ends here

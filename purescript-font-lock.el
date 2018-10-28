@@ -278,17 +278,14 @@ Returns keywords suitable for `font-lock-keywords'."
                   "\\S_"))
          ;; Reserved identifiers
          (reservedid
-          (concat "\\<"
-                  ;; `as', `hiding', and `qualified' are part of the import
-                  ;; spec syntax, but they are not reserved.
-                  ;; `_' can go in here since it has temporary word syntax.
-                  ;; (regexp-opt
-                  ;;  '("case" "class" "data" "default" "deriving" "do"
-                  ;;    "else" "if" "import" "in" "infix" "infixl"
-                  ;;    "infixr" "instance" "let" "module" "newtype" "of"
-                  ;;    "then" "type" "where" "_") t)
-                  "\\(_\\|c\\(ase\\|lass\\)\\|d\\(ata\\|e\\(fault\\|riving\\)\\|o\\)\\|else\\|i\\(mport\\|n\\(fix[lr]?\\|stance\\)\\|[fn]\\)\\|let\\|module\\|mdo\\|newtype\\|of\\|rec\\|proc\\|t\\(hen\\|ype\\)\\|where\\)"
-                  "\\>"))
+          ;; `as', `hiding', and `qualified' are part of the import
+          ;; spec syntax, but they are not reserved.
+          ;; `_' can go in here since it has temporary word syntax.
+          (regexp-opt
+           '("case" "class" "data" "default" "deriving" "do"
+             "else" "if" "import" "in" "infix" "infixl"
+             "infixr" "instance" "let" "module" "newtype" "of"
+             "then" "type" "where" "_") 'words))
 
          ;; This unreadable regexp matches strings and character
          ;; constants.  We need to do this with one regexp to handle
@@ -640,7 +637,6 @@ Invokes `purescript-font-lock-hook' if not nil."
 (provide 'purescript-font-lock)
 
 ;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
 ;; tab-width: 8
 ;; End:
 
