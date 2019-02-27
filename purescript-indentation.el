@@ -182,41 +182,6 @@ autofill-mode."
         (forward-char))
       cc)))
 
-(defun kill-indented-line (&optional arg)
-  "`kill-line' for indented text.
-Preserves indentation and removes extra whitespace"
-  (interactive "P")
-  (let ((col (purescript-current-column))
-        (old-point (point)))
-    (cond ((or (and (numberp arg) (< arg 0))
-               (and (not (looking-at "[ \t]*$"))
-                    (or (not (numberp arg)) (zerop arg))))
-                                        ;use default behavior when calling with a negative argument
-                                        ;or killing (once) from the middle of a line
-           (kill-line arg))
-          ((and (skip-chars-backward " \t") ;always true
-                (bolp)
-                (save-excursion
-                  (forward-line arg)
-                  (not (looking-at "[ \t]*$"))))
-                                        ; killing from an empty line:
-                                        ; preserve indentation of the next line
-           (kill-region (point)
-                        (save-excursion
-                          (forward-line arg)
-                          (point)))
-           (skip-chars-forward " \t")
-           (if (> (purescript-current-column) col)
-               (move-to-column col)))
-          (t                            ; killing from not empty line:
-                                        ; kill all indentation
-           (goto-char old-point)
-           (kill-region (point)
-                        (save-excursion
-                          (forward-line arg)
-                          (skip-chars-forward " \t")
-                          (point)))))))
-
 (defun purescript-indentation-auto-fill-function ()
   (when (> (purescript-current-column) fill-column)
     (while (> (purescript-current-column) fill-column)
