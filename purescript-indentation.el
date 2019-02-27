@@ -547,6 +547,16 @@ autofill-mode."
     ("{"     . (lambda () (purescript-indentation-list #'purescript-indentation-expression
                                                     "}" "," nil)))))
 
+(defun purescript-indentation-qualified-do-p (token)
+  (and (stringp token)
+       (string-match-p "\\.do\\'" token)))
+
+(defun purescript-indentation-find-expression-parser (token)
+  "Find the entry for TOKEN in `purescript-indentation-expression-list'."
+  (or (assoc token purescript-indentation-expression-list)
+      (when (purescript-indentation-qualified-do-p token)
+        (assoc "do" purescript-indentation-expression-list))))
+
 (defun purescript-indentation-expression-layout ()
   (purescript-indentation-layout #'purescript-indentation-expression))
 
@@ -769,7 +779,7 @@ autofill-mode."
                   current-indent)))
           (throw 'return nil))
 
-         (t (let ((parser (assoc current-token purescript-indentation-expression-list)))
+         (t (let ((parser (purescript-indentation-find-expression-parser current-token)))
               (when (null parser)
                 (throw 'return nil))
               (funcall (cdr parser))
@@ -967,7 +977,7 @@ autofill-mode."
 
 (defun purescript-indentation-peek-token ()
   "Return token starting at point."
-  (cond ((looking-at "\\(if\\|then\\|else\\|let\\|in\\|mdo\\|rec\\|do\\|proc\\|case\\|of\\|where\\|module\\|deriving\\|data\\|type\\|newtype\\|class\\|instance\\)\\([^[:alnum:]'_]\\|$\\)")
+  (cond ((looking-at "\\(if\\|then\\|else\\|let\\|in\\|mdo\\|rec\\|\\(?:[[:word:]]+\\.\\)*do\\|proc\\|case\\|of\\|where\\|module\\|deriving\\|data\\|type\\|newtype\\|class\\|instance\\)\\([^[:alnum:]'_]\\|$\\)")
          (match-string-no-properties 1))
         ((looking-at "[][(){}[,;]")
          (match-string-no-properties 0))
