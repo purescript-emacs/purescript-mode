@@ -89,7 +89,7 @@
 ;;; Code:
 
 (require 'purescript-string)
-(with-no-warnings (require 'cl))
+(require 'cl-lib)
 
 (defvar purescript-literate)
 
@@ -267,7 +267,7 @@ If so, return its start; otherwise return nil:
 If it is Bird-style, then return the position of the >;
 otherwise return the ending position of \\begin{code}."
   (save-excursion
-    (case purescript-literate
+    (cl-case purescript-literate
       (bird
        (beginning-of-line)
        (if (or (eq (following-char) ?\>)
@@ -374,7 +374,7 @@ location of the opening symbol, nil otherwise."
   "Check, starting from START, if END is at or within a comment.
 Returns the location of the start of the comment, nil otherwise."
   (let (pps)
-    (assert (<= start end))
+    (cl-assert (<= start end))
     (cond ((= start end) nil)
           ((nth 4 (save-excursion (setq pps (parse-partial-sexp start end))))
            (nth 8 pps))
@@ -580,7 +580,7 @@ Returns the location of the start of the comment, nil otherwise."
                 (if rpurs-sign (purescript-indent-push-pos rpurs-sign)
                   (purescript-indent-push-pos-offset valname))
               (purescript-indent-push-pos-offset valname)))
-        (case                           ; general case
+        (cl-case                           ; general case
             (purescript-indent-find-case test)
           ;; "1.1.11"   1= vn gd rh arh
           (1 (purescript-indent-push-pos valname)
@@ -681,7 +681,7 @@ Returns the location of the start of the comment, nil otherwise."
                   (purescript-indent-push-pos-offset valname))))
         (if (string= purescript-indent-current-line-first-ident "::")
             (if valname (purescript-indent-push-pos valname))
-          (case                         ; general case
+          (cl-case                         ; general case
               (purescript-indent-find-case test)
             ;; "1.1.11"   1= vn gd rh arh
             (1 (if is-where
@@ -776,7 +776,7 @@ than an identifier, a guard or rpurs."
       (if (and valname-string           ; special case for start keywords
                (string-match purescript-indent-start-keywords-re valname-string))
           (purescript-indent-push-pos-offset valname)
-        (case                           ; general case
+        (cl-case                           ; general case
             (purescript-indent-find-case test)
           ;; "1.1.11"   1= vn gd rh arh
           (1 (purescript-indent-push-pos aft-rpurs-sign))
@@ -819,11 +819,11 @@ than an identifier, a guard or rpurs."
       purescript-indent-info)))
 
 (defun purescript-indent-valdef-indentation (start end end-visible curr-line-type
-                                                indent-info)
+                                                   indent-info)
   "Find indentation information for a value definition."
   (let ((purescript-indent-info indent-info))
     (if (< start end-visible)
-        (case curr-line-type
+        (cl-case curr-line-type
           (empty (purescript-indent-empty start end end-visible indent-info))
           (ident (purescript-indent-ident start end end-visible indent-info))
           (guard (purescript-indent-guard start end end-visible indent-info))
@@ -839,7 +839,7 @@ Separate a line of program into valdefs between offside keywords
 and find indentation info for each part."
   (save-excursion
     ;; point is (already) at line-start
-    (assert (eq (point) line-start))
+    (cl-assert (eq (point) line-start))
     (let ((purescript-indent-info indent-info)
           (start (or (purescript-indent-in-comment line-start line-end)
                      (purescript-indent-in-string line-start line-end))))
@@ -1025,7 +1025,7 @@ See http://hackage.purescript.org/trac/purescript-prime/wiki/DoAndIfThenElse"
 (defun purescript-indent-closing-keyword (start)
   (let ((open (save-excursion
                 (purescript-indent-find-matching-start
-                 (case (char-after)
+                 (cl-case (char-after)
                    (?i "\\<\\(?:\\(in\\)\\|let\\)\\>")
                    (?o "\\<\\(?:\\(of\\)\\|case\\)\\>")
                    (?t "\\<\\(?:\\(then\\)\\|if\\)\\>")

@@ -89,7 +89,7 @@
 
 (require 'purescript-mode)
 (require 'font-lock)
-(with-no-warnings (require 'cl))
+(require 'cl-lib)
 
 (defcustom purescript-font-lock-symbols nil
   "Display \\ and -> and such using symbols in fonts.
@@ -382,7 +382,7 @@ Returns keywords suitable for `font-lock-keywords'."
                         purescript-constructor-face
                       purescript-operator-face))))
     (unless (boundp 'font-lock-syntactic-keywords)
-      (case literate
+      (cl-case literate
         (bird
          (setq keywords
                `(("^[^>\n].*$" 0 purescript-comment-face t)
@@ -543,14 +543,14 @@ that should be commented under LaTeX-style literate scripts."
 ;;;###autoload
 (defun purescript-font-lock-choose-keywords ()
   (let ((literate (if (boundp 'purescript-literate) purescript-literate)))
-    (case literate
+    (cl-case literate
       (bird purescript-font-lock-bird-literate-keywords)
       ((latex tex) purescript-font-lock-latex-literate-keywords)
       (t purescript-font-lock-keywords))))
 
 (defun purescript-font-lock-choose-syntactic-keywords ()
   (let ((literate (if (boundp 'purescript-literate) purescript-literate)))
-    (case literate
+    (cl-case literate
       (bird purescript-bird-syntactic-keywords)
       ((latex tex) purescript-latex-syntactic-keywords)
       (t purescript-basic-syntactic-keywords))))

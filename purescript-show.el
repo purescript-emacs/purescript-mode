@@ -31,7 +31,7 @@
 
 (defvar sexp-show "sexp-show")
 (require 'purescript-string)
-(with-no-warnings (require 'cl))
+(require 'cl-lib)
 
 (defun purescript-show-replace-region ()
   "Replace the given region with a pretty printed version."
@@ -76,7 +76,7 @@
 
 (defun purescript-show-insert-pretty (column tree &optional parens)
   "Insert a Show `tree' into the current buffer with collapsible nodes."
-  (case (car tree)
+  (cl-case (car tree)
     ('list (let ((start (point)))
              (insert "[")
              (purescript-show-mapcar/i (lambda (x i len)
@@ -196,7 +196,7 @@
 
 (defun purescript-show-pretty (tree &optional parens)
   "Show a Show `tree'."
-  (case (car tree)
+  (cl-case (car tree)
     ('list (format "[%s]"
                    (mapconcat
                     (lambda (x)
