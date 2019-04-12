@@ -16,7 +16,6 @@ ELFILES = \
 	purescript-mode.el \
 	purescript-move-nested.el \
 	purescript-navigate-imports.el \
-	purescript-package.el \
 	purescript-simple-indent.el \
 	purescript-sort-imports.el \
 	purescript-str.el \
