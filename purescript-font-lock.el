@@ -91,80 +91,31 @@
 (require 'font-lock)
 (require 'cl-lib)
 
-(defcustom purescript-font-lock-symbols nil
-  "Display \\ and -> and such using symbols in fonts.
-This may sound like a neat trick, but be extra careful: it changes the
-alignment and can thus lead to nasty surprises w.r.t layout.
-If t, try to use whichever font is available.  Otherwise you can
-set it to a particular font of your preference among `japanese-jisx0208'
-and `unicode'."
-  :group 'purescript
-  :type '(choice (const nil)
-                 (const t)
-                 (const unicode)
-                 (const japanese-jisx0208)))
-
-(defconst purescript-font-lock-symbols-alist
-  (append
-   ;; Prefer single-width Unicode font for lambda.
-   (and (fboundp 'decode-char)
-        (memq purescript-font-lock-symbols '(t unicode))
-        (list (cons "\\" (decode-char 'ucs 955))))
-   ;; The symbols can come from a JIS0208 font.
-   (and (fboundp 'make-char) (fboundp 'charsetp) (charsetp 'japanese-jisx0208)
-        (memq purescript-font-lock-symbols '(t japanese-jisx0208))
-        (list (cons "not" (make-char 'japanese-jisx0208 34 76))
-              (cons "\\" (make-char 'japanese-jisx0208 38 75))
-              (cons "->" (make-char 'japanese-jisx0208 34 42))
-              (cons "<-" (make-char 'japanese-jisx0208 34 43))
-              (cons "=>" (make-char 'japanese-jisx0208 34 77))
-              ;; FIXME: I'd like to either use ∀ or ∃ depending on how the
-              ;; `forall' keyword is used, but currently the rest of the
-              ;; code assumes that such ambiguity doesn't happen :-(
-              (cons "forall" (make-char 'japanese-jisx0208 34 79))))
-   ;; Or a unicode font.
-   (and (fboundp 'decode-char)
-        (memq purescript-font-lock-symbols '(t unicode))
-        (list (cons "not" (decode-char 'ucs 172))
-              (cons "->" (decode-char 'ucs 8594))
-              (cons "<-" (decode-char 'ucs 8592))
-              (cons "=>" (decode-char 'ucs 8658))
-              (cons "()" (decode-char 'ucs #X2205))
-              (cons "==" (decode-char 'ucs #X2261))
-              (cons "/=" (decode-char 'ucs #X2262))
-              (cons ">=" (decode-char 'ucs #X2265))
-              (cons "<=" (decode-char 'ucs #X2264))
-              (cons "!!" (decode-char 'ucs #X203C))
-              (cons "&&" (decode-char 'ucs #X2227))
-              (cons "||" (decode-char 'ucs #X2228))
-              (cons "sqrt" (decode-char 'ucs #X221A))
-              (cons "undefined" (decode-char 'ucs #X22A5))
-              (cons "pi" (decode-char 'ucs #X3C0))
-              (cons "~>" (decode-char 'ucs 8669)) ;; Omega language
-              ;; (cons "~>" (decode-char 'ucs 8605)) ;; less desirable
-              (cons "-<" (decode-char 'ucs 8610)) ;; Paterson's arrow syntax
-              ;; (cons "-<" (decode-char 'ucs 10521)) ;; nicer but uncommon
-              (cons "::" (decode-char 'ucs 8759))
-              (list "." (decode-char 'ucs 8728) ; (decode-char 'ucs 9675)
-                    ;; Need a predicate here to distinguish the . used by
-                    ;; forall <foo> . <bar>.
-                    'purescript-font-lock-dot-is-not-composition)
-              (cons "forall" (decode-char 'ucs 8704)))))
-  "Alist mapping PureScript symbols to chars.
-Each element has the form (STRING . CHAR) or (STRING CHAR PREDICATE).
-STRING is the PureScript symbol.
-CHAR is the character with which to represent this symbol.
-PREDICATE if present is a function of one argument (the start position
-of the symbol) which should return non-nil if this mapping should be disabled
-at that position.")
-
-(defun purescript-font-lock-dot-is-not-composition (start)
-  "Return non-nil if the \".\" at START is not a composition operator.
-This is the case if the \".\" is part of a \"forall <tvar> . <type>\"."
-  (save-excursion
-    (goto-char start)
-    (re-search-backward "\\<forall\\>[^.\"]*\\="
-                        (line-beginning-position) t)))
+(defcustom purescript-font-lock-prettify-symbols-alist
+  `(("/\\" . ,(decode-char 'ucs #X2227))
+    ("\\" . ,(decode-char 'ucs 955))
+    ("not" . ,(decode-char 'ucs 172))
+    ("->" . ,(decode-char 'ucs 8594))
+    ("<-" . ,(decode-char 'ucs 8592))
+    ("=>" . ,(decode-char 'ucs 8658))
+    ("()" . ,(decode-char 'ucs #X2205))
+    ("==" . ,(decode-char 'ucs #X2261))
+    ("<<<" . ,(decode-char 'ucs 9675))
+    ("/=" . ,(decode-char 'ucs #X2262))
+    (">=" . ,(decode-char 'ucs #X2265))
+    ("<=" . ,(decode-char 'ucs #X2264))
+    ("!!" . ,(decode-char 'ucs #X203C))
+    ("&&" . ,(decode-char 'ucs #X2227))
+    ("||" . ,(decode-char 'ucs #X2228))
+    ("sqrt" . ,(decode-char 'ucs #X221A))
+    ("undefined" . ,(decode-char 'ucs #X22A5)) ;; Not really needed for Purescript
+    ("pi" . ,(decode-char 'ucs #X3C0))
+    ("~>" . ,(decode-char 'ucs 8669)) ;; Omega language
+    ("-<" . ,(decode-char 'ucs 8610)) ;; Paterson's arrow syntax
+    ("::" . ,(decode-char 'ucs 8759))
+    ("forall" . ,(decode-char 'ucs 8704)))
+  "A set of symbol compositions for use as `prettify-symbols-alist'."
+  :group 'purescript)
 
 ;; Use new vars for the font-lock faces.  The indirection allows people to
 ;; use different faces than in other modes, as before.
@@ -186,57 +137,6 @@ Set to `default' to avoid fontification of them.")
 (defconst purescript-emacs21-features (string-match "[[:alpha:]]" "x")
   "Non-nil if we have regexp char classes.
 Assume this means we have other useful features from Emacs 21.")
-
-(defun purescript-font-lock-compose-symbol (alist)
-  "Compose a sequence of ascii chars into a symbol.
-Regexp match data 0 points to the chars."
-  ;; Check that the chars should really be composed into a symbol.
-  (let* ((start (match-beginning 0))
-         (end (match-end 0))
-         (syntaxes (cond
-                    ((eq (char-syntax (char-after start)) ?w) '(?w))
-                    ;; Special case for the . used for qualified names.
-                    ((and (eq (char-after start) ?\.) (= end (1+ start)))
-                     '(?_ ?\\ ?w))
-                    (t '(?_ ?\\))))
-         sym-data)
-    (if (or (memq (char-syntax (or (char-before start) ?\ )) syntaxes)
-            (memq (char-syntax (or (char-after end) ?\ )) syntaxes)
-            (memq (get-text-property start 'face)
-                  '(font-lock-doc-face font-lock-string-face
-                                       font-lock-comment-face))
-            (and (consp (setq sym-data (cdr (assoc (match-string 0) alist))))
-                 (let ((pred (cadr sym-data)))
-                   (setq sym-data (car sym-data))
-                   (funcall pred start))))
-        ;; No composition for you.  Let's actually remove any composition
-        ;; we may have added earlier and which is now incorrect.
-        (remove-text-properties start end '(composition))
-      ;; That's a symbol alright, so add the composition.
-      (compose-region start end sym-data)))
-  ;; Return nil because we're not adding any face property.
-  nil)
-
-(defun purescript-font-lock-symbols-keywords ()
-  (when (fboundp 'compose-region)
-    (let ((alist nil))
-      (dolist (x purescript-font-lock-symbols-alist)
-        (when (and (if (fboundp 'char-displayable-p)
-                       (char-displayable-p (if (consp (cdr x)) (cadr x) (cdr x)))
-                     (if (fboundp 'latin1-char-displayable-p)
-                         (latin1-char-displayable-p (if (consp (cdr x))
-                                                        (cadr x)
-                                                      (cdr x)))
-                       t))
-                   (not (assoc (car x) alist))) ; Not yet in alist.
-          (push x alist)))
-      (when alist
-        `((,(regexp-opt (mapcar 'car alist) t)
-           (0 (purescript-font-lock-compose-symbol ',alist)
-              ;; In Emacs-21, if the `override' field is nil, the face
-              ;; expressions is only evaluated if the text has currently
-              ;; no face.  So force evaluation by using `keep'.
-              keep)))))))
 
 ;; The font lock regular expressions.
 (defun purescript-font-lock-keywords-create (literate)
@@ -325,13 +225,6 @@ Returns keywords suitable for `font-lock-keywords'."
             ,@(unless purescript-emacs21-features ;Supports nested comments?
                 ;; Expensive.
                 `((,string-and-char 1 font-lock-string-face)))
-
-            ;; This was originally at the very end (and needs to be after
-            ;; all the comment/string/doc highlighting) but it seemed to
-            ;; trigger a bug in Emacs-21.3 which caused the compositions to
-            ;; be "randomly" dropped.  Moving it earlier seemed to reduce
-            ;; the occurrence of the bug.
-            ,@(purescript-font-lock-symbols-keywords)
 
             (,reservedid 1 (symbol-value 'purescript-keyword-face))
             (,reservedsym 1 (symbol-value 'purescript-operator-face))

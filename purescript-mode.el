@@ -340,6 +340,9 @@ see documentation for that variable for more details."
   (set (make-local-variable 'dabbrev-case-distinction) nil)
   (set (make-local-variable 'dabbrev-case-replace) nil)
   (set (make-local-variable 'dabbrev-abbrev-char-regexp) "\\sw\\|[.]")
+  (setq prettify-symbols-alist purescript-font-lock-prettify-symbols-alist)
+  (when (bound-and-true-p purescript-font-lock-symbols)
+    (warn "`purescript-font-lock-symbols' is obsolete: please enable `prettify-symbols-mode' locally or globally instead."))
   )
 
 (defun purescript-fill-paragraph (justify)
