@@ -35,6 +35,7 @@
 (require 'purescript-align-imports)
 (require 'purescript-sort-imports)
 (require 'purescript-string)
+(require 'purescript-font-lock)
 (require 'cl-lib)
 
 ;; All functions/variables start with `(literate-)purescript-'.
