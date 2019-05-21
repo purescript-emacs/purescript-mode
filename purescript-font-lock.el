@@ -134,10 +134,6 @@
   "Face with which to fontify literate comments.
 Set to `default' to avoid fontification of them.")
 
-(defconst purescript-emacs21-features (string-match "[[:alpha:]]" "x")
-  "Non-nil if we have regexp char classes.
-Assume this means we have other useful features from Emacs 21.")
-
 ;; The font lock regular expressions.
 (defun purescript-font-lock-keywords-create (literate)
   "Create fontification definitions for PureScript scripts.
@@ -187,15 +183,6 @@ Returns keywords suitable for `font-lock-keywords'."
              "infixr" "instance" "let" "module" "newtype" "of"
              "then" "type" "where" "_") 'words))
 
-         ;; This unreadable regexp matches strings and character
-         ;; constants.  We need to do this with one regexp to handle
-         ;; stuff like '"':"'".  The regexp is the composition of
-         ;; "([^"\\]|\\.)*" for strings and '([^\\]|\\.[^']*)' for
-         ;; characters, allowing for string continuations.
-         ;; Could probably be improved...
-         (string-and-char
-          (concat "\\(\\(\"\\|" line-prefix "[ \t]*\\\\\\)\\([^\"\\\\\n]\\|\\\\.\\)*\\(\"\\|\\\\[ \t]*$\\)\\|'\\([^'\\\\\n]\\|\\\\.[^'\n]*\\)'\\)"))
-
          ;; Top-level declarations
          (topdecl-var
           (concat line-prefix "\\(" varid "\\)\\s-*"
@@ -222,9 +209,6 @@ Returns keywords suitable for `font-lock-keywords'."
             ("^=======" 0 'font-lock-warning-face t)
             ("^>>>>>>> .*$" 0 'font-lock-warning-face t)
             ("^#.*$" 0 'font-lock-preprocessor-face t)
-            ,@(unless purescript-emacs21-features ;Supports nested comments?
-                ;; Expensive.
-                `((,string-and-char 1 font-lock-string-face)))
 
             (,reservedid 1 (symbol-value 'purescript-keyword-face))
             (,reservedsym 1 (symbol-value 'purescript-operator-face))
