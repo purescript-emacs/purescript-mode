@@ -370,13 +370,13 @@ that should be commented under LaTeX-style literate scripts."
      ("^\\(\\\\\\)end{code}$" 1 "!"))
    purescript-basic-syntactic-keywords))
 
-(defcustom purescript-font-lock-haddock (boundp 'font-lock-doc-face)
-  "If non-nil try to highlight Haddock comments specially."
+(defcustom purescript-font-lock-docstrings (boundp 'font-lock-doc-face)
+  "If non-nil try to highlight docstring comments specially."
   :type 'boolean
   :group 'purescript)
 
-(defvar purescript-font-lock-seen-haddock nil)
-(make-variable-buffer-local 'purescript-font-lock-seen-haddock)
+(defvar purescript-font-lock-seen-docstring nil)
+(make-variable-buffer-local 'purescript-font-lock-seen-docstring)
 
 (defun purescript-syntactic-face-function (state)
   "`font-lock-syntactic-face-function' for PureScript."
@@ -387,26 +387,26 @@ that should be commented under LaTeX-style literate scripts."
         (and (eq purescript-literate 'bird)
              (memq (char-before (nth 8 state)) '(nil ?\n))))
     purescript-literate-comment-face)
-   ;; Try and recognize Haddock comments.  From what I gather from its
+   ;; Try and recognize docstring comments.  From what I gather from its
    ;; documentation, its comments can take the following forms:
    ;; a) {-| ... -}
    ;; b) {-^ ... -}
    ;; c) -- | ...
    ;; d) -- ^ ...
    ;; e) -- ...
-   ;; Where `e' is the tricky one: it is only a Haddock comment if it
-   ;; follows immediately another Haddock comment.  Even an empty line
-   ;; breaks such a sequence of Haddock comments.  It is not clear if `e'
+   ;; Where `e' is the tricky one: it is only a docstring comment if it
+   ;; follows immediately another docstring comment.  Even an empty line
+   ;; breaks such a sequence of docstring comments.  It is not clear if `e'
    ;; can follow any other case, so I interpreted it as following only cases
    ;; c,d,e (not a or b).  In any case, this `e' is expensive since it
-   ;; requires extra work for each and every non-Haddock comment, so I only
-   ;; go through the more expensive check if we've already seen a Haddock
+   ;; requires extra work for each and every non-docstring comment, so I only
+   ;; go through the more expensive check if we've already seen a docstring
    ;; comment in the buffer.
-   ((and purescript-font-lock-haddock
+   ((and purescript-font-lock-docstrings
          (save-excursion
            (goto-char (nth 8 state))
            (or (looking-at "\\(-- \\|{-\\)[ \\t]*[|^]")
-               (and purescript-font-lock-seen-haddock
+               (and purescript-font-lock-seen-docstring
                     (looking-at "-- ")
                     (let ((doc nil)
                           pos)
@@ -417,7 +417,7 @@ that should be commented under LaTeX-style literate scripts."
                                   (looking-at "--\\( [|^]\\)?"))
                         (setq doc (match-beginning 1)))
                       doc)))))
-    (set (make-local-variable 'purescript-font-lock-seen-haddock) t)
+    (set (make-local-variable 'purescript-font-lock-seen-docstring) t)
     font-lock-doc-face)
    (t font-lock-comment-face)))
 
