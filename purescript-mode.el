@@ -35,6 +35,7 @@
 (require 'purescript-align-imports)
 (require 'purescript-sort-imports)
 (require 'purescript-string)
+(require 'purescript-font-lock)
 (require 'cl-lib)
 
 ;; All functions/variables start with `(literate-)purescript-'.
@@ -91,8 +92,7 @@ sure all purescript customize definitions have been loaded."
   (interactive)
   ;; make sure all modules with (defcustom ...)s are loaded
   (mapc 'require
-        '(purescript-font-lock
-          purescript-indentation
+        '(purescript-indentation
           purescript-indent
           purescript-interactive-mode
           purescript-yas))
@@ -320,7 +320,6 @@ see documentation for that variable for more details."
   (set (make-local-variable 'parse-sexp-ignore-comments) nil)
   (set (make-local-variable 'indent-line-function) 'purescript-mode-suggest-indent-choice)
   ;; Set things up for font-lock.
-  (require 'purescript-font-lock)
   (set (make-local-variable 'font-lock-defaults)
        '(purescript-font-lock-choose-keywords
          nil nil ((?\' . "w") (?_  . "w")) nil

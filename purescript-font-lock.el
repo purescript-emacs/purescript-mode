@@ -87,7 +87,6 @@
 
 ;;; Code:
 
-(require 'purescript-mode)
 (require 'font-lock)
 (require 'cl-lib)
 
