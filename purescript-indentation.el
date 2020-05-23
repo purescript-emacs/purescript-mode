@@ -760,7 +760,7 @@ autofill-mode."
     (purescript-indentation-implicit-layout-list parser)))
 
 (defun purescript-indentation-expression-token (token)
-  (member token '("if" "let" "do" "case" "\\" "(" "[" "::"
+  (member token '("if" "let" "do" "case" "\\" "(" "[" "{" "::"
                   value operator no-following-token)))
 
 (defun purescript-indentation-expression ()
