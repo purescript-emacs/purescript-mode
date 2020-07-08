@@ -507,7 +507,7 @@ autofill-mode."
     ("["     . (lambda () (purescript-indentation-list #'purescript-indentation-type
                                                     "]" "," nil)))
     ("{"     . (lambda () (purescript-indentation-list #'purescript-indentation-type
-                                                    "}" "," nil)))))
+                                                    "}" "," "|")))))
 
 (defconst purescript-indentation-expression-list
   '(("data" . purescript-indentation-data)
