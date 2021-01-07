@@ -362,6 +362,8 @@ that should be commented under LaTeX-style literate scripts."
 (defvar purescript-font-lock-seen-docstring nil)
 (make-variable-buffer-local 'purescript-font-lock-seen-docstring)
 
+(defvar purescript-literate)
+
 (defun purescript-syntactic-face-function (state)
   "`font-lock-syntactic-face-function' for PureScript."
   (cond
