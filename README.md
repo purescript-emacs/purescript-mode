@@ -1,5 +1,5 @@
 [![MELPA](https://melpa.org/packages/purescript-mode-badge.svg)](https://melpa.org/#/purescript-mode)
-[![Build Status](https://github.com/purescript-emacs/purescript-mode/workflows/ci/badge.svg)](https://github.com/purescript-emacs/purescript-mode/actions)
+[![Build Status](https://github.com/purescript-emacs/purescript-mode/workflows/CI/badge.svg)](https://github.com/purescript-emacs/purescript-mode/actions)
 
 PureScript Mode for Emacs
 ----------------------
