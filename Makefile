@@ -43,7 +43,9 @@ compile: $(ELCFILES)
 
 $(ELCHECKS): check-%: %.el
 	@$(BATCH) --eval '(when (check-declare-file "$*.el") (error "check-declare failed"))'
-	@$(BATCH) -f batch-byte-compile $*.el
+	@$(BATCH) \
+		 --eval "(setq byte-compile-error-on-warn t)" \
+		 -f batch-byte-compile $*.el
 	@$(RM) $*.elc
 	@if [ -f "$(<:%.el=tests/%-tests.el)" ]; then \
 	if $(BATCH) --eval "(require 'ert)" 2> /dev/null; then \
