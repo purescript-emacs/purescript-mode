@@ -529,7 +529,7 @@ autofill-mode."
     ("rec"   . (lambda () (purescript-indentation-with-starter
                            #'purescript-indentation-expression-layout nil)))
     ("case"  . (lambda () (purescript-indentation-phrase
-                           '(purescript-indentation-expression
+                           `(,(lambda () (purescript-indentation-separated #'purescript-indentation-expression "," nil))
                              "of" purescript-indentation-case-layout))))
     ("\\"    . (lambda () (purescript-indentation-with-starter
                            #'purescript-indentation-lambda-maybe-lambdacase nil)))
@@ -713,7 +713,7 @@ autofill-mode."
             (end (parse-error "Illegal token: %s" current-token))))))
 
 (defun purescript-indentation-case ()
-  (purescript-indentation-expression)
+  (purescript-indentation-separated #'purescript-indentation-expression "," nil)
   (cond ((eq current-token 'end-tokens)
          (purescript-indentation-add-indentation current-indent))
         ((string= current-token "|")
