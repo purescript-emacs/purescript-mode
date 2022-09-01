@@ -178,8 +178,8 @@ Returns keywords suitable for `font-lock-keywords'."
           ;; spec syntax, but they are not reserved.
           ;; `_' can go in here since it has temporary word syntax.
           (regexp-opt
-           '("case" "class" "data" "default" "deriving" "do"
-             "else" "if" "import" "in" "infix" "infixl"
+           '("ado" "case" "class" "data" "default" "deriving"
+             "do" "else" "if" "import" "in" "infix" "infixl"
              "infixr" "instance" "let" "module" "newtype" "of"
              "then" "type" "where" "_") 'words))
 
