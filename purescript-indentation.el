@@ -1,4 +1,4 @@
-;;; purescript-indentation.el -- indentation module for PureScript Mode
+;;; purescript-indentation.el -- indentation module for PureScript Mode -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2009  Kristof Bastiaensen
 
