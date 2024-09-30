@@ -445,7 +445,9 @@ is asked to show extra info for the items matching QUERY.."
   :safe 'integerp)
 
 (defun purescript-mode-suggest-indent-choice ()
-  "Ran when the user tries to indent in the buffer but no indentation mode has been selected.
+  "Ran when the user tries to indent in the buffer but no indentation mode
+has been selected.
+
 Brings up the documentation for purescript-mode-hook."
   (describe-variable 'purescript-mode-hook))
 

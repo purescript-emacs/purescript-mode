@@ -432,7 +432,8 @@ Returns the location of the start of the comment, nil otherwise."
         (purescript-indent-skip-blanks-and-newlines-forward end))))
 
 (defun purescript-indent-next-symbol-safe (end)
-  "Puts point to the next following symbol, or to end if there are no more symbols in the sexp."
+  "Puts point to the next following symbol, or to end if there are no more
+symbols in the sexp."
   (condition-case errlist (purescript-indent-next-symbol end)
     (error (goto-char end))))
 
