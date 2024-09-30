@@ -60,13 +60,13 @@ When MESSAGE is non-nil, display a message with the version."
   (interactive "P")
   (let* ((purescript-mode-dir (ignore-errors
                              (file-name-directory (or (locate-library "purescript-mode") ""))))
-         (_version (format "purescript-mode version %s (%s @ %s)"
+         (version (format "purescript-mode version %s (%s @ %s)"
                            purescript-version
                            purescript-git-version
                            purescript-mode-dir)))
     (if here
-        (insert _version)
-      (message "%s" _version))))
+        (insert version)
+      (message "%s" version))))
 
 ;;;###autoload
 (defun purescript-mode-view-news ()
