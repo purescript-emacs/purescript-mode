@@ -434,7 +434,7 @@ Returns the location of the start of the comment, nil otherwise."
 (defun purescript-indent-next-symbol-safe (end)
   "Puts point to the next following symbol, or to end if there are no more
 symbols in the sexp."
-  (condition-case errlist (purescript-indent-next-symbol end)
+  (condition-case nil (purescript-indent-next-symbol end)
     (error (goto-char end))))
 
 (defun purescript-indent-separate-valdef (start end)
@@ -1292,7 +1292,7 @@ We stay in the cycle as long as the TAB key is pressed."
         (if marker
             (goto-char (marker-position marker)))))))
 
-(defun purescript-indent-region (start end)
+(defun purescript-indent-region (_start _end)
   (error "Auto-reindentation of a region is not supported"))
 
 ;;; alignment functions
@@ -1430,9 +1430,9 @@ TYPE is either \\='guard or \\='rpurs."
             (if regstack
                 (purescript-indent-shift-columns maxcol regstack)))))))
 
-(defun purescript-indent-align-guards-and-rpurs (start end)
+(defun purescript-indent-align-guards-and-rpurs (_start _end)
   "Align the guards and rpurs of functions in the region, which must be active."
-  ;; The `start' and `end' args are dummys right now: they're just there so
+  ;; The `_start' and `_end' args are dummys right now: they're just there so
   ;; we can use the "r" interactive spec which properly signals an error.
   (interactive "*r")
   (purescript-indent-align-def t 'guard)

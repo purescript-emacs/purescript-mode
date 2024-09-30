@@ -413,7 +413,7 @@ see documentation for that variable for more details."
 
 ;;;###autoload(add-to-list 'auto-mode-alist '("\\.purs\\'" . purescript-mode))
 
-(defun purescript-pursuit (query &optional info)
+(defun purescript-pursuit (query &optional _info)
   "Do a Pursuit search for QUERY.
 When `purescript-pursuit-command' is non-nil, this command runs
 that.  Otherwise, it opens a Pursuit search result in the browser.
