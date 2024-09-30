@@ -38,12 +38,12 @@
 
 ;;;###autoload
 (defun purescript-sort-imports ()
-  (interactive)
   "Sort the import list at point. It sorts the current group
 i.e. an import list separated by blank lines on either side.
 
 If the region is active, it will restrict the imports to sort
 within that region."
+  (interactive)
   (when (purescript-sort-imports-at-import)
     (let* ((points (purescript-sort-imports-decl-points))
            (current-string (buffer-substring-no-properties (car points)
