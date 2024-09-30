@@ -1321,7 +1321,7 @@ of the regions to move."
 (defun purescript-indent-align-def (p-arg type)
   "Align guards or rpurs within the current definition before point.
 If P-ARG is t align all defs up to the mark.
-TYPE is either 'guard or 'rpurs."
+TYPE is either \\='guard or \\='rpurs."
   (save-excursion
     (let (start-block end-block
                       (maxcol (if (eq type 'rpurs) purescript-indent-rpurs-align-column 0))

@@ -87,7 +87,7 @@ When MESSAGE is non-nil, display a message with the version."
 ;;;###autoload
 (defun purescript-customize ()
   "Browse the purescript customize sub-tree.
-This calls 'customize-browse' with purescript as argument and makes
+This calls `customize-browse' with purescript as argument and makes
 sure all purescript customize definitions have been loaded."
   (interactive)
   ;; make sure all modules with (defcustom ...)s are loaded
