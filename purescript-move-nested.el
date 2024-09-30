@@ -1,4 +1,4 @@
-;;; purescript-move-nested.el --- Change the column of text nested below a line
+;;; purescript-move-nested.el --- Change the column of text nested below a line -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  Chris Done
 

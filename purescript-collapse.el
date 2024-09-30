@@ -1,4 +1,4 @@
-;;; purescript-collapse.el --- Collapse expressions
+;;; purescript-collapse.el --- Collapse expressions -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2014 Chris Done. All rights reserved.
 

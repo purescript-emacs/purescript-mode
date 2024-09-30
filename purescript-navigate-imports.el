@@ -1,4 +1,4 @@
-;;; purescript-navigate-imports.el --- A function for cycling through PureScript import lists
+;;; purescript-navigate-imports.el --- A function for cycling through PureScript import lists -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  Chris Done
 

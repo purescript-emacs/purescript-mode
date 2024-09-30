@@ -1,4 +1,4 @@
-;;; purescript-align-imports.el --- Align the import lines in a PureScript file
+;;; purescript-align-imports.el --- Align the import lines in a PureScript file -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  Chris Done
 

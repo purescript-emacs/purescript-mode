@@ -1,4 +1,4 @@
-;;; purescript-simple-indent.el --- Simple indentation module for PureScript Mode
+;;; purescript-simple-indent.el --- Simple indentation module for PureScript Mode -*- lexical-binding: t -*-
 
 ;; Copyright (C) 1998  Heribert Schuetz, Graeme E Moss
 

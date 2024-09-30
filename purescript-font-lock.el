@@ -1,4 +1,4 @@
-;;; purescript-font-lock.el --- Font locking module for PureScript Mode
+;;; purescript-font-lock.el --- Font locking module for PureScript Mode -*- lexical-binding: t -*-
 
 ;; Copyright 2003, 2004, 2005, 2006, 2007, 2008  Free Software Foundation, Inc.
 ;; Copyright 1997-1998  Graeme E Moss, and Tommy Thorn

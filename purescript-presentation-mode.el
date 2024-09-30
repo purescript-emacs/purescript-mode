@@ -1,4 +1,4 @@
-;;; purescript-presentation-mode.el --- Presenting PureScript things
+;;; purescript-presentation-mode.el --- Presenting PureScript things -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2013  Chris Done
 

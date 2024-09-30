@@ -1,4 +1,4 @@
-;;; purescript-utils.el --- General utility functions used by purescript-mode modules
+;;; purescript-utils.el --- General utility functions used by purescript-mode modules -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2013  Herbert Valerio Riedel
 

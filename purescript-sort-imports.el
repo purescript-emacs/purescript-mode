@@ -1,4 +1,4 @@
-;;; purescript-sort-imports.el --- Sort the list of PureScript imports at the point alphabetically
+;;; purescript-sort-imports.el --- Sort the list of PureScript imports at the point alphabetically -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  Chris Done
 

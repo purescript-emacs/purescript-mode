@@ -1,4 +1,4 @@
-;;; purescript-str.el --- PureScript related string utilities
+;;; purescript-str.el --- PureScript related string utilities -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2013  Herbert Valerio Riedel
 
