@@ -1,4 +1,4 @@
-;;; purescript-yas.el --- Customization support for Luke Hoersten's yasnippets
+;;; purescript-yas.el --- Customization support for Luke Hoersten's yasnippets -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2013  John Wiegley, Luke Hoersten
 

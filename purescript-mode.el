@@ -1,4 +1,4 @@
-;;; purescript-mode.el --- A PureScript editing mode    -*- coding: utf-8 -*-
+;;; purescript-mode.el --- A PureScript editing mode    -*- coding: utf-8 lexical-binding: t -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008  Free Software Foundation, Inc
 ;; Copyright (C) 1992, 1997-1998  Simon Marlow, Graeme E Moss, and Tommy Thorn
@@ -60,13 +60,13 @@ When MESSAGE is non-nil, display a message with the version."
   (interactive "P")
   (let* ((purescript-mode-dir (ignore-errors
                              (file-name-directory (or (locate-library "purescript-mode") ""))))
-         (_version (format "purescript-mode version %s (%s @ %s)"
+         (version (format "purescript-mode version %s (%s @ %s)"
                            purescript-version
                            purescript-git-version
                            purescript-mode-dir)))
     (if here
-        (insert _version)
-      (message "%s" _version))))
+        (insert version)
+      (message "%s" version))))
 
 ;;;###autoload
 (defun purescript-mode-view-news ()
@@ -87,7 +87,7 @@ When MESSAGE is non-nil, display a message with the version."
 ;;;###autoload
 (defun purescript-customize ()
   "Browse the purescript customize sub-tree.
-This calls 'customize-browse' with purescript as argument and makes
+This calls `customize-browse' with purescript as argument and makes
 sure all purescript customize definitions have been loaded."
   (interactive)
   ;; make sure all modules with (defcustom ...)s are loaded
@@ -413,7 +413,7 @@ see documentation for that variable for more details."
 
 ;;;###autoload(add-to-list 'auto-mode-alist '("\\.purs\\'" . purescript-mode))
 
-(defun purescript-pursuit (query &optional info)
+(defun purescript-pursuit (query &optional _info)
   "Do a Pursuit search for QUERY.
 When `purescript-pursuit-command' is non-nil, this command runs
 that.  Otherwise, it opens a Pursuit search result in the browser.
@@ -445,7 +445,9 @@ is asked to show extra info for the items matching QUERY.."
   :safe 'integerp)
 
 (defun purescript-mode-suggest-indent-choice ()
-  "Ran when the user tries to indent in the buffer but no indentation mode has been selected.
+  "Ran when the user tries to indent in the buffer but no indentation mode
+has been selected.
+
 Brings up the documentation for purescript-mode-hook."
   (describe-variable 'purescript-mode-hook))
 

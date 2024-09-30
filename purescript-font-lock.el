@@ -1,4 +1,4 @@
-;;; purescript-font-lock.el --- Font locking module for PureScript Mode
+;;; purescript-font-lock.el --- Font locking module for PureScript Mode -*- lexical-binding: t -*-
 
 ;; Copyright 2003, 2004, 2005, 2006, 2007, 2008  Free Software Foundation, Inc.
 ;; Copyright 1997-1998  Graeme E Moss, and Tommy Thorn
@@ -448,7 +448,7 @@ that should be commented under LaTeX-style literate scripts."
 (defun turn-on-purescript-font-lock ()
   "Turns on font locking in current buffer for PureScript 1.4 scripts.
 
-Changes the current buffer's `font-lock-defaults', and adds the
+Changes the current buffer\\='s `font-lock-defaults', and adds the
 following variables:
 
    `purescript-keyword-face'      for reserved keywords and syntax,
@@ -470,7 +470,7 @@ Use the variable `font-lock-maximum-decoration' to choose
 non-default levels of fontification.  For example, adding this to
 .emacs:
 
-  (setq font-lock-maximum-decoration '((purescript-mode . 2) (t . 0)))
+  (setq font-lock-maximum-decoration \\='((purescript-mode . 2) (t . 0)))
 
 uses level two fontification for `purescript-mode' and default level for
 all other modes.  See documentation on this variable for further
@@ -480,9 +480,9 @@ To alter an attribute of a face, add a hook.  For example, to change
 the foreground colour of comments to brown, add the following line to
 .emacs:
 
-  (add-hook 'purescript-font-lock-hook
+  (add-hook \\='purescript-font-lock-hook
       (lambda ()
-          (set-face-foreground 'purescript-comment-face \"brown\")))
+          (set-face-foreground \\='purescript-comment-face \"brown\")))
 
 Note that the colours available vary from system to system.  To see
 what colours are available on your system, call
@@ -490,7 +490,7 @@ what colours are available on your system, call
 
 To turn font locking on for all PureScript buffers, add this to .emacs:
 
-  (add-hook 'purescript-mode-hook 'turn-on-purescript-font-lock)
+  (add-hook \\='purescript-mode-hook \\='turn-on-purescript-font-lock)
 
 To turn font locking on for the current buffer, call
 `turn-on-purescript-font-lock'.  To turn font locking off in the current

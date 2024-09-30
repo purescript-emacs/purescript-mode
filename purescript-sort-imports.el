@@ -1,4 +1,4 @@
-;;; purescript-sort-imports.el --- Sort the list of PureScript imports at the point alphabetically
+;;; purescript-sort-imports.el --- Sort the list of PureScript imports at the point alphabetically -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  Chris Done
 
@@ -38,12 +38,12 @@
 
 ;;;###autoload
 (defun purescript-sort-imports ()
-  (interactive)
   "Sort the import list at point. It sorts the current group
 i.e. an import list separated by blank lines on either side.
 
 If the region is active, it will restrict the imports to sort
 within that region."
+  (interactive)
   (when (purescript-sort-imports-at-import)
     (let* ((points (purescript-sort-imports-decl-points))
            (current-string (buffer-substring-no-properties (car points)

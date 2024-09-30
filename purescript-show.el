@@ -1,4 +1,4 @@
-;;; purescript-show.el --- A pretty printer for PureScript Show values
+;;; purescript-show.el --- A pretty printer for PureScript Show values -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2011  Chris Done
 

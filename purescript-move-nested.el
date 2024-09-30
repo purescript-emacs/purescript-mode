@@ -1,4 +1,4 @@
-;;; purescript-move-nested.el --- Change the column of text nested below a line
+;;; purescript-move-nested.el --- Change the column of text nested below a line -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  Chris Done
 
@@ -34,7 +34,8 @@
 
 ;;;###autoload
 (defun purescript-move-nested (cols)
-  "Shift the nested off-side-rule block adjacent to point by COLS columns to the right.
+  "Shift the nested off-side-rule block adjacent to point by COLS columns
+to the right.
 
 In Transient Mark mode, if the mark is active, operate on the contents
 of the region instead.

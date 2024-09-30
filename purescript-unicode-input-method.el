@@ -1,4 +1,4 @@
-;;; purescript-unicode-input-method.el --- PureScript Unicode helper functions  -*- coding: utf-8 -*-
+;;; purescript-unicode-input-method.el --- PureScript Unicode helper functions  -*- coding: utf-8 lexical-binding: t -*-
 
 ;; Copyright (C) 2010-2011  Roel van Dijk
 

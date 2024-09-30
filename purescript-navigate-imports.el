@@ -1,4 +1,4 @@
-;;; purescript-navigate-imports.el --- A function for cycling through PureScript import lists
+;;; purescript-navigate-imports.el --- A function for cycling through PureScript import lists -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2010  Chris Done
 
@@ -98,10 +98,9 @@
                     (purescript-navigate-imports-after-imports-p) ;; This one just speeds it up.
                     (purescript-navigate-imports-line)))
       (forward-line))
-    (let ((point (point)))
-      (if (purescript-navigate-imports-line)
-          (point)
-        nil))))
+    (if (purescript-navigate-imports-line)
+        (point)
+      nil)))
 
 (defun purescript-navigate-imports-line ()
   "Try to match the current line as a regexp."

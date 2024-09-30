@@ -1,4 +1,4 @@
-;;; purescript-decl-scan.el --- Declaration scanning module for PureScript Mode
+;;; purescript-decl-scan.el --- Declaration scanning module for PureScript Mode -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2004, 2005, 2007, 2009  Free Software Foundation, Inc.
 ;; Copyright (C) 1997-1998  Graeme E Moss

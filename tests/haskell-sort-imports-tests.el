@@ -1,4 +1,4 @@
-;;; purescript-sort-imports-tests.el --- Unit tests for purescript-sort-imports
+;;; purescript-sort-imports-tests.el --- Unit tests for purescript-sort-imports -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2014 Chris Done. All rights reserved.
 

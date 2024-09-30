@@ -1,3 +1,4 @@
+;;; purescript-string.el --- string manipulation utilties -*- lexical-binding: t -*-
 ;;;###autoload
 (defun purescript-trim (string)
   (replace-regexp-in-string

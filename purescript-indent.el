@@ -1,4 +1,4 @@
-;;; purescript-indent.el --- "semi-intelligent" indentation module for PureScript Mode
+;;; purescript-indent.el --- "semi-intelligent" indentation module for PureScript Mode -*- lexical-binding: t -*-
 
 ;; Copyright 2004, 2005, 2007, 2008, 2009  Free Software Foundation, Inc.
 ;; Copyright 1997-1998  Guy Lapalme
@@ -432,8 +432,9 @@ Returns the location of the start of the comment, nil otherwise."
         (purescript-indent-skip-blanks-and-newlines-forward end))))
 
 (defun purescript-indent-next-symbol-safe (end)
-  "Puts point to the next following symbol, or to end if there are no more symbols in the sexp."
-  (condition-case errlist (purescript-indent-next-symbol end)
+  "Puts point to the next following symbol, or to end if there are no more
+symbols in the sexp."
+  (condition-case nil (purescript-indent-next-symbol end)
     (error (goto-char end))))
 
 (defun purescript-indent-separate-valdef (start end)
@@ -1291,7 +1292,7 @@ We stay in the cycle as long as the TAB key is pressed."
         (if marker
             (goto-char (marker-position marker)))))))
 
-(defun purescript-indent-region (start end)
+(defun purescript-indent-region (_start _end)
   (error "Auto-reindentation of a region is not supported"))
 
 ;;; alignment functions
@@ -1320,7 +1321,7 @@ of the regions to move."
 (defun purescript-indent-align-def (p-arg type)
   "Align guards or rpurs within the current definition before point.
 If P-ARG is t align all defs up to the mark.
-TYPE is either 'guard or 'rpurs."
+TYPE is either \\='guard or \\='rpurs."
   (save-excursion
     (let (start-block end-block
                       (maxcol (if (eq type 'rpurs) purescript-indent-rpurs-align-column 0))
@@ -1429,9 +1430,9 @@ TYPE is either 'guard or 'rpurs."
             (if regstack
                 (purescript-indent-shift-columns maxcol regstack)))))))
 
-(defun purescript-indent-align-guards-and-rpurs (start end)
+(defun purescript-indent-align-guards-and-rpurs (_start _end)
   "Align the guards and rpurs of functions in the region, which must be active."
-  ;; The `start' and `end' args are dummys right now: they're just there so
+  ;; The `_start' and `_end' args are dummys right now: they're just there so
   ;; we can use the "r" interactive spec which properly signals an error.
   (interactive "*r")
   (purescript-indent-align-def t 'guard)
