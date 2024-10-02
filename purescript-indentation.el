@@ -463,21 +463,39 @@ autofill-mode."
 (defun purescript-indentation-first-indentation ()
   (if (eq purescript-literate 'bird) '(2) '(0)))
 
+(defun purescript-get-previous-indentation-hack ()
+  "Return previous indentation level as a list element.
+
+This function is a temporary workaround for
+`purescript-newline-and-indent' asking for indent before going to the
+new line, which makes it indistinguishable from just attempting to
+indent the current line. This has to be fixed elsewhere."
+  (list
+   (if (string= this-command "purescript-newline-and-indent")
+       (current-indentation) ;; current line is actually previous one
+     (save-excursion
+       (forward-line -1)
+       (current-indentation)))))
+
 (defun purescript-indentation-find-indentations ()
-  (let ((ppss (syntax-ppss)))
-    (cond
-     ((nth 3 ppss)
-      (purescript-indentation-first-indentation))
-     ((nth 4 ppss)
-      (if (save-excursion
-            (and (skip-syntax-forward "-")
-                 (eolp)
-                 (not (> (forward-line 1) 0))
-                 (not (nth 4 (syntax-ppss)))))
-          (purescript-indentation-parse-to-indentations)
-        (purescript-indentation-first-indentation)))
-     (t
-      (purescript-indentation-parse-to-indentations)))))
+  (condition-case nil
+      (let ((ppss (syntax-ppss)))
+        (cond
+         ((nth 3 ppss)
+          (purescript-indentation-first-indentation))
+         ((nth 4 ppss)
+          (if (save-excursion
+                (and (skip-syntax-forward "-")
+                     (eolp)
+                     (not (> (forward-line 1) 0))
+                     (not (nth 4 (syntax-ppss)))))
+              (purescript-indentation-parse-to-indentations)
+            (purescript-indentation-first-indentation)))
+         (t
+          (purescript-indentation-parse-to-indentations))))
+    ;; Ideally it should not return parse error but if it does just use the previous
+    ;; indentation.
+    (parse-error (purescript-get-previous-indentation-hack))))
 
 (defconst purescript-indentation-unicode-tokens
   '(("→" . "->")     ;; #x2192 RIGHTWARDS ARROW
