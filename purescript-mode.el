@@ -37,6 +37,7 @@
 (require 'purescript-string)
 (require 'purescript-font-lock)
 (require 'cl-lib)
+(cl-eval-when 'compile (require 'find-file))
 
 ;; All functions/variables start with `(literate-)purescript-'.
 
@@ -340,7 +341,9 @@ see documentation for that variable for more details."
   (set (make-local-variable 'dabbrev-case-distinction) nil)
   (set (make-local-variable 'dabbrev-case-replace) nil)
   (set (make-local-variable 'dabbrev-abbrev-char-regexp) "\\sw\\|[.]")
-  (setq prettify-symbols-alist purescript-font-lock-prettify-symbols-alist)
+  (setq prettify-symbols-alist purescript-font-lock-prettify-symbols-alist
+        ;; make (ff-find-other-file) find .js FFI file, given .purs
+        ff-other-file-alist '((".purs$" (".js"))))
   (when (bound-and-true-p purescript-font-lock-symbols)
     (warn "`purescript-font-lock-symbols' is obsolete: please enable `prettify-symbols-mode' locally or globally instead."))
   )
