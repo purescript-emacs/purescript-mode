@@ -22,6 +22,7 @@ ELFILES = \
 	purescript-string.el \
 	purescript-unicode-input-method.el \
 	purescript-utils.el \
+	purescript-decl-scan.el \
 	purescript-yas.el
 
 ELCFILES = $(ELFILES:.el=.elc)
