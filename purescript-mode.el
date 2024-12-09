@@ -340,6 +340,7 @@ see documentation for that variable for more details."
   (set (make-local-variable 'dabbrev-case-distinction) nil)
   (set (make-local-variable 'dabbrev-case-replace) nil)
   (set (make-local-variable 'dabbrev-abbrev-char-regexp) "\\sw\\|[.]")
+  (setq-local beginning-of-defun-function 'purescript-beginning-of-defun)
   (setq prettify-symbols-alist purescript-font-lock-prettify-symbols-alist)
   (when (bound-and-true-p purescript-font-lock-symbols)
     (warn "`purescript-font-lock-symbols' is obsolete: please enable `prettify-symbols-mode' locally or globally instead."))
@@ -470,6 +471,35 @@ Brings up the documentation for purescript-mode-hook."
                            (format " [ %s .. ]" (purescript-string-take (purescript-trim (cadr lines)) 10))
                          ""))))))
 
+(defun purescript-current-line-string ()
+  "Returns current line as a string."
+  (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+
+(defun purescript-beginning-of-defun-single ()
+  (while (and (looking-at-p (rx (* space) eol))
+              (not (bobp)))
+    (forward-line -1)) ; can't get indentation on an empty line
+  (let ((indent-level (current-indentation)))
+    (while
+        (not
+         (or (ignore (forward-line -1)) ; do-while implementation
+             (bobp)
+             (and (< (current-indentation) indent-level)
+                  (string-match-p
+                   (rx (*? anything)
+                       (or bol space word-boundary) "="
+                       (or eol space word-boundary))
+                   ;; Emacs doesn't allow to limit search just to the curent line
+                   ;; barring the regex eol, but eol overly complicates matching.
+                   (purescript-current-line-string))))))))
+
+(defun purescript-beginning-of-defun (&optional repeat)
+  "Move point to the beginning of the current PureScript function."
+  (purescript-beginning-of-defun-single)
+  (dotimes (_ (if repeat
+                  (- repeat 1) ; the function was already called once
+                0))
+    (purescript-beginning-of-defun-single)))
 
 (provide 'purescript-mode)
 
