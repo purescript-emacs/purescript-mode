@@ -172,16 +172,22 @@ Returns keywords suitable for `font-lock-keywords'."
                   ;;            "@" "~" "=>") t)
                   "\\(->\\|\\.\\.\\|::\\|∷\\|<-\\|=>\\|[=@\\|~]\\)"
                   "\\S_"))
+         ;; These are only keywords when appear at top-level, optionally with
+         ;; indentation. They are not reserved and in other levels would represent
+         ;; record fields or other identifiers.
+         (toplevel-keywords
+          (rx line-start (zero-or-more whitespace)
+              (group (or "type" "module" "import" "data" "class" "newtype"
+                         "instance" "derive")
+                     word-end)))
          ;; Reserved identifiers
          (reservedid
           ;; `as', `hiding', and `qualified' are part of the import
           ;; spec syntax, but they are not reserved.
           ;; `_' can go in here since it has temporary word syntax.
           (regexp-opt
-           '("ado" "case" "class" "data" "default" "deriving"
-             "do" "else" "if" "import" "in" "infix" "infixl"
-             "infixr" "instance" "let" "module" "newtype" "of"
-             "then" "type" "where" "_") 'words))
+           '("ado" "case" "default" "do" "else" "if" "in" "infix"
+             "infixl" "infixr" "let" "of" "then" "where" "_") 'words))
 
          ;; Top-level declarations
          (topdecl-var
@@ -210,6 +216,7 @@ Returns keywords suitable for `font-lock-keywords'."
             ("^>>>>>>> .*$" 0 'font-lock-warning-face t)
             ("^#.*$" 0 'font-lock-preprocessor-face t)
 
+            (,toplevel-keywords 1 (symbol-value 'purescript-keyword-face))
             (,reservedid 1 (symbol-value 'purescript-keyword-face))
             (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Special case for `as', `hiding', `safe' and `qualified', which are
