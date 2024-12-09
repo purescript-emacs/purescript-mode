@@ -178,7 +178,7 @@ Returns keywords suitable for `font-lock-keywords'."
          (toplevel-keywords
           (rx line-start (zero-or-more whitespace)
               (group (or "type" "module" "import" "data" "class" "newtype"
-                         "instance")
+                         "instance" "derive")
                      word-end)))
          ;; Reserved identifiers
          (reservedid
@@ -186,7 +186,7 @@ Returns keywords suitable for `font-lock-keywords'."
           ;; spec syntax, but they are not reserved.
           ;; `_' can go in here since it has temporary word syntax.
           (regexp-opt
-           '("ado" "case" "default" "deriving" "do" "else" "if" "in" "infix"
+           '("ado" "case" "default" "do" "else" "if" "in" "infix"
              "infixl" "infixr" "let" "of" "then" "where" "_") 'words))
 
          ;; Top-level declarations
