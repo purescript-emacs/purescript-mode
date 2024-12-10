@@ -998,7 +998,13 @@ indent the current line. This has to be fixed elsewhere."
 
 (defun purescript-indentation-peek-token ()
   "Return token starting at point."
-  (cond ((looking-at "\\(if\\|then\\|else\\|let\\|in\\|ado\\|mdo\\|rec\\|\\(?:[[:word:]]+\\.\\)*do\\|proc\\|case\\|of\\|where\\|module\\|data\\|type\\|newtype\\|class\\|instance\\)\\([^[:alnum:]'_]\\|$\\)")
+  (cond ((looking-at
+          (rx (group
+               (or "if" "then" "else" "let" "in" "ado" "mdo" "rec"
+                   (seq (0+ (seq (1+ word) ".")) "do")
+                   "proc" "case" "of" "where" "module" "data" "type" "newtype"
+                   "class" "instance"))
+              (group (or (not (any alnum "'_")) eol))))
          (match-string-no-properties 1))
         ((looking-at "[][(){}[,;]")
          (match-string-no-properties 0))
