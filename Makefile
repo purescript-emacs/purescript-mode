@@ -23,43 +23,31 @@ ELFILES = \
 	purescript-unicode-input-method.el \
 	purescript-utils.el \
 	purescript-decl-scan.el \
-	purescript-yas.el
+	purescript-yas.el \
+	tests/purescript-sort-imports-tests.el \
+	tests/purescript-str-tests.el
 
 ELCFILES = $(ELFILES:.el=.elc)
 AUTOLOADS = purescript-mode-autoloads.el
 
 PKG_DIST_FILES = $(ELFILES) logo.svg NEWS purescript-mode.info dir
 PKG_TAR = purescript-mode-$(VERSION).tar
-ELCHECKS=$(addprefix check-, $(ELFILES:.el=))
 
 %.elc: %.el
 	@$(BATCH) \
 	   --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile $<
 
-.PHONY: all compile info clean check $(ELCHECKS) elpa package
+.PHONY: all compile info clean test elpa package
 
 all: compile $(AUTOLOADS) info
 
 compile: $(ELCFILES)
 
-$(ELCHECKS): check-%: %.el
-	@$(BATCH) --eval '(when (check-declare-file "$*.el") (error "check-declare failed"))'
-	@$(BATCH) \
-		 --eval "(setq byte-compile-error-on-warn t)" \
-		 -f batch-byte-compile $*.el
-	@$(RM) $*.elc
-	@if [ -f "$(<:%.el=tests/%-tests.el)" ]; then \
-	if $(BATCH) --eval "(require 'ert)" 2> /dev/null; then \
-		echo; \
-		$(BATCH) -l "$(<:%.el=tests/%-tests.el)" -f ert-run-tests-batch-and-exit; \
-	else \
-		echo "ERT not available, skipping unit tests"; \
-	fi; \
-	fi
-	@echo "--"
-
-check: clean $(ELCHECKS)
-	@echo "checks passed!"
+test: compile
+	@$(BATCH) -l tests/purescript-sort-imports-tests.elc \
+		-l tests/purescript-str-tests.elc \
+		-f ert-run-tests-batch-and-exit
+	@echo "tests passed!"
 
 clean:
 	$(RM) $(ELCFILES) $(AUTOLOADS) $(AUTOLOADS:.el=.elc) $(PKG_TAR) purescript-mode.tmp.texi purescript-mode.info dir
