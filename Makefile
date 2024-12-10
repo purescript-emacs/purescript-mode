@@ -34,7 +34,7 @@ ELCHECKS=$(addprefix check-, $(ELFILES:.el=))
 
 %.elc: %.el
 	@$(BATCH) \
-	   -f batch-byte-compile $<
+	   --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile $<
 
 .PHONY: all compile info clean check $(ELCHECKS) elpa package
 
