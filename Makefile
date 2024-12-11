@@ -33,9 +33,9 @@ AUTOLOADS = purescript-mode-autoloads.el
 PKG_DIST_FILES = $(ELFILES) logo.svg NEWS purescript-mode.info dir
 PKG_TAR = purescript-mode-$(VERSION).tar
 
-%.elc: %.el
+.el.elc:
 	@$(BATCH) \
-	   --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile $<
+	   --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile $(ELFILES)
 
 .PHONY: all compile info clean test elpa package
 
