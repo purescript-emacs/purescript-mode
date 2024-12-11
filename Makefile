@@ -35,7 +35,7 @@ PKG_TAR = purescript-mode-$(VERSION).tar
 
 %.elc: %.el
 	@$(BATCH) \
-	   --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile $<
+	   --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile $(ELFILES)
 
 .PHONY: all compile info clean test elpa package
 
