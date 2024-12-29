@@ -1,2 +1,0 @@
-(define-package "purescript-mode" "@VERSION@" "A PureScript editing mode"
-  '((emacs "25.1")))

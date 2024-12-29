@@ -11,6 +11,8 @@
 ;;          2014      Tim Dysinger <tim@dysinger.net>
 ;; Keywords: faces files PureScript
 ;; URL: https://github.com/purescript-emacs/purescript-mode
+;; Package-Version: @VERSION@
+;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
 
