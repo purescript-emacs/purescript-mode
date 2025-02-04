@@ -1,4 +1,4 @@
-;; unit tests for purescript-str.el
+;; unit tests for purescript-str.el -*- lexical-binding: t -*-
 
 (require 'ert)
 
