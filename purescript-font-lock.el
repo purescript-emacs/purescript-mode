@@ -371,7 +371,7 @@ that should be commented under LaTeX-style literate scripts."
 (defun purescript-syntactic-face-function (state)
   "`font-lock-syntactic-face-function' for PureScript."
   (cond
-   ((nth 3 state) font-lock-string-face) ; as normal
+   ((nth 3 state) 'font-lock-string-face) ; as normal
    ;; Else comment.  If it's from syntax table, use default face.
    ((or (eq 'syntax-table (nth 7 state))
         (and (eq purescript-literate 'bird)
@@ -408,8 +408,8 @@ that should be commented under LaTeX-style literate scripts."
                         (setq doc (match-beginning 1)))
                       doc)))))
     (set (make-local-variable 'purescript-font-lock-seen-docstring) t)
-    font-lock-doc-face)
-   (t font-lock-comment-face)))
+    'font-lock-doc-face)
+   (t 'font-lock-comment-face)))
 
 (defconst purescript-font-lock-keywords
   (purescript-font-lock-keywords-create nil)
