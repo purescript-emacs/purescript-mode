@@ -35,7 +35,6 @@
           "\\(\"[^\"]*\" \\)?"
           "[ ]*\\([A-Za-z0-9_.']*.*\\)"))
 
-;;;###autoload
 (defun purescript-sort-imports ()
   "Sort the import list at point. It sorts the current group
 i.e. an import list separated by blank lines on either side.
