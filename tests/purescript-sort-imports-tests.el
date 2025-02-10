@@ -45,23 +45,23 @@ import B
 import B
 ")))
   (should (with-temp-buffer
-            (insert "import qualified A
+            (insert "import A (A, B, C)
 import B
 ")
             (goto-char (point-min))
             (purescript-sort-imports)
             (string= (buffer-string)
-                     "import qualified A
+                     "import A (A, B, C)
 import B
 ")))
   (should (with-temp-buffer
-            (insert "import qualified \"mtl\" A
+            (insert "import A (mtl)
 import B
 ")
             (goto-char (point-min))
             (purescript-sort-imports)
             (string= (buffer-string)
-                     "import qualified \"mtl\" A
+                     "import A (mtl)
 import B
 "))))
 
@@ -116,8 +116,8 @@ import Data.Aeson.Types
 import Data.Aeson.Parser.Internal (decodeWith, decodeStrictWith,
                                    eitherDecodeWith, eitherDecodeStrictWith,
                                    jsonEOF, json, jsonEOF', json')
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as L
+import Data.ByteString as B
+import Data.ByteString.Lazy as L
 ")
             (goto-char (point-min))
             (purescript-sort-imports)
@@ -127,8 +127,8 @@ import Data.Aeson.Parser.Internal (decodeWith, decodeStrictWith,
                                    eitherDecodeWith, eitherDecodeStrictWith,
                                    jsonEOF, json, jsonEOF', json')
 import Data.Aeson.Types
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as L
+import Data.ByteString as B
+import Data.ByteString.Lazy as L
 "))))
 
 (provide 'purescript-sort-imports-tests)
