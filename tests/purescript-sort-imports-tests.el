@@ -21,88 +21,88 @@
 (require 'purescript-sort-imports)
 
 (ert-deftest empty-buffer ()
-  (should (with-temp-buffer
-            (purescript-sort-imports)
-            t)))
+  (with-temp-buffer
+    (purescript-sort-imports)
+    t))
 
 (ert-deftest single-line ()
-  (should (with-temp-buffer
-            (insert "import A\n")
-            (goto-char (point-min))
-            (purescript-sort-imports)
-            (string= (buffer-string)
+  (with-temp-buffer
+    (insert "import A\n")
+    (goto-char (point-min))
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
                      "import A\n"))))
 
 (ert-deftest two-idem ()
-  (should (with-temp-buffer
-            (insert "import A
+  (with-temp-buffer
+    (insert "import A
 import B
 ")
-            (goto-char (point-min))
-            (purescript-sort-imports)
-            (string= (buffer-string)
+    (goto-char (point-min))
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
                      "import A
 import B
 ")))
-  (should (with-temp-buffer
-            (insert "import qualified A
+  (with-temp-buffer
+    (insert "import A (A, B, C)
 import B
 ")
-            (goto-char (point-min))
-            (purescript-sort-imports)
-            (string= (buffer-string)
-                     "import qualified A
+    (goto-char (point-min))
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
+                     "import A (A, B, C)
 import B
 ")))
-  (should (with-temp-buffer
-            (insert "import qualified \"mtl\" A
+  (with-temp-buffer
+    (insert "import A (mtl)
 import B
 ")
-            (goto-char (point-min))
-            (purescript-sort-imports)
-            (string= (buffer-string)
-                     "import qualified \"mtl\" A
+    (goto-char (point-min))
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
+                     "import A (mtl)
 import B
 "))))
 
 (ert-deftest two-rev ()
-  (should (with-temp-buffer
-            (insert "import B
+  (with-temp-buffer
+    (insert "import B
 import A
 ")
-            (goto-char (point-min))
-            (purescript-sort-imports)
-            (string= (buffer-string)
+    (goto-char (point-min))
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
                      "import A
 import B
 "))))
 
 (ert-deftest file-structure ()
-  (should (with-temp-buffer
-            (insert "module A where
+  (with-temp-buffer
+    (insert "module A where
 import B
 import A
 ")
-            ;; test at line 2
-            (goto-char (point-min))
-            (forward-line 1)
-            (purescript-sort-imports)
-            (string= (buffer-string)
+    ;; test at line 2
+    (goto-char (point-min))
+    (forward-line 1)
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
                      "module A where
 import A
 import B
 ")))
-  (should (with-temp-buffer
-            (insert "module C where
+  (with-temp-buffer
+    (insert "module C where
 
 import B
 import A
 ")
-            ;; test at line 3
-            (goto-char (point-min))
-            (forward-line 2)
-            (purescript-sort-imports)
-            (string= (buffer-string)
+    ;; test at line 3
+    (goto-char (point-min))
+    (forward-line 2)
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
                      "module C where
 
 import A
@@ -110,25 +110,25 @@ import B
 "))))
 
 (ert-deftest bos-270 ()
-  (should (with-temp-buffer
-            (insert "import Data.Aeson.Encode (encode)
+  (with-temp-buffer
+    (insert "import Data.Aeson.Encode (encode)
 import Data.Aeson.Types
 import Data.Aeson.Parser.Internal (decodeWith, decodeStrictWith,
                                    eitherDecodeWith, eitherDecodeStrictWith,
                                    jsonEOF, json, jsonEOF', json')
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as L
+import Data.ByteString as B
+import Data.ByteString.Lazy as L
 ")
-            (goto-char (point-min))
-            (purescript-sort-imports)
-            (string= (buffer-string)
+    (goto-char (point-min))
+    (purescript-sort-imports)
+    (should (string= (buffer-string)
                      "import Data.Aeson.Encode (encode)
 import Data.Aeson.Parser.Internal (decodeWith, decodeStrictWith,
                                    eitherDecodeWith, eitherDecodeStrictWith,
                                    jsonEOF, json, jsonEOF', json')
 import Data.Aeson.Types
-import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as L
+import Data.ByteString as B
+import Data.ByteString.Lazy as L
 "))))
 
 (provide 'purescript-sort-imports-tests)

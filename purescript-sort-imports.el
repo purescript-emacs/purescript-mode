@@ -32,11 +32,9 @@
 
 (defvar purescript-sort-imports-regexp
   (concat "^import[ ]+"
-          "\\(qualified \\)?"
-          "[ ]*\\(\"[^\"]*\" \\)?"
+          "\\(\"[^\"]*\" \\)?"
           "[ ]*\\([A-Za-z0-9_.']*.*\\)"))
 
-;;;###autoload
 (defun purescript-sort-imports ()
   "Sort the import list at point. It sorts the current group
 i.e. an import list separated by blank lines on either side.
@@ -68,9 +66,8 @@ within that region."
 
 (defun purescript-sort-imports-normalize (i)
   "Normalize an import, if possible, so that it can be sorted."
-  (if (string-match purescript-sort-imports-regexp
-                    i)
-      (match-string 3 i)
+  (if (string-match purescript-sort-imports-regexp i)
+      (match-string 2 i)
     i))
 
 (defun purescript-sort-imports-collect-imports ()
