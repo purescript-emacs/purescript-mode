@@ -25,6 +25,7 @@ ELFILES = \
 	purescript-decl-scan.el \
 	purescript-yas.el \
 	tests/purescript-sort-imports-tests.el \
+	tests/purescript-font-lock-tests.el \
 	tests/purescript-str-tests.el
 
 ELCFILES = $(ELFILES:.el=.elc)
@@ -46,6 +47,7 @@ compile: $(ELCFILES)
 test: compile
 	@$(BATCH) -l tests/purescript-sort-imports-tests.elc \
 		-l tests/purescript-str-tests.elc \
+		-l tests/purescript-font-lock-tests.elc \
 		-f ert-run-tests-batch-and-exit
 	@echo "tests passed!"
 
