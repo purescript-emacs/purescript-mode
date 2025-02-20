@@ -75,7 +75,6 @@ hello
      (7 19 font-lock-string-face))))
 
 (ert-deftest multiline-string-with-hash ()
-  :expected-result :failed
   (purescript-test-ranges
    "foo = \"\"\"
 # a string with hashtag
