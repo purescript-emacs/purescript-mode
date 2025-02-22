@@ -262,17 +262,6 @@ Returns keywords suitable for `font-lock-keywords'."
             (,sym 0 (if (eq (char-after (match-beginning 0)) ?:)
                         purescript-constructor-face
                       purescript-operator-face))))
-    (unless (boundp 'font-lock-syntactic-keywords)
-      (cl-case literate
-        (bird
-         (setq keywords
-               `(("^[^>\n].*$" 0 purescript-comment-face t)
-                 ,@keywords
-                 ("^>" 0 purescript-default-face t))))
-        ((latex tex)
-         (setq keywords
-               `((purescript-fl-latex-comments 0 'font-lock-comment-face t)
-                 ,@keywords)))))
     keywords))
 
 ;; The next three aren't used in Emacs 21.
