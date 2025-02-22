@@ -80,11 +80,14 @@ hello
    "foo = \"\"\"
 # a string with hashtag
   # another # one
+-- not a comment --
+-- | not a comment
+{- not a comment -}
 \"\"\"
 "
    '((1 3 font-lock-function-name-face)
      (5 5 font-lock-variable-name-face)
-     (7 55 font-lock-string-face))))
+     (7 114 font-lock-string-face))))
 
 (ert-deftest multiline-string-with-embedded-strings ()
   :expected-result :failed
