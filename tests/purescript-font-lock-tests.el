@@ -102,7 +102,7 @@ this = \"still a string\"
 
 (ert-deftest docs-bar-comment-different-spacings ()
   (purescript-test-ranges
-   "-- | Docs comment space
+   "-- | Docs comment 1 space
 --    | Docs comment many spaces
 "
    '((1 57 font-lock-doc-face))))
@@ -112,7 +112,6 @@ this = \"still a string\"
 https://github.com/purescript/documentation/blob/master/language/Syntax.md
 PureScript explicitly doesn't support Haskell-style docs continuation
 where vertical bar is omitted"
-  :expected-result :failed
   (purescript-test-ranges
    "-- | Docs start
 -- continue

@@ -363,9 +363,6 @@ that should be commented under LaTeX-style literate scripts."
   :type 'boolean
   :group 'purescript)
 
-(defvar purescript-font-lock-seen-docstring nil)
-(make-variable-buffer-local 'purescript-font-lock-seen-docstring)
-
 (defvar purescript-literate)
 
 (defun purescript-syntactic-face-function (state)
@@ -383,31 +380,16 @@ that should be commented under LaTeX-style literate scripts."
    ;; b) {-^ ... -}
    ;; c) -- | ...
    ;; d) -- ^ ...
-   ;; e) -- ...
-   ;; Where `e' is the tricky one: it is only a docstring comment if it
-   ;; follows immediately another docstring comment.  Even an empty line
-   ;; breaks such a sequence of docstring comments.  It is not clear if `e'
-   ;; can follow any other case, so I interpreted it as following only cases
-   ;; c,d,e (not a or b).  In any case, this `e' is expensive since it
-   ;; requires extra work for each and every non-docstring comment, so I only
-   ;; go through the more expensive check if we've already seen a docstring
-   ;; comment in the buffer.
+
+   ;; Worth pointing out purescript opted out of ability to continue
+   ;; docs-comment by omitting an empty line like in Haskell, see:
+   ;; https://github.com/purescript/documentation/blob/master/language/Syntax.md
+   ;; IOW, given a `-- | foo' line followed by `-- bar' line, the latter is a
+   ;; plain comment.
    ((and purescript-font-lock-docstrings
          (save-excursion
            (goto-char (nth 8 state))
-           (or (looking-at "\\(-- \\|{-\\)[ \\t]*[|^]")
-               (and purescript-font-lock-seen-docstring
-                    (looking-at "-- ")
-                    (let ((doc nil)
-                          pos)
-                      (while (and (not doc)
-                                  (setq pos (line-beginning-position))
-                                  (forward-comment -1)
-                                  (eq (line-beginning-position 2) pos)
-                                  (looking-at "--\\( [|^]\\)?"))
-                        (setq doc (match-beginning 1)))
-                      doc)))))
-    (set (make-local-variable 'purescript-font-lock-seen-docstring) t)
+           (looking-at "\\(-- \\|{-\\)[ \\t]*[|^]")))
     'font-lock-doc-face)
    (t 'font-lock-comment-face)))
 
