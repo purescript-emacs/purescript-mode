@@ -99,3 +99,58 @@ this = \"still a string\"
    '((1 3 font-lock-function-name-face)
      (5 5 font-lock-variable-name-face)
      (7 37 font-lock-string-face))))
+
+(ert-deftest docs-bar-comment-different-spacings ()
+  (purescript-test-ranges
+   "-- | Docs comment space
+--    | Docs comment many spaces
+"
+   '((1 57 font-lock-doc-face))))
+
+(ert-deftest docs-bar-comment-continuation ()
+  "Acc. to
+https://github.com/purescript/documentation/blob/master/language/Syntax.md
+PureScript explicitly doesn't support Haskell-style docs continuation
+where vertical bar is omitted"
+  :expected-result :failed
+  (purescript-test-ranges
+   "-- | Docs start
+-- continue
+"
+   '((1 16 font-lock-doc-face)
+     (17 19 font-lock-comment-delimiter-face)
+     (20 28 font-lock-comment-face))))
+
+(ert-deftest docs-cap-comment-different-spacings ()
+  (purescript-test-ranges
+   "-- ^ Docs comment space
+--    ^ Docs comment many spaces
+"
+   '((1 57 font-lock-doc-face))))
+
+(ert-deftest multiline-comment ()
+  (purescript-test-ranges
+   "{-
+multiline comment
+-- | not a doc
+--| not a doc
+still comment
+-}
+noncomment
+{--}
+noncomment
+"
+   '((1 64 font-lock-comment-face)
+     (65 66 font-lock-comment-delimiter-face)
+     (67 78 nil)
+     (79 80 font-lock-comment-face)
+     (81 82 font-lock-comment-delimiter-face)
+     (83 93 nil))))
+
+(ert-deftest multiline-comment-w-delimiter-inside ()
+  :expected-result :failed
+  (purescript-test-ranges
+   "{- {-{- -} noncomment"
+   '((1 6 font-lock-comment-face)
+     (7 10 font-lock-comment-delimiter-face)
+     (11 21 nil))))
