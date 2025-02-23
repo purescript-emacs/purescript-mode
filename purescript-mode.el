@@ -322,16 +322,7 @@ see documentation for that variable for more details."
   (set (make-local-variable 'comment-end-skip) "[ \t]*\\(-}\\|\\s>\\)")
   (set (make-local-variable 'parse-sexp-ignore-comments) nil)
   (set (make-local-variable 'indent-line-function) 'purescript-mode-suggest-indent-choice)
-  ;; Set things up for font-lock.
-  (set (make-local-variable 'font-lock-defaults)
-       '(purescript-font-lock-choose-keywords
-         nil nil ((?\' . "w") (?_  . "w")) nil
-         (font-lock-syntactic-keywords
-          . purescript-font-lock-choose-syntactic-keywords)
-         (font-lock-syntactic-face-function
-          . purescript-syntactic-face-function)
-         ;; Get help from font-lock-syntactic-keywords.
-         (parse-sexp-lookup-properties . t)))
+  (purescript-font-lock-defaults-create) ; set things up for font-lock.
   ;; PureScript's layout rules mean that TABs have to be handled with extra care.
   ;; The safer option is to avoid TABs.  The second best is to make sure
   ;; TABs stops are 8 chars apart, as mandated by the PureScript Report.  --Stef
