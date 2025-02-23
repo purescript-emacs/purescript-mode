@@ -169,3 +169,25 @@ noncomment
      (40 40 nil)
      (41 43 font-lock-type-face)
      (44 45 nil))))
+
+(ert-deftest module-in-different-locations ()
+  (purescript-test-ranges
+   "module React.Basic.Hooks ( Component, module React.Basic
+                         , module Data.Tuple.Nested ) where
+"
+   '((1 6 font-lock-keyword-face)
+     (7 7 nil)
+     (8 24 font-lock-type-face)
+     (25 27 nil)
+     (28 36 font-lock-type-face)
+     (37 38 nil)
+     (39 44 font-lock-keyword-face)
+     (45 45 nil)
+     (46 56 font-lock-type-face)
+     (57 84 nil)
+     (85 90 font-lock-keyword-face)
+     (91 91 nil)
+     (92 108 font-lock-type-face)
+     (109 111 nil)
+     (112 116 font-lock-keyword-face)
+     (117 117 nil))))
