@@ -31,20 +31,32 @@
 ;; functions, etc.  Supports full PureScript 1.4 as well as LaTeX- and
 ;; Bird-style literate scripts.
 ;;
-;; Installation:
-;;
-;; To turn font locking on for all PureScript buffers under the PureScript
-;; mode of Moss&Thorn, add this to .emacs:
-;;
-;;    (add-hook 'purescript-mode-hook 'turn-on-purescript-font-lock)
-;;
-;; Otherwise, call `turn-on-purescript-font-lock'.
-;;
-;;
 ;; Customisation:
 ;;
-;; The colours and level of font locking may be customised.  See the
-;; documentation on `turn-on-purescript-font-lock' for more details.
+;; Two levels of fontification are defined: level one (the default)
+;; and level two (more colour).  The former does not colour operators.
+;; Use the variable `font-lock-maximum-decoration' to choose
+;; non-default levels of fontification.  For example, adding this to
+;; .emacs:
+;;
+;;   (setq font-lock-maximum-decoration \\='((purescript-mode . 2) (t . 0)))
+;;
+;; uses level two fontification for `purescript-mode' and default level for all
+;; other modes. See documentation on this variable for further details.
+;;
+;; To alter an attribute of a face, add a hook. For example, to change the
+;; foreground colour of comments to brown, add the following line to .emacs:
+;;
+;;   (add-hook \\='purescript-font-lock-hook
+;;       (lambda ()
+;;           (set-face-foreground \\='purescript-comment-face \"brown\")))
+;;
+;; Note that the colours available vary from system to system. To see what
+;; colours are available on your system, call `list-colors-display' from emacs.
+;;
+;; Bird-style literate PureScript scripts are supported: If the value of
+;; `purescript-literate-bird-style' (automatically set by the PureScript mode of
+;; Moss&Thorn) is non-nil, a Bird-style literate script is assumed.
 ;;
 ;; Present Limitations/Future Work (contributions are most welcome!):
 ;;
@@ -416,73 +428,6 @@ that should be commented under LaTeX-style literate scripts."
           . purescript-syntactic-face-function)
          ;; Get help from font-lock-syntactic-keywords.
          (parse-sexp-lookup-properties . t))))
-
-;; The main functions.
-(defun turn-on-purescript-font-lock ()
-  "Turns on font locking in current buffer for PureScript 1.4 scripts.
-
-Changes the current buffer\\='s `font-lock-defaults', and adds the
-following variables:
-
-   `purescript-keyword-face'      for reserved keywords and syntax,
-   `purescript-constructor-face'  for data- and type-constructors, class names,
-                               and module names,
-   `purescript-operator-face'     for symbolic and alphanumeric operators,
-   `purescript-default-face'      for ordinary code.
-
-The variables are initialised to the following font lock default faces:
-
-   `purescript-keyword-face'      `font-lock-keyword-face'
-   `purescript-constructor-face'  `font-lock-type-face'
-   `purescript-operator-face'     `font-lock-function-name-face'
-   `purescript-default-face'      <default face>
-
-Two levels of fontification are defined: level one (the default)
-and level two (more colour).  The former does not colour operators.
-Use the variable `font-lock-maximum-decoration' to choose
-non-default levels of fontification.  For example, adding this to
-.emacs:
-
-  (setq font-lock-maximum-decoration \\='((purescript-mode . 2) (t . 0)))
-
-uses level two fontification for `purescript-mode' and default level for
-all other modes.  See documentation on this variable for further
-details.
-
-To alter an attribute of a face, add a hook.  For example, to change
-the foreground colour of comments to brown, add the following line to
-.emacs:
-
-  (add-hook \\='purescript-font-lock-hook
-      (lambda ()
-          (set-face-foreground \\='purescript-comment-face \"brown\")))
-
-Note that the colours available vary from system to system.  To see
-what colours are available on your system, call
-`list-colors-display' from emacs.
-
-To turn font locking on for all PureScript buffers, add this to .emacs:
-
-  (add-hook \\='purescript-mode-hook \\='turn-on-purescript-font-lock)
-
-To turn font locking on for the current buffer, call
-`turn-on-purescript-font-lock'.  To turn font locking off in the current
-buffer, call `turn-off-purescript-font-lock'.
-
-Bird-style literate PureScript scripts are supported: If the value of
-`purescript-literate-bird-style' (automatically set by the PureScript mode
-of Moss&Thorn) is non-nil, a Bird-style literate script is assumed.
-
-Invokes `purescript-font-lock-hook' if not nil."
-  (purescript-font-lock-defaults-create)
-  (run-hooks 'purescript-font-lock-hook)
-  (turn-on-font-lock))
-
-(defun turn-off-purescript-font-lock ()
-  "Turns off font locking in current buffer."
-  (font-lock-mode -1))
-
-;; Provide ourselves:
 
 (provide 'purescript-font-lock)
 
