@@ -153,3 +153,19 @@ noncomment
    '((1 6 font-lock-comment-face)
      (7 10 font-lock-comment-delimiter-face)
      (11 21 nil))))
+
+(ert-deftest type-with-typenames-and--> ()
+  (purescript-test-ranges
+   "type Component props = Effect (props -> JSX)"
+   '((1 4 font-lock-keyword-face)
+     (5 5 nil)
+     (6 14 font-lock-type-face)
+     (15 21 nil)
+     (22 22 font-lock-variable-name-face)
+     (23 23 nil)
+     (24 29 font-lock-type-face)
+     (30 37 nil)
+     (38 39 font-lock-variable-name-face)
+     (40 40 nil)
+     (41 43 font-lock-type-face)
+     (44 45 nil))))
