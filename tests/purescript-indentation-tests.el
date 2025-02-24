@@ -75,7 +75,6 @@ data Foo = Foo1 Bar |
            Foo3 Unit"))
 
 (ert-deftest imports-zero-indented ()
-  :expected-result :failed
   (purescript-test-indentation "
 module MyModule where
 

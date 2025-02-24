@@ -993,7 +993,7 @@ indent the current line. This has to be fixed elsewhere."
   "Return token starting at point."
   (cond ((looking-at
           (rx (group
-               (or "if" "then" "else" "let" "in" "ado" "mdo" "rec"
+               (or "if" "then" "else" "let" "in" "ado" "mdo" "rec" "import"
                    (seq (0+ (seq (1+ word) ".")) "do")
                    "proc" "case" "of" "where" "module" "data" "type" "newtype"
                    "class" "instance"))
