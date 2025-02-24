@@ -177,7 +177,7 @@ Returns keywords suitable for `font-lock-keywords'."
          ;; record fields or other identifiers.
          (toplevel-keywords
           (rx line-start (zero-or-more whitespace)
-              (group (or "type" "module" "import" "data" "class" "newtype"
+              (group (or "type" "import" "data" "class" "newtype"
                          "instance" "derive")
                      word-end)))
          ;; Reserved identifiers
@@ -186,7 +186,7 @@ Returns keywords suitable for `font-lock-keywords'."
           ;; spec syntax, but they are not reserved.
           ;; `_' can go in here since it has temporary word syntax.
           (regexp-opt
-           '("ado" "case" "do" "else" "if" "in" "infix"
+           '("ado" "case" "do" "else" "if" "in" "infix" "module"
              "infixl" "infixr" "let" "of" "then" "where" "_") 'words))
 
          ;; Top-level declarations
@@ -262,17 +262,6 @@ Returns keywords suitable for `font-lock-keywords'."
             (,sym 0 (if (eq (char-after (match-beginning 0)) ?:)
                         purescript-constructor-face
                       purescript-operator-face))))
-    (unless (boundp 'font-lock-syntactic-keywords)
-      (cl-case literate
-        (bird
-         (setq keywords
-               `(("^[^>\n].*$" 0 purescript-comment-face t)
-                 ,@keywords
-                 ("^>" 0 purescript-default-face t))))
-        ((latex tex)
-         (setq keywords
-               `((purescript-fl-latex-comments 0 'font-lock-comment-face t)
-                 ,@keywords)))))
     keywords))
 
 ;; The next three aren't used in Emacs 21.
@@ -363,9 +352,6 @@ that should be commented under LaTeX-style literate scripts."
   :type 'boolean
   :group 'purescript)
 
-(defvar purescript-font-lock-seen-docstring nil)
-(make-variable-buffer-local 'purescript-font-lock-seen-docstring)
-
 (defvar purescript-literate)
 
 (defun purescript-syntactic-face-function (state)
@@ -383,31 +369,16 @@ that should be commented under LaTeX-style literate scripts."
    ;; b) {-^ ... -}
    ;; c) -- | ...
    ;; d) -- ^ ...
-   ;; e) -- ...
-   ;; Where `e' is the tricky one: it is only a docstring comment if it
-   ;; follows immediately another docstring comment.  Even an empty line
-   ;; breaks such a sequence of docstring comments.  It is not clear if `e'
-   ;; can follow any other case, so I interpreted it as following only cases
-   ;; c,d,e (not a or b).  In any case, this `e' is expensive since it
-   ;; requires extra work for each and every non-docstring comment, so I only
-   ;; go through the more expensive check if we've already seen a docstring
-   ;; comment in the buffer.
+
+   ;; Worth pointing out purescript opted out of ability to continue
+   ;; docs-comment by omitting an empty line like in Haskell, see:
+   ;; https://github.com/purescript/documentation/blob/master/language/Syntax.md
+   ;; IOW, given a `-- | foo' line followed by `-- bar' line, the latter is a
+   ;; plain comment.
    ((and purescript-font-lock-docstrings
          (save-excursion
            (goto-char (nth 8 state))
-           (or (looking-at "\\(-- \\|{-\\)[ \\t]*[|^]")
-               (and purescript-font-lock-seen-docstring
-                    (looking-at "-- ")
-                    (let ((doc nil)
-                          pos)
-                      (while (and (not doc)
-                                  (setq pos (line-beginning-position))
-                                  (forward-comment -1)
-                                  (eq (line-beginning-position 2) pos)
-                                  (looking-at "--\\( [|^]\\)?"))
-                        (setq doc (match-beginning 1)))
-                      doc)))))
-    (set (make-local-variable 'purescript-font-lock-seen-docstring) t)
+           (looking-at "\\(-- \\|{-\\)[ \\t]*[|^]")))
     'font-lock-doc-face)
    (t 'font-lock-comment-face)))
 
