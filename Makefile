@@ -90,6 +90,7 @@ $(AUTOLOADS): $(ELFILES) purescript-mode.elc
 	$(BATCH) \
 		--eval '(setq make-backup-files nil)' \
 		--eval '(setq generated-autoload-file "$(CURDIR)/$@")' \
+		--eval "(require 'autoload)" \
 		-f batch-update-autoloads "."
 
 # HACK: embed version number into .elc file
