@@ -101,10 +101,11 @@ this = \"still a string\"
 
 (ert-deftest docs-bar-comment-different-spacings ()
   (purescript-test-ranges
-   "-- | Docs comment 1 space
+   "--|  Docs comment 0 space
+-- | Docs comment 1 space
 --    | Docs comment many spaces
 "
-   '((1 57 font-lock-doc-face))))
+   '((1 85 font-lock-doc-face))))
 
 (ert-deftest docs-bar-comment-continuation ()
   "Acc. to
