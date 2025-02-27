@@ -249,3 +249,57 @@ mkMyComponent = do
      (186 192 nil)
      (193 194 font-lock-type-face)
      (195 195 nil))))
+
+(ert-deftest instance-miscellaneous ()
+  "A diverse code snippet using `instance' (from Data.List module)"
+  (purescript-test-ranges
+   "instance extendNonEmptyList :: Extend NonEmptyList where
+  extend f w@(NonEmptyList (_ :| as)) =
+    NonEmptyList (f w :| (foldr go { val: Nil, acc: Nil } as).val)
+    where
+    go a { val, acc } = { val: f (NonEmptyList (a :| acc)) : val, acc: a : acc }
+instance semigroupNonEmptyList :: Semigroup (NonEmptyList a) where
+  append (NonEmptyList (a :| as)) as' =
+    NonEmptyList (a :| as <> toList as')
+derive newtype instance foldableNonEmptyList :: Foldable NonEmptyList
+"
+   '((1 8 font-lock-keyword-face) (9 28 nil)
+     (29 30 font-lock-variable-name-face) (31 31 nil)
+     (32 37 font-lock-type-face) (38 38 nil)
+     (39 50 font-lock-type-face) (51 51 nil)
+     (52 56 font-lock-keyword-face) (57 69 nil)
+     (70 70 font-lock-variable-name-face) (71 71 nil)
+     (72 83 font-lock-type-face) (84 85 nil)
+     (86 86 font-lock-keyword-face) (87 87 nil)
+     (88 89 font-lock-type-face) (90 95 nil)
+     (96 96 font-lock-variable-name-face) (97 101 nil)
+     (102 113 font-lock-type-face) (114 119 nil)
+     (120 121 font-lock-type-face) (122 137 nil)
+     (138 138 font-lock-type-face) (139 139 nil)
+     (140 142 font-lock-type-face) (143 147 nil)
+     (148 148 font-lock-type-face) (149 149 nil)
+     (150 152 font-lock-type-face) (153 158 nil)
+     (159 159 font-lock-variable-name-face) (160 168 nil)
+     (169 173 font-lock-keyword-face) (174 196 nil)
+     (197 197 font-lock-variable-name-face) (198 203 nil)
+     (204 204 font-lock-type-face) (205 208 nil)
+     (209 220 font-lock-type-face) (221 224 nil)
+     (225 226 font-lock-type-face) (227 233 nil)
+     (234 234 font-lock-type-face) (235 243 nil)
+     (244 244 font-lock-type-face) (245 247 nil)
+     (248 248 font-lock-type-face) (249 255 nil)
+     (256 263 font-lock-keyword-face) (264 286 nil)
+     (287 288 font-lock-variable-name-face) (289 289 nil)
+     (290 298 font-lock-type-face) (299 300 nil)
+     (301 312 font-lock-type-face) (313 316 nil)
+     (317 321 font-lock-keyword-face) (322 332 nil)
+     (333 344 font-lock-type-face) (345 348 nil)
+     (349 350 font-lock-type-face) (351 360 nil)
+     (361 361 font-lock-variable-name-face) (362 366 nil)
+     (367 378 font-lock-type-face) (379 382 nil)
+     (383 384 font-lock-type-face) (385 388 nil)
+     (389 390 font-lock-variable-name-face) (391 403 nil)
+     (404 409 font-lock-keyword-face) (410 448 nil)
+     (449 450 font-lock-variable-name-face) (451 451 nil)
+     (452 459 font-lock-type-face) (460 460 nil)
+     (461 472 font-lock-type-face) (473 473 nil))))
