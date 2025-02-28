@@ -326,7 +326,7 @@ that should be commented under LaTeX-style literate scripts."
     ("\\s_\\{3,\\}" (0 (cond ((numberp (nth 4 (syntax-ppss)))
                               ;; There are no such instances inside nestable comments
                               nil)
-                             ((string-match "\\`-*\\'" (match-string 0))
+                             ((string-match "\\`-*|?\\'" (match-string 0))
                               ;; Sequence of hyphens.  Do nothing in
                               ;; case of things like `{---'.
                               nil)
@@ -376,7 +376,7 @@ that should be commented under LaTeX-style literate scripts."
    ((and purescript-font-lock-docstrings
          (save-excursion
            (goto-char (nth 8 state))
-           (looking-at "\\(-- \\|{-\\)[ \\t]*[|^]")))
+           (looking-at "\\(--\\|{-\\)[ \\t]*[|^]")))
     'font-lock-doc-face)
    (t 'font-lock-comment-face)))
 
