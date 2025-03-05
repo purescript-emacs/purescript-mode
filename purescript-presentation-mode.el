@@ -35,7 +35,7 @@
 
 (define-key purescript-presentation-mode-map (kbd "q") 'quit-window)
 
-(defun purescript-present (name session code)
+(defun purescript-present (name _ code)
   "Present CODE in a popup buffer suffixed with NAME and set
 SESSION as the current purescript-session."
   (let* ((name (format "*PureScript Presentation%s*" name))
