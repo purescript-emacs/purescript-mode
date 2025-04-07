@@ -224,7 +224,8 @@ Returns keywords suitable for `font-lock-keywords'."
 
             (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Case for `foreign import'
-            ("\\<\\(foreign\\)[ \t]+\\(import\\>\\)"
+            (,(rx line-start (0+ whitespace)
+                  (group "foreign") (1+ whitespace) (group "import") word-end)
              (1 (symbol-value 'purescript-keyword-face) nil lax)
              (2 (symbol-value 'purescript-keyword-face) nil lax))
 

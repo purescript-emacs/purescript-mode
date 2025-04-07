@@ -312,6 +312,8 @@ foreign import func3
 foreign import
   func4 :: Effect Int
   foreign import func5 -- invalid indentation, but allowed in other context
+invalid_dont_highlight foreign import func6
+foreign importinvalid
 "
    '((1 7 font-lock-keyword-face)
      (8 8 nil)
@@ -348,4 +350,8 @@ foreign import
      (120 125 font-lock-keyword-face)
      (126 132 nil)
      (133 135 font-lock-comment-delimiter-face)
-     (136 185 font-lock-comment-face))))
+     (136 185 font-lock-comment-face)
+     (186 207 font-lock-function-name-face)
+     (208 229 nil)
+     (230 236 font-lock-function-name-face)
+     (237 251 nil))))
