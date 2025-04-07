@@ -223,13 +223,10 @@ Returns keywords suitable for `font-lock-keywords'."
              (4 (symbol-value 'purescript-keyword-face) nil lax))
 
             (,reservedsym 1 (symbol-value 'purescript-operator-face))
-            ;; Special case for `foreign import'
-            ;; keywords in foreign import statements but are not otherwise reserved.
-            ("\\<\\(foreign\\)[ \t]+\\(import\\)[ \t]+\\(?:\\(ccall\\|stdcall\\|cplusplus\\|jvm\\|dotnet\\)[ \t]+\\)?\\(?:\\(safe\\|unsafe\\|interruptible\\)[ \t]+\\)?"
+            ;; Case for `foreign import'
+            ("\\<\\(foreign\\)[ \t]+\\(import\\>\\)"
              (1 (symbol-value 'purescript-keyword-face) nil lax)
-             (2 (symbol-value 'purescript-keyword-face) nil lax)
-             (3 (symbol-value 'purescript-keyword-face) nil lax)
-             (4 (symbol-value 'purescript-keyword-face) nil lax))
+             (2 (symbol-value 'purescript-keyword-face) nil lax))
 
             (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Special case for `foreign export'
