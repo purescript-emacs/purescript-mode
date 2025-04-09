@@ -303,3 +303,55 @@ derive newtype instance foldableNonEmptyList :: Foldable NonEmptyList
      (449 450 font-lock-variable-name-face) (451 451 nil)
      (452 459 font-lock-type-face) (460 460 nil)
      (461 472 font-lock-type-face) (473 473 nil))))
+
+(ert-deftest foreign-imports ()
+  (purescript-test-ranges
+   "foreign import func2 :: Effect Int
+foreign import func3
+  :: Effect Int
+foreign import
+  func4 :: Effect Int
+  foreign import func5 -- invalid indentation, but allowed in other context
+invalid_dont_highlight foreign import func6
+foreign importinvalid
+"
+   '((1 7 font-lock-keyword-face)
+     (8 8 nil)
+     (9 14 font-lock-keyword-face)
+     (15 21 nil)
+     (22 23 font-lock-variable-name-face)
+     (24 24 nil)
+     (25 30 font-lock-type-face)
+     (31 31 nil)
+     (32 34 font-lock-type-face)
+     (35 35 nil)
+     (36 42 font-lock-keyword-face)
+     (43 43 nil)
+     (44 49 font-lock-keyword-face)
+     (50 58 nil)
+     (59 60 font-lock-variable-name-face)
+     (61 61 nil)
+     (62 67 font-lock-type-face)
+     (68 68 nil)
+     (69 71 font-lock-type-face)
+     (72 72 nil)
+     (73 79 font-lock-keyword-face)
+     (80 80 nil)
+     (81 86 font-lock-keyword-face)
+     (87 95 nil)
+     (96 97 font-lock-variable-name-face)
+     (98 98 nil)
+     (99 104 font-lock-type-face)
+     (105 105 nil)
+     (106 108 font-lock-type-face)
+     (109 111 nil)
+     (112 118 font-lock-keyword-face)
+     (119 119 nil)
+     (120 125 font-lock-keyword-face)
+     (126 132 nil)
+     (133 135 font-lock-comment-delimiter-face)
+     (136 185 font-lock-comment-face)
+     (186 207 font-lock-function-name-face)
+     (208 229 nil)
+     (230 236 font-lock-function-name-face)
+     (237 251 nil))))
