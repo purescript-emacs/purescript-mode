@@ -222,14 +222,12 @@ Returns keywords suitable for `font-lock-keywords'."
              (3 (symbol-value 'purescript-keyword-face) nil lax)
              (4 (symbol-value 'purescript-keyword-face) nil lax))
 
-            (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Case for `foreign import'
             (,(rx line-start (0+ whitespace)
                   (group "foreign") (1+ whitespace) (group "import") word-end)
              (1 (symbol-value 'purescript-keyword-face) nil lax)
              (2 (symbol-value 'purescript-keyword-face) nil lax))
 
-            (,reservedsym 1 (symbol-value 'purescript-operator-face))
             ;; Toplevel Declarations.
             ;; Place them *before* generic id-and-op highlighting.
             (,topdecl-var  (1 (symbol-value 'purescript-definition-face)))
