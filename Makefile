@@ -42,7 +42,7 @@ PKG_TAR = purescript-mode-$(VERSION).tar
 
 .PHONY: all compile info clean test elpa package
 
-all: compile $(AUTOLOADS) info
+all: compile info
 
 compile: $(ELCFILES)
 
@@ -87,6 +87,7 @@ $(PKG_TAR): $(PKG_DIST_FILES) purescript-mode-pkg.el.in
 	@echo
 	@echo "Created ELPA compatible distribution package '$@' from $(GIT_VERSION)"
 
+autoloads: $(AUTOLOADS)
 $(AUTOLOADS): $(ELFILES) purescript-mode.elc
 	$(BATCH) \
 		--eval '(setq make-backup-files nil)' \
