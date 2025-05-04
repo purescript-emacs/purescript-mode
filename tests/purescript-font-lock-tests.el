@@ -355,3 +355,156 @@ foreign importinvalid
      (208 229 nil)
      (230 236 font-lock-function-name-face)
      (237 251 nil))))
+
+(ert-deftest operator-faces-simple ()
+  "Tests operator faces unrelated to backticks"
+  (purescript-test-ranges
+   "-- ..
+import Data.Maybe (Maybe(..))
+
+-- -> and ::
+id :: a -> a
+id = \\x -> x
+
+-- <-
+main = do
+  n <- pure 42
+  pure n
+
+-- => and =
+showVal :: Show a => a -> String
+showVal = show
+
+-- @
+firstElem j@(Just _) = j
+
+-- guard |
+abs' x | x < 0 = -x
+       | otherwise = x
+
+-- ~ and unicode ∷
+toUnfoldable ∷ forall f. Unfoldable f => List ~> f
+toUnfoldable = undefined
+
+-- : as an operator
+arr :: Array Int
+arr = 1 : [2,3]
+"
+   '((1 3 font-lock-comment-delimiter-face)
+     (4 6 font-lock-comment-face)
+     (7 12 font-lock-keyword-face)
+     (13 13 nil)
+     (14 23 font-lock-type-face)
+     (24 25 nil)
+     (26 30 font-lock-type-face)
+     (31 31 nil)
+     (32 33 font-lock-variable-name-face)
+     (34 37 nil)
+     (38 40 font-lock-comment-delimiter-face)
+     (41 50 font-lock-comment-face)
+     (51 52 font-lock-function-name-face)
+     (53 53 nil)
+     (54 55 font-lock-variable-name-face)
+     (56 58 nil)
+     (59 60 font-lock-variable-name-face)
+     (61 63 nil)
+     (64 65 font-lock-function-name-face)
+     (66 66 nil)
+     (67 67 font-lock-variable-name-face)
+     (68 68 nil)
+     (69 69 font-lock-variable-name-face)
+     (70 71 nil)
+     (72 73 font-lock-variable-name-face)
+     (74 77 nil)
+     (78 80 font-lock-comment-delimiter-face)
+     (81 83 font-lock-comment-face)
+     (84 87 font-lock-function-name-face)
+     (88 88 nil)
+     (89 89 font-lock-variable-name-face)
+     (90 90 nil)
+     (91 92 font-lock-keyword-face)
+     (93 97 nil)
+     (98 99 font-lock-variable-name-face)
+     (100 118 nil)
+     (119 121 font-lock-comment-delimiter-face)
+     (122 130 font-lock-comment-face)
+     (131 137 font-lock-function-name-face)
+     (138 138 nil)
+     (139 140 font-lock-variable-name-face)
+     (141 141 nil)
+     (142 145 font-lock-type-face)
+     (146 148 nil)
+     (149 150 font-lock-variable-name-face)
+     (151 153 nil)
+     (154 155 font-lock-variable-name-face)
+     (156 156 nil)
+     (157 162 font-lock-type-face)
+     (163 163 nil)
+     (164 170 font-lock-function-name-face)
+     (171 171 nil)
+     (172 172 font-lock-variable-name-face)
+     (173 179 nil)
+     (180 182 font-lock-comment-delimiter-face)
+     (183 184 font-lock-comment-face)
+     (185 193 font-lock-function-name-face)
+     (194 195 nil)
+     (196 196 font-lock-variable-name-face)
+     (197 197 nil)
+     (198 201 font-lock-type-face)
+     (202 202 nil)
+     (203 203 font-lock-keyword-face)
+     (204 205 nil)
+     (206 206 font-lock-variable-name-face)
+     (207 210 nil)
+     (211 213 font-lock-comment-delimiter-face)
+     (214 221 font-lock-comment-face)
+     (222 225 font-lock-function-name-face)
+     (226 228 nil)
+     (229 229 font-lock-variable-name-face)
+     (230 232 nil)
+     (233 233 font-lock-variable-name-face)
+     (234 236 nil)
+     (237 237 font-lock-variable-name-face)
+     (238 238 nil)
+     (239 239 font-lock-variable-name-face)
+     (240 248 nil)
+     (249 249 font-lock-variable-name-face)
+     (250 260 nil)
+     (261 261 font-lock-variable-name-face)
+     (262 265 nil)
+     (266 268 font-lock-comment-delimiter-face)
+     (269 284 font-lock-comment-face)
+     (285 296 font-lock-function-name-face)
+     (297 297 nil)
+     (298 298 font-lock-variable-name-face)
+     (299 307 nil)
+     (308 308 font-lock-variable-name-face)
+     (309 309 nil)
+     (310 319 font-lock-type-face)
+     (320 322 nil)
+     (323 324 font-lock-variable-name-face)
+     (325 325 nil)
+     (326 329 font-lock-type-face)
+     (330 330 nil)
+     (331 332 font-lock-variable-name-face)
+     (333 335 nil)
+     (336 347 font-lock-function-name-face)
+     (348 348 nil)
+     (349 349 font-lock-variable-name-face)
+     (350 361 nil)
+     (362 364 font-lock-comment-delimiter-face)
+     (365 381 font-lock-comment-face)
+     (382 384 font-lock-function-name-face)
+     (385 385 nil)
+     (386 387 font-lock-variable-name-face)
+     (388 388 nil)
+     (389 393 font-lock-type-face)
+     (394 394 nil)
+     (395 397 font-lock-type-face)
+     (398 398 nil)
+     (399 401 font-lock-function-name-face)
+     (402 402 nil)
+     (403 403 font-lock-variable-name-face)
+     (404 406 nil)
+     (407 407 font-lock-type-face)
+     (408 414 nil))))

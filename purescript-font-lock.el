@@ -204,54 +204,48 @@ Returns keywords suitable for `font-lock-keywords'."
           (concat line-prefix "\\(" varid "\\|" conid "\\)\\s-*`\\(" varid "\\)`"))
          (topdecl-sym
           (concat line-prefix "\\(" varid "\\|" conid "\\)\\s-*\\(" sym "\\)"))
-         (topdecl-sym2 (concat line-prefix "(\\(" sym "\\))"))
+         (topdecl-sym2 (concat line-prefix "(\\(" sym "\\))")))
 
-         keywords)
+    `(;; NOTICE the ordering below is significant
+      ;;
+      (,toplevel-keywords 1 (symbol-value 'purescript-keyword-face))
+      (,reservedid 1 (symbol-value 'purescript-keyword-face))
+      (,reservedsym 1 (symbol-value 'purescript-operator-face))
+      ;; Special case for `as', `hiding', `safe' and `qualified', which are
+      ;; keywords in import statements but are not otherwise reserved.
+      ("\\<import[ \t]+\\(?:\\(safe\\>\\)[ \t]*\\)?\\(?:\\(qualified\\>\\)[ \t]*\\)?[^ \t\n()]+[ \t]*\\(?:\\(\\<as\\>\\)[ \t]*[^ \t\n()]+[ \t]*\\)?\\(\\<hiding\\>\\)?"
+       (1 (symbol-value 'purescript-keyword-face) nil lax)
+       (2 (symbol-value 'purescript-keyword-face) nil lax)
+       (3 (symbol-value 'purescript-keyword-face) nil lax)
+       (4 (symbol-value 'purescript-keyword-face) nil lax))
 
-    (setq keywords
-          `(;; NOTICE the ordering below is significant
-            ;;
-            (,toplevel-keywords 1 (symbol-value 'purescript-keyword-face))
-            (,reservedid 1 (symbol-value 'purescript-keyword-face))
-            (,reservedsym 1 (symbol-value 'purescript-operator-face))
-            ;; Special case for `as', `hiding', `safe' and `qualified', which are
-            ;; keywords in import statements but are not otherwise reserved.
-            ("\\<import[ \t]+\\(?:\\(safe\\>\\)[ \t]*\\)?\\(?:\\(qualified\\>\\)[ \t]*\\)?[^ \t\n()]+[ \t]*\\(?:\\(\\<as\\>\\)[ \t]*[^ \t\n()]+[ \t]*\\)?\\(\\<hiding\\>\\)?"
-             (1 (symbol-value 'purescript-keyword-face) nil lax)
-             (2 (symbol-value 'purescript-keyword-face) nil lax)
-             (3 (symbol-value 'purescript-keyword-face) nil lax)
-             (4 (symbol-value 'purescript-keyword-face) nil lax))
+      ;; Case for `foreign import'
+      (,(rx line-start (0+ whitespace)
+            (group "foreign") (1+ whitespace) (group "import") word-end)
+       (1 (symbol-value 'purescript-keyword-face) nil lax)
+       (2 (symbol-value 'purescript-keyword-face) nil lax))
 
-            (,reservedsym 1 (symbol-value 'purescript-operator-face))
-            ;; Case for `foreign import'
-            (,(rx line-start (0+ whitespace)
-                  (group "foreign") (1+ whitespace) (group "import") word-end)
-             (1 (symbol-value 'purescript-keyword-face) nil lax)
-             (2 (symbol-value 'purescript-keyword-face) nil lax))
+      ;; Toplevel Declarations.
+      ;; Place them *before* generic id-and-op highlighting.
+      (,topdecl-var  (1 (symbol-value 'purescript-definition-face)))
+      (,topdecl-var2 (2 (symbol-value 'purescript-definition-face)))
+      (,topdecl-sym  (2 (symbol-value 'purescript-definition-face)))
+      (,topdecl-sym2 (1 (symbol-value 'purescript-definition-face)))
 
-            (,reservedsym 1 (symbol-value 'purescript-operator-face))
-            ;; Toplevel Declarations.
-            ;; Place them *before* generic id-and-op highlighting.
-            (,topdecl-var  (1 (symbol-value 'purescript-definition-face)))
-            (,topdecl-var2 (2 (symbol-value 'purescript-definition-face)))
-            (,topdecl-sym  (2 (symbol-value 'purescript-definition-face)))
-            (,topdecl-sym2 (1 (symbol-value 'purescript-definition-face)))
+      ;; These four are debatable...
+      ("(\\(,*\\|->\\))" 0 (symbol-value 'purescript-constructor-face))
+      ("\\[\\]" 0 (symbol-value 'purescript-constructor-face))
+      ;; Expensive.
+      (,qvarid 0 (symbol-value 'purescript-default-face))
+      (,qconid 0 (symbol-value 'purescript-constructor-face))
+      (,(concat "\`" varid "\`") 0 (symbol-value 'purescript-operator-face))
+      ;; Expensive.
+      (,conid 0 (symbol-value 'purescript-constructor-face))
 
-            ;; These four are debatable...
-            ("(\\(,*\\|->\\))" 0 (symbol-value 'purescript-constructor-face))
-            ("\\[\\]" 0 (symbol-value 'purescript-constructor-face))
-            ;; Expensive.
-            (,qvarid 0 (symbol-value 'purescript-default-face))
-            (,qconid 0 (symbol-value 'purescript-constructor-face))
-            (,(concat "\`" varid "\`") 0 (symbol-value 'purescript-operator-face))
-            ;; Expensive.
-            (,conid 0 (symbol-value 'purescript-constructor-face))
-
-            ;; Very expensive.
-            (,sym 0 (if (eq (char-after (match-beginning 0)) ?:)
-                        purescript-constructor-face
-                      purescript-operator-face))))
-    keywords))
+      ;; Very expensive.
+      (,sym 0 (if (eq (char-after (match-beginning 0)) ?:)
+                  purescript-constructor-face
+                purescript-operator-face)))))
 
 ;; The next three aren't used in Emacs 21.
 
