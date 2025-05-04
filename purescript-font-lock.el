@@ -128,7 +128,7 @@
 ;; This is probably just wrong, but it used to use
 ;; `font-lock-function-name-face' with a result that was not consistent with
 ;; other major modes, so I just exchanged with `purescript-definition-face'.
-(defvar purescript-operator-face 'font-lock-variable-name-face)
+(defvar purescript-operator-face 'font-lock-builtin-face)
 (defvar purescript-default-face nil)
 (defvar purescript-literate-comment-face 'font-lock-doc-face
   "Face with which to fontify literate comments.
