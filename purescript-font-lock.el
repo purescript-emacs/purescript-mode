@@ -165,12 +165,10 @@ Returns keywords suitable for `font-lock-keywords'."
           ;; be thrown for some reason by backslash's escape syntax.
           "\\(\\s_\\|\\\\\\)+")
 
-         ;; Reserved operations
-         (reservedsym
+         (operator
           (concat "\\S_"
-                  ;; (regexp-opt '(".." "::" "=" "\\" "|" "<-" "->"
-                  ;;            "@" "~" "=>") t)
-                  "\\(->\\|\\.\\.\\|::\\|∷\\|<-\\|=>\\|[=@\\|~]\\)"
+                  ;; All punctuation, excluding (),;[]{}_"'`
+                  "\\([!@#$%^&*+\\-./<=>?@|~:∷\\\\]+\\)"
                   "\\S_"))
          ;; These are only keywords when appear at top-level, optionally with
          ;; indentation. They are not reserved and in other levels would represent
@@ -210,7 +208,7 @@ Returns keywords suitable for `font-lock-keywords'."
       ;;
       (,toplevel-keywords 1 (symbol-value 'purescript-keyword-face))
       (,reservedid 1 (symbol-value 'purescript-keyword-face))
-      (,reservedsym 1 (symbol-value 'purescript-operator-face))
+      (,operator 1 (symbol-value 'purescript-operator-face))
       ;; Special case for `as', `hiding', `safe' and `qualified', which are
       ;; keywords in import statements but are not otherwise reserved.
       ("\\<import[ \t]+\\(?:\\(safe\\>\\)[ \t]*\\)?\\(?:\\(qualified\\>\\)[ \t]*\\)?[^ \t\n()]+[ \t]*\\(?:\\(\\<as\\>\\)[ \t]*[^ \t\n()]+[ \t]*\\)?\\(\\<hiding\\>\\)?"
