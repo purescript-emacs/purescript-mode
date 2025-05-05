@@ -52,15 +52,6 @@
 ;;   highlighted as constructors or not.  Should the `->' in
 ;;   `id :: a -> a' be considered a constructor or a keyword?  If so,
 ;;   how do we distinguish this from `\x -> x'?  What about the `\'?
-;;
-;; . XEmacs can support both `--' comments and `{- -}' comments
-;;   simultaneously.  If XEmacs is detected, this should be used.
-;;
-;; . Support for GreenCard?
-;;
-;;
-;; All functions/variables start with
-;; `(turn-(on/off)-)purescript-font-lock' or `purescript-fl-'.
 
 ;;; Change Log:
 
