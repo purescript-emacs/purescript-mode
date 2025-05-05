@@ -98,7 +98,7 @@
     ("&&" . ,(decode-char 'ucs #X2227))
     ("||" . ,(decode-char 'ucs #X2228))
     ("sqrt" . ,(decode-char 'ucs #X221A))
-    ("undefined" . ,(decode-char 'ucs #X22A5)) ;; Not really needed for Purescript
+    ("undefined" . ,(decode-char 'ucs #X22A5))
     ("pi" . ,(decode-char 'ucs #X3C0))
     ("~>" . ,(decode-char 'ucs 8669)) ;; Omega language
     ("-<" . ,(decode-char 'ucs 8610)) ;; Paterson's arrow syntax
