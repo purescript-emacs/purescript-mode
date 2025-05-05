@@ -53,29 +53,6 @@
 ;;   `id :: a -> a' be considered a constructor or a keyword?  If so,
 ;;   how do we distinguish this from `\x -> x'?  What about the `\'?
 
-;;; Change Log:
-
-;; Version 1.3:
-;;   From Dave Love:
-;;   Support for proper behaviour (including with Unicode identifiers)
-;;   in Emacs 21 only hacked in messily to avoid disturbing the old
-;;   stuff.  Needs integrating more cleanly.  Allow literate comment
-;;   face to be customized.  Some support for fontifying definitions.
-;;   (I'm not convinced the faces should be customizable -- fontlock
-;;   faces are normally expected to be consistent.)
-;;
-;; Version 1.2:
-;;   Added support for LaTeX-style literate scripts.  Allow whitespace
-;;   after backslash to end a line for string continuations.
-;;
-;; Version 1.1:
-;;   Use own syntax table.  Use backquote (neater).  Stop ''' being
-;;   highlighted as quoted character.  Fixed `\"' fontification bug
-;;   in comments.
-;;
-;; Version 1.0:
-;;   Brought over from PureScript mode v1.1.
-
 ;;; Code:
 
 (require 'font-lock)
