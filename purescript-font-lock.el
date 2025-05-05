@@ -230,8 +230,7 @@ Returns keywords suitable for `font-lock-keywords'."
       (,topdecl-sym  (2 (symbol-value 'purescript-definition-face)))
       (,topdecl-sym2 (1 (symbol-value 'purescript-definition-face)))
 
-      ;; These four are debatable...
-      ("(\\(,*\\|->\\))" 0 (symbol-value 'purescript-constructor-face))
+      ;; This one is debatable…
       ("\\[\\]" 0 (symbol-value 'purescript-constructor-face))
       ;; Expensive.
       (,qvarid 0 (symbol-value 'purescript-default-face))
