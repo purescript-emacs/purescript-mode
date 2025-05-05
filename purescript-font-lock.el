@@ -235,7 +235,7 @@ Returns keywords suitable for `font-lock-keywords'."
       ;; Expensive.
       (,qvarid 0 (symbol-value 'purescript-default-face))
       (,qconid 0 (symbol-value 'purescript-constructor-face))
-      (,(concat "\`" varid "\`") 0 (symbol-value 'purescript-operator-face))
+      (,(concat "`" varid "`") 0 (symbol-value 'purescript-operator-face))
       ;; Expensive.
       (,conid 0 (symbol-value 'purescript-constructor-face))
 

@@ -520,3 +520,13 @@ arr = 1 : [2,3]
      (15 18 nil)
      (19 19 font-lock-builtin-face)
      (20 23 nil))))
+
+(ert-deftest backtick-operator ()
+  (purescript-test-ranges
+   "var = 1 `func` 2"
+   '((1 3 font-lock-function-name-face)
+     (4 4 nil)
+     (5 5 font-lock-builtin-face)
+     (6 8 nil)
+     (9 14 font-lock-builtin-face)
+     (15 17 nil))))
