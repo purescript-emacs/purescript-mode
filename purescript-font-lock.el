@@ -128,7 +128,7 @@
 ;; This is probably just wrong, but it used to use
 ;; `font-lock-function-name-face' with a result that was not consistent with
 ;; other major modes, so I just exchanged with `purescript-definition-face'.
-(defvar purescript-operator-face 'font-lock-variable-name-face)
+(defvar purescript-operator-face 'font-lock-builtin-face)
 (defvar purescript-default-face nil)
 (defvar purescript-literate-comment-face 'font-lock-doc-face
   "Face with which to fontify literate comments.
@@ -165,12 +165,10 @@ Returns keywords suitable for `font-lock-keywords'."
           ;; be thrown for some reason by backslash's escape syntax.
           "\\(\\s_\\|\\\\\\)+")
 
-         ;; Reserved operations
-         (reservedsym
+         (operator
           (concat "\\S_"
-                  ;; (regexp-opt '(".." "::" "=" "\\" "|" "<-" "->"
-                  ;;            "@" "~" "=>") t)
-                  "\\(->\\|\\.\\.\\|::\\|∷\\|<-\\|=>\\|[=@\\|~]\\)"
+                  ;; All punctuation, excluding (),;[]{}_"'`
+                  "\\([!@#$%^&*+\\-./<=>?@|~:∷\\\\]+\\)"
                   "\\S_"))
          ;; These are only keywords when appear at top-level, optionally with
          ;; indentation. They are not reserved and in other levels would represent
@@ -210,7 +208,7 @@ Returns keywords suitable for `font-lock-keywords'."
       ;;
       (,toplevel-keywords 1 (symbol-value 'purescript-keyword-face))
       (,reservedid 1 (symbol-value 'purescript-keyword-face))
-      (,reservedsym 1 (symbol-value 'purescript-operator-face))
+      (,operator 1 (symbol-value 'purescript-operator-face))
       ;; Special case for `as', `hiding', `safe' and `qualified', which are
       ;; keywords in import statements but are not otherwise reserved.
       ("\\<import[ \t]+\\(?:\\(safe\\>\\)[ \t]*\\)?\\(?:\\(qualified\\>\\)[ \t]*\\)?[^ \t\n()]+[ \t]*\\(?:\\(\\<as\\>\\)[ \t]*[^ \t\n()]+[ \t]*\\)?\\(\\<hiding\\>\\)?"
@@ -232,13 +230,12 @@ Returns keywords suitable for `font-lock-keywords'."
       (,topdecl-sym  (2 (symbol-value 'purescript-definition-face)))
       (,topdecl-sym2 (1 (symbol-value 'purescript-definition-face)))
 
-      ;; These four are debatable...
-      ("(\\(,*\\|->\\))" 0 (symbol-value 'purescript-constructor-face))
+      ;; This one is debatable…
       ("\\[\\]" 0 (symbol-value 'purescript-constructor-face))
       ;; Expensive.
       (,qvarid 0 (symbol-value 'purescript-default-face))
       (,qconid 0 (symbol-value 'purescript-constructor-face))
-      (,(concat "\`" varid "\`") 0 (symbol-value 'purescript-operator-face))
+      (,(concat "`" varid "`") 0 (symbol-value 'purescript-operator-face))
       ;; Expensive.
       (,conid 0 (symbol-value 'purescript-constructor-face))
 
