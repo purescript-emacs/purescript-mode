@@ -52,38 +52,6 @@
 ;;   highlighted as constructors or not.  Should the `->' in
 ;;   `id :: a -> a' be considered a constructor or a keyword?  If so,
 ;;   how do we distinguish this from `\x -> x'?  What about the `\'?
-;;
-;; . XEmacs can support both `--' comments and `{- -}' comments
-;;   simultaneously.  If XEmacs is detected, this should be used.
-;;
-;; . Support for GreenCard?
-;;
-;;
-;; All functions/variables start with
-;; `(turn-(on/off)-)purescript-font-lock' or `purescript-fl-'.
-
-;;; Change Log:
-
-;; Version 1.3:
-;;   From Dave Love:
-;;   Support for proper behaviour (including with Unicode identifiers)
-;;   in Emacs 21 only hacked in messily to avoid disturbing the old
-;;   stuff.  Needs integrating more cleanly.  Allow literate comment
-;;   face to be customized.  Some support for fontifying definitions.
-;;   (I'm not convinced the faces should be customizable -- fontlock
-;;   faces are normally expected to be consistent.)
-;;
-;; Version 1.2:
-;;   Added support for LaTeX-style literate scripts.  Allow whitespace
-;;   after backslash to end a line for string continuations.
-;;
-;; Version 1.1:
-;;   Use own syntax table.  Use backquote (neater).  Stop ''' being
-;;   highlighted as quoted character.  Fixed `\"' fontification bug
-;;   in comments.
-;;
-;; Version 1.0:
-;;   Brought over from PureScript mode v1.1.
 
 ;;; Code:
 
@@ -107,7 +75,7 @@
     ("&&" . ,(decode-char 'ucs #X2227))
     ("||" . ,(decode-char 'ucs #X2228))
     ("sqrt" . ,(decode-char 'ucs #X221A))
-    ("undefined" . ,(decode-char 'ucs #X22A5)) ;; Not really needed for Purescript
+    ("undefined" . ,(decode-char 'ucs #X22A5))
     ("pi" . ,(decode-char 'ucs #X3C0))
     ("~>" . ,(decode-char 'ucs 8669)) ;; Omega language
     ("-<" . ,(decode-char 'ucs 8610)) ;; Paterson's arrow syntax
@@ -243,55 +211,6 @@ Returns keywords suitable for `font-lock-keywords'."
       (,sym 0 (if (eq (char-after (match-beginning 0)) ?:)
                   purescript-constructor-face
                 purescript-operator-face)))))
-
-;; The next three aren't used in Emacs 21.
-
-(defvar purescript-fl-latex-cache-pos nil
-  "Position of cache point used by `purescript-fl-latex-cache-in-comment'.
-Should be at the start of a line.")
-
-(defvar purescript-fl-latex-cache-in-comment nil
-  "If `purescript-fl-latex-cache-pos' is outside a
-\\begin{code}..\\end{code} block (and therefore inside a comment),
-this variable is set to t, otherwise nil.")
-
-(defun purescript-fl-latex-comments (end)
-  "Sets `match-data' according to the region of the buffer before end
-that should be commented under LaTeX-style literate scripts."
-  (let ((start (point)))
-    (if (= start end)
-        ;; We're at the end.  No more to fontify.
-        nil
-      (if (not (eq start purescript-fl-latex-cache-pos))
-          ;; If the start position is not cached, calculate the state
-          ;; of the start.
-          (progn
-            (setq purescript-fl-latex-cache-pos start)
-            ;; If the previous \begin{code} or \end{code} is a
-            ;; \begin{code}, then start is not in a comment, otherwise
-            ;; it is in a comment.
-            (setq purescript-fl-latex-cache-in-comment
-                  (if (and
-                       (re-search-backward
-                        "^\\(\\(\\\\begin{code}\\)\\|\\(\\\\end{code}\\)\\)$"
-                        (point-min) t)
-                       (match-end 2))
-                      nil t))
-            ;; Restore position.
-            (goto-char start)))
-      (if purescript-fl-latex-cache-in-comment
-          (progn
-            ;; If start is inside a comment, search for next \begin{code}.
-            (re-search-forward "^\\\\begin{code}$" end 'move)
-            ;; Mark start to end of \begin{code} (if present, till end
-            ;; otherwise), as a comment.
-            (set-match-data (list start (point)))
-            ;; Return point, as a normal regexp would.
-            (point))
-        ;; If start is inside a code block, search for next \end{code}.
-        (if (re-search-forward "^\\\\end{code}$" end t)
-            ;; If one found, mark it as a comment, otherwise finish.
-            (point))))))
 
 (defconst purescript-basic-syntactic-keywords
   '(;; Character constants (since apostrophe can't have string syntax).
