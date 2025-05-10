@@ -34,9 +34,8 @@
 
 (require 'syntax)
 (require 'cl-lib)
+(require 'simple)
 (require 'purescript-vars)
-
-(defvar delete-active-region)
 
 ;; Dynamically scoped variables.
 (defvar following-token)
