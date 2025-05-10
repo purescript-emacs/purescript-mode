@@ -102,7 +102,7 @@ sure all purescript customize definitions have been loaded."
   (customize-browse 'purescript))
 
 ;; Are we looking at a literate script?
-(defvar purescript-literate nil
+(defvar-local purescript-literate nil
   "*If not nil, the current buffer contains a literate PureScript script.
 Possible values are: `bird' and `tex', for Bird-style and LaTeX-style
 literate scripts respectively.  Set by `purescript-mode' and
@@ -110,7 +110,6 @@ literate scripts respectively.  Set by `purescript-mode' and
 not contain either \"\\begin{code}\" or \"\\end{code}\" on a line on
 its own, nor does it contain \">\" at the start of a line -- the value
 of `purescript-literate-default' is used.")
-(make-variable-buffer-local 'purescript-literate)
 (put 'purescript-literate 'safe-local-variable 'symbolp)
 ;; Default literate style for ambiguous literate buffers.
 (defcustom purescript-literate-default 'bird
