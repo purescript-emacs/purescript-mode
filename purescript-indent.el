@@ -88,10 +88,9 @@
 
 ;;; Code:
 
+(require 'purescript-vars)
 (require 'purescript-string)
 (require 'cl-lib)
-
-(defvar purescript-literate)
 
 (defgroup purescript-indent nil
   "PureScript indentation."
@@ -1486,9 +1485,8 @@ One indentation cycle is used."
 
 ;;; purescript-indent-mode
 
-(defvar purescript-indent-mode nil
+(defvar-local purescript-indent-mode nil
   "Non-nil if the semi-intelligent PureScript indentation mode is in effect.")
-(make-variable-buffer-local 'purescript-indent-mode)
 
 (defvar purescript-indent-map
   (let ((map (make-sparse-keymap)))

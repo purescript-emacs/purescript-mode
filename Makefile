@@ -25,6 +25,7 @@ ELFILES = \
 	purescript-utils.el \
 	purescript-decl-scan.el \
 	purescript-yas.el \
+	purescript-vars.el \
 	tests/purescript-sort-imports-tests.el \
 	tests/purescript-indentation-tests.el \
 	tests/purescript-font-lock-tests.el \
