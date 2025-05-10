@@ -47,7 +47,7 @@
 (defvar parse-line-number)
 (defvar possible-indentations)
 (defvar indentation-point)
-(defvar purescript-indent-last-position)
+(defvar-local purescript-indent-last-position nil)
 
 (defgroup purescript-indentation nil
   "PureScript indentation."
@@ -133,9 +133,7 @@ autofill-mode."
     (set (make-local-variable 'indent-line-function)
          'purescript-indentation-indent-line)
     (set (make-local-variable 'normal-auto-fill-function)
-         'purescript-indentation-auto-fill-function)
-    (set (make-local-variable 'purescript-indent-last-position)
-         nil)))
+         'purescript-indentation-auto-fill-function)))
 
 ;;;###autoload
 (defun turn-on-purescript-indentation ()
