@@ -37,7 +37,7 @@
 (require 'simple)
 (require 'purescript-vars)
 
-;; Dynamically scoped variables.
+;; Dynamically scoped internal variables.
 (defvar following-token)
 (defvar current-token)
 (defvar left-indent)
@@ -47,6 +47,7 @@
 (defvar parse-line-number)
 (defvar possible-indentations)
 (defvar indentation-point)
+(defvar purescript-indent-last-position)
 
 (defgroup purescript-indentation nil
   "PureScript indentation."
@@ -116,9 +117,6 @@
     (define-key keymap [backspace] 'purescript-indentation-delete-backward-char)
     (define-key keymap [?\C-d] 'purescript-indentation-delete-char)
     keymap))
-
-;; Used internally
-(defvar purescript-indent-last-position)
 
 ;;;###autoload
 (define-minor-mode purescript-indentation-mode
