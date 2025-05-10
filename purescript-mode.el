@@ -279,8 +279,6 @@ details."
              turn-on-purescript-simple-indent
              turn-on-purescript-unicode-input-method))
 
-(defvar eldoc-print-current-symbol-info-function)
-
 ;; The main mode functions
 ;;;###autoload
 (define-derived-mode purescript-mode prog-mode "PureScript"
