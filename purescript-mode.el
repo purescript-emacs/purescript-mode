@@ -325,10 +325,7 @@ see documentation for that variable for more details."
   (setq-local beginning-of-defun-function 'purescript-beginning-of-defun)
   (setq prettify-symbols-alist purescript-font-lock-prettify-symbols-alist
         ;; make (ff-find-other-file) find .js FFI file, given .purs
-        ff-other-file-alist '((".purs\\'" (".js"))))
-  (when (bound-and-true-p purescript-font-lock-symbols)
-    (warn "`purescript-font-lock-symbols' is obsolete: please enable `prettify-symbols-mode' locally or globally instead."))
-  )
+        ff-other-file-alist '((".purs\\'" (".js")))))
 
 (defun purescript-fill-paragraph (justify)
   (save-excursion
