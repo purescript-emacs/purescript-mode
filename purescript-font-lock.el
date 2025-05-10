@@ -69,6 +69,7 @@
 
 (require 'font-lock)
 (require 'cl-lib)
+(require 'purescript-vars)
 
 (defcustom purescript-font-lock-prettify-symbols-alist
   `(("/\\" . ,(decode-char 'ucs #X2227))
@@ -262,8 +263,6 @@ Returns keywords suitable for `font-lock-keywords'."
   "If non-nil try to highlight docstring comments specially."
   :type 'boolean
   :group 'purescript)
-
-(defvar purescript-literate)
 
 (defun purescript-syntactic-face-function (state)
   "`font-lock-syntactic-face-function' for PureScript."

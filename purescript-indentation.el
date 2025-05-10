@@ -34,6 +34,7 @@
 
 (require 'syntax)
 (require 'cl-lib)
+(require 'purescript-vars)
 
 (defvar delete-active-region)
 
@@ -47,7 +48,6 @@
 (defvar parse-line-number)
 (defvar possible-indentations)
 (defvar indentation-point)
-(defvar purescript-literate)
 
 (defgroup purescript-indentation nil
   "PureScript indentation."

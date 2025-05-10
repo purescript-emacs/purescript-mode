@@ -88,10 +88,9 @@
 
 ;;; Code:
 
+(require 'purescript-vars)
 (require 'purescript-string)
 (require 'cl-lib)
-
-(defvar purescript-literate)
 
 (defgroup purescript-indent nil
   "PureScript indentation."
