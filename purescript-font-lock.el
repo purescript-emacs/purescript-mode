@@ -259,11 +259,6 @@ Returns keywords suitable for `font-lock-keywords'."
      ("^\\(\\\\\\)end{code}$" 1 "!"))
    purescript-basic-syntactic-keywords))
 
-(defcustom purescript-font-lock-docstrings (boundp 'font-lock-doc-face)
-  "If non-nil try to highlight docstring comments specially."
-  :type 'boolean
-  :group 'purescript)
-
 (defun purescript-syntactic-face-function (state)
   "`font-lock-syntactic-face-function' for PureScript."
   (cond
@@ -285,10 +280,9 @@ Returns keywords suitable for `font-lock-keywords'."
    ;; https://github.com/purescript/documentation/blob/master/language/Syntax.md
    ;; IOW, given a `-- | foo' line followed by `-- bar' line, the latter is a
    ;; plain comment.
-   ((and purescript-font-lock-docstrings
-         (save-excursion
-           (goto-char (nth 8 state))
-           (looking-at "\\(--\\|{-\\)[ \\t]*[|^]")))
+   ((save-excursion
+      (goto-char (nth 8 state))
+      (looking-at "\\(--\\|{-\\)[ \\t]*[|^]"))
     'font-lock-doc-face)
    (t 'font-lock-comment-face)))
 
