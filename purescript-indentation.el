@@ -34,10 +34,10 @@
 
 (require 'syntax)
 (require 'cl-lib)
+(require 'simple)
+(require 'purescript-vars)
 
-(defvar delete-active-region)
-
-;; Dynamically scoped variables.
+;; Dynamically scoped internal variables.
 (defvar following-token)
 (defvar current-token)
 (defvar left-indent)
@@ -47,7 +47,7 @@
 (defvar parse-line-number)
 (defvar possible-indentations)
 (defvar indentation-point)
-(defvar purescript-literate)
+(defvar-local purescript-indent-last-position nil)
 
 (defgroup purescript-indentation nil
   "PureScript indentation."
@@ -118,9 +118,6 @@
     (define-key keymap [?\C-d] 'purescript-indentation-delete-char)
     keymap))
 
-;; Used internally
-(defvar purescript-indent-last-position)
-
 ;;;###autoload
 (define-minor-mode purescript-indentation-mode
   "PureScript indentation mode that deals with the layout rule.
@@ -129,16 +126,12 @@ set and deleted as if they were real tabs.  It supports
 autofill-mode."
   :lighter " Ind"
   :keymap purescript-indentation-mode-map
-  (kill-local-variable 'indent-line-function)
-  (kill-local-variable 'normal-auto-fill-function)
   (when purescript-indentation-mode
     (setq max-lisp-eval-depth (max max-lisp-eval-depth 600)) ;; set a higher limit for recursion
-    (set (make-local-variable 'indent-line-function)
-         'purescript-indentation-indent-line)
-    (set (make-local-variable 'normal-auto-fill-function)
-         'purescript-indentation-auto-fill-function)
-    (set (make-local-variable 'purescript-indent-last-position)
-         nil)))
+    (setq-local indent-line-function
+                #'purescript-indentation-indent-line)
+    (setq-local normal-auto-fill-function
+                #'purescript-indentation-auto-fill-function)))
 
 ;;;###autoload
 (defun turn-on-purescript-indentation ()

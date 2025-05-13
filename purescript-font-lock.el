@@ -69,6 +69,7 @@
 
 (require 'font-lock)
 (require 'cl-lib)
+(require 'purescript-vars)
 
 (defcustom purescript-font-lock-prettify-symbols-alist
   `(("/\\" . ,(decode-char 'ucs #X2227))
@@ -263,8 +264,6 @@ Returns keywords suitable for `font-lock-keywords'."
   :type 'boolean
   :group 'purescript)
 
-(defvar purescript-literate)
-
 (defun purescript-syntactic-face-function (state)
   "`font-lock-syntactic-face-function' for PureScript."
   (cond
@@ -307,13 +306,13 @@ Returns keywords suitable for `font-lock-keywords'."
 
 ;;;###autoload
 (defun purescript-font-lock-choose-keywords ()
-  (cl-case (bound-and-true-p purescript-literate)
+  (cl-case purescript-literate
     (bird purescript-font-lock-bird-literate-keywords)
     ((latex tex) purescript-font-lock-latex-literate-keywords)
     (t purescript-font-lock-keywords)))
 
 (defun purescript-font-lock-choose-syntactic-keywords ()
-  (cl-case (bound-and-true-p purescript-literate)
+  (cl-case purescript-literate
     (bird purescript-bird-syntactic-keywords)
     ((latex tex) purescript-latex-syntactic-keywords)
     (t purescript-basic-syntactic-keywords)))
