@@ -34,7 +34,7 @@ ELFILES = \
 ELCFILES = $(ELFILES:.el=.elc)
 AUTOLOADS = purescript-mode-autoloads.el
 
-PKG_DIST_FILES = $(ELFILES) logo.svg NEWS purescript-mode.info dir
+PKG_DIST_FILES = $(ELFILES) logo.svg purescript-mode.info dir
 PKG_TAR = purescript-mode-$(VERSION).tar
 
 %.elc: %.el
