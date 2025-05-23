@@ -33,12 +33,6 @@
   :group 'purescript
   :prefix "purescript-yas-")
 
-(defcustom purescript-yas-ghc-language-pragmas
-  (split-string (shell-command-to-string "ghc --supported-extensions"))
-  "List of language pragmas supported by the installed version of GHC."
-  :group 'purescript-yas
-  :type '(repeat string))
-
 (defcustom purescript-yas-completing-function 'completing-read
   "Function to use for completing among alternatives."
   :group 'purescript-yas
