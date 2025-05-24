@@ -51,10 +51,6 @@
 (defconst purescript-git-version "@GIT_VERSION@"
   "The Git version of `purescript-mode'.")
 
-(defvar purescript-mode-pkg-base-dir (file-name-directory load-file-name)
-  "Package base directory of installed `purescript-mode'.
-Used for locating additional package data files.")
-
 ;;;###autoload
 (defun purescript-version (&optional here)
   "Show the `purescript-mode` version in the echo area.
