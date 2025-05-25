@@ -432,6 +432,12 @@ Brings up the documentation for purescript-mode-hook."
     (goto-char (+ (line-beginning-position)
                   col))))
 
+(defun purescript-string-take (string n)
+  "Take n chars from string."
+  (substring string
+             0
+             (min (length string) n)))
+
 (defun purescript-mode-message-line (str)
   "Message only one line, multiple lines just disturbs the programmer."
   (let ((lines (split-string str "\n" t)))

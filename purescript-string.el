@@ -1,12 +1,5 @@
 ;;; purescript-string.el --- string manipulation utilties -*- lexical-binding: t -*-
 ;;;###autoload
-(defun purescript-string-take (string n)
-  "Take n chars from string."
-  (substring string
-             0
-             (min (length string) n)))
-
-;;;###autoload
 (defun purescript-is-prefix-of (x y)
   "Is x string a prefix of y string?"
   (string= x (substring y 0 (min (length y) (length x)))))
