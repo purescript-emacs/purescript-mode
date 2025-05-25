@@ -37,7 +37,6 @@
 (require 'purescript-vars)
 (require 'purescript-align-imports)
 (require 'purescript-sort-imports)
-(require 'purescript-string)
 (require 'purescript-font-lock)
 (require 'cl-lib)
 (cl-eval-when 'compile (require 'find-file))

@@ -89,7 +89,6 @@
 ;;; Code:
 
 (require 'purescript-vars)
-(require 'purescript-string)
 (require 'cl-lib)
 (eval-when-compile
   (when (< emacs-major-version 28)
