@@ -91,6 +91,9 @@
 (require 'purescript-vars)
 (require 'purescript-string)
 (require 'cl-lib)
+(eval-when-compile
+  (when (< emacs-major-version 28)
+    (require 'subr-x)))
 
 (defgroup purescript-indent nil
   "PureScript indentation."
@@ -655,8 +658,8 @@ symbols in the sexp."
           (string-match "where[ \t]*" purescript-indent-current-line-first-ident))
          (diff-first                 ; not a function def with the same name
           (or (null valname-string)
-              (not (string= (purescript-trim valname-string)
-                            (purescript-trim purescript-indent-current-line-first-ident)))))
+              (not (string= (string-trim valname-string)
+                            (string-trim purescript-indent-current-line-first-ident)))))
 
          ;; (is-type-def
          ;;  (and rpurs-sign (eq (char-after rpurs-sign) ?\:)))

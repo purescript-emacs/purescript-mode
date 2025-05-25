@@ -1,13 +1,5 @@
 ;;; purescript-string.el --- string manipulation utilties -*- lexical-binding: t -*-
 ;;;###autoload
-(defun purescript-trim (string)
-  (replace-regexp-in-string
-   "^[ \t\n]+" ""
-   (replace-regexp-in-string
-    "[ \t\n]+$" ""
-    string)))
-
-;;;###autoload
 (defun purescript-string-take (string n)
   "Take n chars from string."
   (substring string

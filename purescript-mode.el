@@ -439,7 +439,7 @@ Brings up the documentation for purescript-mode-hook."
       (message "%s"
                (concat (car lines)
                        (if (and (cdr lines) (stringp (cadr lines)))
-                           (format " [ %s .. ]" (purescript-string-take (purescript-trim (cadr lines)) 10))
+                           (format " [ %s .. ]" (purescript-string-take (string-trim (cadr lines)) 10))
                          ""))))))
 
 (defun purescript-current-line-string ()
