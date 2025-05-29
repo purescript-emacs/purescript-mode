@@ -37,7 +37,6 @@
 (require 'purescript-vars)
 (require 'purescript-align-imports)
 (require 'purescript-sort-imports)
-(require 'purescript-string)
 (require 'purescript-font-lock)
 (require 'cl-lib)
 (cl-eval-when 'compile (require 'find-file))
@@ -419,6 +418,12 @@ Brings up the documentation for purescript-mode-hook."
     (goto-char (+ (line-beginning-position)
                   col))))
 
+(defun purescript-string-take (string n)
+  "Take n chars from string."
+  (substring string
+             0
+             (min (length string) n)))
+
 (defun purescript-mode-message-line (str)
   "Message only one line, multiple lines just disturbs the programmer."
   (let ((lines (split-string str "\n" t)))
@@ -426,7 +431,7 @@ Brings up the documentation for purescript-mode-hook."
       (message "%s"
                (concat (car lines)
                        (if (and (cdr lines) (stringp (cadr lines)))
-                           (format " [ %s .. ]" (purescript-string-take (purescript-trim (cadr lines)) 10))
+                           (format " [ %s .. ]" (purescript-string-take (string-trim (cadr lines)) 10))
                          ""))))))
 
 (defun purescript-current-line-string ()
