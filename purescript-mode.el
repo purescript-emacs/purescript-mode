@@ -407,7 +407,10 @@ is asked to show extra info for the items matching QUERY.."
 has been selected.
 
 Brings up the documentation for purescript-mode-hook."
-  (describe-variable 'purescript-mode-hook))
+  (error
+   "To use indentation you need to turn-on one of the indentation modes. Please see `purescript-mode-hook' documentation for examples.
+
+Currently `purescript-indentation' is the most maintained mode."))
 
 (defun purescript-mode-format-imports ()
   "Format the imports by aligning and sorting them."

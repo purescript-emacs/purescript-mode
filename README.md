@@ -68,17 +68,16 @@ and recommended installation method.
 Basic Configuration
 -------------------
 
-For setup instructions, please consult the new integrated purescript-mode
-[Info](https://www.gnu.org/software/texinfo/manual/info/info.html)
-manual which can be accessed after installation via
-`M-x info-display-manual [RET] purescript-mode`.
+PureScript mode provides multiple indentation engines, and leaves the choice up to the user. To have indentation an according indentation mode needs to be enabled. Otherwise, attempting to indent will print an error describing this.
 
-Support
--------
+Minimal configuration may look something like:
 
-- [Github homepage](https://github.com/purescript-emacs/purescript-mode)
-
-Contributing
-------------
-
-Please make sure your pull requests are at least properly rebased and up to date.
+```lisp
+(use-package purescript-mode
+  :defer t
+  :config
+  (defun myhook-purescript-mode ()
+    (turn-on-purescript-indentation)
+    (add-hook 'before-save-hook #'purescript-sort-imports nil t))
+  (add-hook 'purescript-mode-hook #'myhook-purescript-mode))
+```
