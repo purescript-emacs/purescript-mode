@@ -81,13 +81,3 @@ Minimal configuration may look something like:
     (add-hook 'before-save-hook #'purescript-sort-imports nil t))
   (add-hook 'purescript-mode-hook #'myhook-purescript-mode))
 ```
-
-Support
--------
-
-- [Github homepage](https://github.com/purescript-emacs/purescript-mode)
-
-Contributing
-------------
-
-Please make sure your pull requests are at least properly rebased and up to date.
