@@ -51,10 +51,6 @@
 (defconst purescript-git-version "@GIT_VERSION@"
   "The Git version of `purescript-mode'.")
 
-(defvar purescript-mode-pkg-base-dir (file-name-directory load-file-name)
-  "Package base directory of installed `purescript-mode'.
-Used for locating additional package data files.")
-
 ;;;###autoload
 (defun purescript-version (&optional here)
   "Show the `purescript-mode` version in the echo area.
@@ -401,15 +397,6 @@ is asked to show extra info for the items matching QUERY.."
                         nil nil def)
            current-prefix-arg)))
   (browse-url (format "https://pursuit.purescript.org/search?q=%s" query)))
-
-(defcustom purescript-completing-read-function 'completing-read
-  "Default function to use for completion."
-  :group 'purescript
-  :type '(choice
-          (function-item :tag "completing-read" :value completing-read)
-          (function-item :tag "ido" :value ido-completing-read)
-          (function-item :tag "helm" :value helm--completing-read-default)
-          (function :tag "Custom function")))
 
 (defcustom purescript-indent-spaces 2
   "Number of spaces to indent inwards."
