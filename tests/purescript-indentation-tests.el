@@ -237,3 +237,44 @@ foo = do
   identifier :: Array String <- function call
   _ <- another call
   pure unit"))
+
+(ert-deftest let-in-separate-lines ()
+  "Tests bug #12"
+  (purescript-test-indentation "
+test1 a
+= let { x } = a
+in x"
+
+"
+test1 a
+  = let { x } = a
+    in x"))
+
+(ert-deftest case-of-separate-lines ()
+  "Tests bug #12"
+  (purescript-test-indentation "
+test3 a
+= case a of
+{ x: y }
+-> y"
+
+ "
+test3 a
+  = case a of
+    { x: y }
+      -> y"))
+
+(ert-deftest comma-first-list-after-case-of ()
+  "A comma-first list was getting misindented if goes after case-of"
+  :expected-result :failed
+  (purescript-test-indentation "
+fun = case _ of
+  [ a
+  , b ]
+"
+
+"
+fun = case _ of
+  [ a
+  , b ]
+"))
