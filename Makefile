@@ -20,7 +20,6 @@ ELFILES = \
 	purescript-simple-indent.el \
 	purescript-sort-imports.el \
 	purescript-unicode-input-method.el \
-	purescript-utils.el \
 	purescript-decl-scan.el \
 	purescript-yas.el \
 	purescript-vars.el \
