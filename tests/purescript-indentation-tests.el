@@ -263,3 +263,18 @@ test3 a
   = case a of
     { x: y }
       -> y"))
+
+(ert-deftest comma-first-list-after-case-of ()
+  "A comma-first list was getting misindented if goes after case-of"
+  :expected-result :failed
+  (purescript-test-indentation "
+fun = case _ of
+  [ a
+  , b ]
+"
+
+"
+fun = case _ of
+  [ a
+  , b ]
+"))
