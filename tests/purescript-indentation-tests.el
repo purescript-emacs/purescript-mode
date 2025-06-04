@@ -276,3 +276,20 @@ fun = case _ of
   [ a
   , b ]
 "))
+
+(ert-deftest multiline-func-decl-arrow-first ()
+  (purescript-test-indentation-expected-only "
+foo ::
+  ∀ a. A
+  -> B
+  -> C
+"))
+
+(ert-deftest multiline-func-decl-arrow-last ()
+  (purescript-test-indentation-expected-only "
+foo ::
+  ∀ a.
+  A ->
+  B ->
+  C
+"))
