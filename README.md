@@ -1,16 +1,7 @@
 [![MELPA](https://melpa.org/packages/purescript-mode-badge.svg)](https://melpa.org/#/purescript-mode)
 [![Build Status](https://github.com/purescript-emacs/purescript-mode/workflows/CI/badge.svg)](https://github.com/purescript-emacs/purescript-mode/actions)
 
-PureScript Mode for Emacs
-----------------------
-
-This is the PureScript mode package for Emacs.
-
-To report problems or suggestions, please
-[open an issue](https://github.com/dysinger/purescript-mode/issues?state=open)
-in the issue tracker.
-
-Below is a brief setup guide.
+This Emacs package provides indentation, syntax highlighting, and other facilities for PureScript language.
 
 Quick Emacs rundown
 --------------------
