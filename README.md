@@ -3,17 +3,6 @@
 
 This Emacs package provides indentation, syntax highlighting, and other facilities for PureScript language.
 
-Quick Emacs rundown
---------------------
-
-When Emacs is started up, it normally loads the
-[Emacs initialization file](http://www.gnu.org/software/emacs/manual/html_node/emacs/Init-File.html)
-usually called `~/.emacs`, `~/.emacs.el`, or `~/.emacs.d/init.el`;
-with `~` standing for for your home directory.  This file should
-contain all of your personal customisations written as a series of
-Emacs Lisp commands.  In the following sections, this file will simply
-be referred to as the `.emacs` file.
-
 Installation
 ------------
 
