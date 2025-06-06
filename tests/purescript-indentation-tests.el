@@ -21,6 +21,14 @@
 (require 'purescript-mode)
 (require 'purescript-indentation)
 
+(defun purescript-test-indentation-expected-only (expected)
+  (with-temp-buffer
+    (insert expected)
+    (purescript-mode)
+    (turn-on-purescript-indentation)
+    (indent-region (point-min) (point-max))
+    (should (string= expected (buffer-string)))))
+
 (defun purescript-test-indentation (before after &optional start-line)
   (with-temp-buffer
     (insert before)
@@ -210,15 +218,11 @@ type MyRec = { data :: Number
 
 (ert-deftest func-with-do ()
   :expected-result :failed
-  (purescript-test-indentation "
+  (purescript-test-indentation-expected-only "
 foo :: Foo
 foo = do
-  pure unit"
-
-"
-foo :: Foo
-foo = do
-  pure unit"))
+  pure unit
+"))
 
 (ert-deftest do-bindings ()
   :expected-result :failed
@@ -267,14 +271,25 @@ test3 a
 (ert-deftest comma-first-list-after-case-of ()
   "A comma-first list was getting misindented if goes after case-of"
   :expected-result :failed
-  (purescript-test-indentation "
+  (purescript-test-indentation-expected-only "
 fun = case _ of
   [ a
   , b ]
-"
+"))
 
-"
-fun = case _ of
-  [ a
-  , b ]
+(ert-deftest multiline-func-decl-arrow-first ()
+  (purescript-test-indentation-expected-only "
+foo ::
+  ∀ a. A
+  -> B
+  -> C
+"))
+
+(ert-deftest multiline-func-decl-arrow-last ()
+  (purescript-test-indentation-expected-only "
+foo ::
+  ∀ a.
+  A ->
+  B ->
+  C
 "))
