@@ -1,27 +1,7 @@
 [![MELPA](https://melpa.org/packages/purescript-mode-badge.svg)](https://melpa.org/#/purescript-mode)
 [![Build Status](https://github.com/purescript-emacs/purescript-mode/workflows/CI/badge.svg)](https://github.com/purescript-emacs/purescript-mode/actions)
 
-PureScript Mode for Emacs
-----------------------
-
-This is the PureScript mode package for Emacs.
-
-To report problems or suggestions, please
-[open an issue](https://github.com/dysinger/purescript-mode/issues?state=open)
-in the issue tracker.
-
-Below is a brief setup guide.
-
-Quick Emacs rundown
---------------------
-
-When Emacs is started up, it normally loads the
-[Emacs initialization file](http://www.gnu.org/software/emacs/manual/html_node/emacs/Init-File.html)
-usually called `~/.emacs`, `~/.emacs.el`, or `~/.emacs.d/init.el`;
-with `~` standing for for your home directory.  This file should
-contain all of your personal customisations written as a series of
-Emacs Lisp commands.  In the following sections, this file will simply
-be referred to as the `.emacs` file.
+This Emacs package provides indentation, syntax highlighting, and other facilities for PureScript language.
 
 Installation
 ------------
