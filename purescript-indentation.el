@@ -739,17 +739,6 @@ indent the current line. This has to be fixed elsewhere."
   (let ((current-indent (purescript-current-column)))
     (funcall parser)))
 
-(defun purescript-indentation-simple-declaration ()
-  (purescript-indentation-expression)
-  (cond ((string= current-token "=")
-         (purescript-indentation-statement-right #'purescript-indentation-expression))
-        ((string= current-token "::")
-         (purescript-indentation-statement-right #'purescript-indentation-type))
-        ((and (eq current-token 'end-tokens)
-              (string= following-token "="))
-         (purescript-indentation-add-indentation current-indent)
-         (throw 'parse-end nil))))
-
 (defun purescript-indentation-declaration ()
   (purescript-indentation-expression)
   (cond ((string= current-token "|")
@@ -797,21 +786,6 @@ indent the current line. This has to be fixed elsewhere."
                 (throw 'parse-end nil))
               (unless (member (car parser) '("(" "[" "{" "do" "case"))
                 (throw 'return nil)))))))))
-
-(defun purescript-indentation-test-indentations ()
-  (interactive)
-  (let ((indentations (save-excursion (purescript-indentation-find-indentations)))
-        (str "")
-        (pos 0))
-    (while indentations
-      (when (>= (car indentations) pos)
-        (setq str (concat str (make-string (- (car indentations) pos) ?\ )
-                          "|"))
-        (setq pos (+ 1 (car indentations))))
-      (setq indentations (cdr indentations)))
-    (end-of-line)
-    (newline)
-    (insert str)))
 
 (defun purescript-indentation-separated (parser separator stmt-separator)
   (catch 'return
@@ -937,14 +911,6 @@ indent the current line. This has to be fixed elsewhere."
             (< indent (car possible-indentations)))
     (setq possible-indentations
           (cons indent possible-indentations))))
-
-(defun purescript-indentation-token-test ()
-  (let ((current-token nil)
-        (following-token nil)
-        (layout-indent 0)
-        (parse-line-number 0)
-        (indentation-point (mark)))
-    (purescript-indentation-read-next-token)))
 
 (defun purescript-indentation-read-next-token ()
   (cond ((eq current-token 'end-tokens)
